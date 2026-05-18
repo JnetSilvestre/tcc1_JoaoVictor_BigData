@@ -1,0 +1,301 @@
+%%%% REFERÊNCIAS
+%%
+%% Conjunto padronizado de elementos descritivos retirados de um documento, que permite sua identificação individual.
+%%
+%% Cada entrada no arquivo BibTeX segue um formato padrão. Este formato muda ligeiramente baseado no tipo de entrada, mas a sintaxe
+%% continua a mesma.
+%%
+%% O rótulo de cada entrada não pode conter caracteres especiais, acentuados ou cedilha.
+%%
+%% A formatação do texto no campo "AUTHOR" deve obedecer algumas regras:
+%%   - Acento agudo:        "á = {\'a}".
+%%   - Acento crase:        "à = {\`a}".
+%%   - Acento til:          "ã = {\~a}".
+%%   - Acento circunflexo:  "ê = {\^e}".
+%%   - Acento trema:        "ü = {\"u}".
+%%   - Acento na letra i:   "í = {\'\i}".
+%%   - Cedilha:             "ç = {\c{c}}".
+%%   - Sobrenome composto:  "Santos, Filho, Jos{\'e} C. S.; da Silva, Erivanildo Lopes".
+%%   - Nome de organização: "{\mbox IONA Technologies PLC}".
+%%
+%% A formatação do texto no campo "TITLE" deve obedecer algumas regras (também válidas para o texto no campo "AUTHOR"):
+%%   - MAIÚSCULAS: "REAL = {REAL}".
+%%   - Minúsculas: "real = {real}".
+%%   - CamelCase:  "Real = {R}eal".
+
+%% TIPOS DE ENTRADA
+%%
+%% Ao inserir uma referência no banco de dados, a primeira coisa a decidir é o tipo de entrada. Existem vários tipos de entrada, mas
+%% não são completas, porém são suficientes para o BibTeX fornecer entradas para lidar com praticamente qualquer tipo de referência
+%% razoavelmente bem.
+
+%% ARTICLE - Um artigo de um jornal ou revista.
+%%   - Campos requeridos: AUTHOR, TITLE, JOURNAL e YEAR.
+%%   - Campos opcionais: VOLUME, NUMBER, PAGES, MONTH e NOTE.
+
+% SEBRAE. Entenda a importância da normalização para o seu negócio. Normas técnicas. 8 jan. 2016. Disponível em: http://www.sebrae.com.br/sites/PortalSebrae/artigos/entenda-a-importancia-da-normalizacao-para-o-seu-negocio. Acesso em: 11 mar. 2025. (Modelo de referência: material disponível na Internet).
+
+@misc{SEBRAE:2016,
+  TITLE         = {Normas técnicas},
+  AUTHOR        = {{SEBRAE}},
+  Institution  = {Entenda a importância da normalização para o seu negócio.},
+  YEAR          = {2016},
+  mounth = {8 jan},
+  URL = {http://www.sebrae.com.br/sites/PortalSebrae/artigos/entenda-a-importancia-da-normalizacao-para-o-seu-negocio},
+  URLACCESSDATE = {11 mar. 2025},
+}
+
+
+@INPROCEEDINGS{Renaux2001,
+  AUTHOR       = {Douglas P. B. Renaux and Faimara do Rocio Strauhs and Aline França Abreu and Leandro Gustavo Biss Becker},
+  TITLE        = {Gestão do conhecimento de um laboratório de pesquisa: uma abordagem prática},
+  BOOKTITLE    = {Simpósio Internacional de Gestão do Conhecimento},
+  YEAR         = {2001},
+  VOLUME        = {4},
+  PAGES        = {195-208},
+  pUBLISHER = {PUC-PR},
+  ADDRESS      = {Curitiba},
+}
+
+@article{Monteiro2009,
+  author = {S. Monteiro},
+  title = {Breve espaço entre cor e sombra},
+  journal = {Revista de Letras},
+  year = {2009},
+  month = {dez.},
+  ADDRESS   = {Curitiba,},
+  number = {11},
+  pages = {183--200},
+  volume = {13},
+  subtitle = {o romance da maturidade literária de {Cristóvão Tezza}},
+}
+
+@BOOK{KOTLER:2012,
+  AUTHOR    = {P. KOTLER and H. KARTAJAYA and I. SETIAWAN},
+  TITLE     = {Marketing 3.0},
+  SUBTITLE   = {as forças que estão definindo o novo marketing centrado no ser humano},
+  PUBLISHER = {Elsevier},
+  YEAR      = {2012},
+  ADDRESS   = {Rio de Janeiro},
+  URL = {https://bibliotecas.sebrae.com.br/chronus/ARQUIVOS_CHRONUS/bds/bds.nsf/3472e2ca0932a98d7edbc110c8c58de9/$File/9938.pdf.},
+  URLACCESSDATE = {8 fev. 2025},
+}
+
+@book{DAVENPORT:2012,
+  author = {Laurence Davenport and Thomas H. Prusak},
+  title = {Conhecimento empresarial},
+  subtitle = {como as organizações gerenciam o seu capital intelectual},
+  publisher = {Campus},
+  address = {Rio de Janeiro},
+  YEAR = {2012},
+}
+
+@book{AACR2,
+  author = {},
+  title = {Código de catalogação anglo-americano},
+  edition = {2},
+  publisher = {FEBAB},
+  address = {São Paulo},
+  YEAR = {1983-1985},
+}
+
+@BOOK{Barton:1998,
+  AUTHOR    = {Dorothy Leonard-Barton},
+  TITLE     = {Nascentes do saber},
+  PUBLISHER = {FGV},
+  YEAR      = {1998},
+  ADDRESS   = {Rio de Janeiro},
+}
+
+@manual{BRASIL:2014,
+  TITLE         = {Relatório educação para todos no Brasil 2000-2015},
+  SUBTITLE      = {versão preliminar},
+  AUTHOR        = {{BRASIL}},
+  ORGANIZATION  = {Ministério da Educação},
+  ADDRESS       = {[Brasília, DF]},
+  ORG-SHORT     = {[MEC]},
+  YEAR          = {2014},
+  URL = {http://portal.mec.gov.br/index.php?option=com_docman&view=download&alias=15774-ept-relatorio-06062014&Itemid=30192},
+  URLACCESSDATE = {12 fev. 2025},
+  institution = {Ministério da Educação}, 
+}
+
+@BOOK{FLEURY:2018,
+  AUTHOR    = {A. C. C. FLEURY and M. T. L. FLEURY},
+  TITLE     = {Estratégias empresariais e formação de competências},
+  SUBTITLE   = {um quebra-cabeça caleidoscópico da indústria brasileira},
+  PUBLISHER = {Atlas},
+  EDITION = {3},
+  YEAR      = {2018},
+  ADDRESS   = {São Paulo},
+}
+
+@MANUAL{NBR6023:2018,
+  TITLE         = {{ABNT NBR} 6023},
+  AUTHOR        = {{ABNT}},
+  ORGANIZATION  = {Associação Brasileira de Normas Técnicas},
+  ADDRESS       = {Rio de Janeiro},
+  YEAR          = {2018},
+  ORG-SHORT     = {ABNT},
+  SUBTITLE      = {informação e documentação: referências: elaboração},
+ 
+}
+
+
+@manual{Centro:2025,
+  TITLE         = {As dimensões curriculares de pré-escolar},
+  AUTHOR        = {Centro{ }Social{ }de{ }Azurva},
+  ADDRESS       = {Valência},
+  year = {2020},
+  org-SHORT = {Pré-escolar},
+  URL = {https://centrosocialazurva.org/seccao.php?s=pre-escolar},
+  URLACCESSDATE = {7 ago. 2025},
+}
+
+@BOOK{Pawlina:2018,
+  AUTHOR    = {Michael H. Ross and Wojciech Pawlina},
+  TITLE     = {Histologia},
+  SUBTITLE   = {Texto e Atlas},
+  EDITION = {7},
+  PUBLISHER = {Guanabara Koogan},
+  YEAR      = {2018},
+  ADDRESS   = {Rio de Janeiro},
+  URL = {https://webapp.utfpr.edu.br/bibservices/minhaBiblioteca?ISBN=9788527729888.},
+  URLACCESSDATE = {18 maio 2025},
+  note = {E-book},
+}
+
+@misc{UTFPR:2025,
+  title        = {Sustentabilidade},
+  subtitle = {estudo da {UTFPR} identifica desmatamento em áreas de preservação do {Rio Pato Branco}},
+  author       = {{UTFPR}},
+  Institution = {},
+  shortauthor  = {{UTFPR}},
+  mounth = {21 fev.},
+  year         = {2025},
+  address     = {Curitiba},
+  url = {https://www.instagram.com/p/DHgMWuCP1xt/?utm_source=ig_web_copy_link},
+  URLACCESSDATE = {25 mar. 2025},
+note = {Instagram: @utfpr\_}
+}
+
+@manual{UTFPR2020,
+  title        = {Relatório de gestão},
+  subtitle = {2020},
+  author       = {{UTFPR}},
+  Institution = {Diretoria de Graduação e Educação Profissional. Departamento de Biblioteca},
+  shortauthor  = {{UTFPR}},
+  note         = {(Relatório técnico)},
+  year         = {2020},
+  address     = {Ponta Grossa},
+  publisher    = {[s.n.]},
+  org-short    = {[\textit{s.n.}]},
+}
+
+@MANUAL{INEP:2016,
+  TITLE         = {Relatório dos cursos avaliados em 2015},
+  AUTHOR        = {{INEP}},
+  Institution = {Sistema Nacional de Avaliação da Educação Superior.},
+  ORGANIZATION  = {Sistema Nacional de Avaliação da Educação Superior},
+  ADDRESS       = {Brasília, DF},
+  YEAR          = {2016},
+  ORG-SHORT     = {INEP},
+}
+
+@MANUAL{NBR6028:2021,
+  TITLE         = {{ABNT NBR} 6028},
+  AUTHOR        = {{ABNT}},
+  ORGANIZATION  = {Associação Brasileira de Normas Técnicas},
+  ADDRESS       = {Rio de Janeiro},
+  YEAR          = {2021},
+  ORG-SHORT     = {ABNT},
+  SUBTITLE      = {informação e documentação: resumo -- apresentação}
+}
+
+@MANUAL{NBR6027:2012,
+  TITLE         = {{ABNT NBR} 6027},
+  AUTHOR        = {{ABNT}},
+  ORGANIZATION  = {Associação Brasileira de Normas Técnicas},
+  ADDRESS       = {Rio de Janeiro},
+  YEAR          = {2012},
+  ORG-SHORT     = {ABNT},
+  SUBTITLE      = {informação e documentação: sumário -- apresentação}
+}
+
+@BOOK{KROGH:2001,
+  AUTHOR    = {Georg Von{ }Ichijo and Kazuo Nonaka and Ikujiro Krogh},
+  TITLE     = {Facilitando a criação de conhecimento},
+  PUBLISHER = {Campus},
+  YEAR      = {2001},
+  ADDRESS   = {Rio de Janeiro},
+  SUBTITLE  = {reinventando a empresa com o poder da inovação contínua}
+}
+
+@MANUAL{NBR10520:2023,
+  TITLE         = {{ABNT NBR} 10520},
+  AUTHOR        = {{ABNT}},
+  ORGANIZATION  = {Associação Brasileira de Normas Técnicas},
+  ADDRESS       = {Rio de Janeiro},
+  YEAR          = {2023},
+  ORG-SHORT     = {ABNT},
+  SUBTITLE      = {informação e documentação -- apresentação de citações em documentos}
+}
+
+@MANUAL{NBR14724:2011,
+  TITLE         = {{ABNT NBR} 14724},
+  AUTHOR        = {{ABNT}},
+  ORGANIZATION  = {Associação Brasileira de Normas Técnicas},
+  ADDRESS       = {Rio de Janeiro, RJ},
+  MONTH         = mar,
+  YEAR          = {2024},
+  ORG-SHORT     = {ABNT},
+  SUBTITLE      = {informação e documentação -- trabalhos acadêmicos -- apresentação}
+}
+
+@MASTERSTHESIS{Andrade2005,
+  AUTHOR  = {M. M. Andrade},
+  TITLE   = {Competências requeridas pelos gestores de Instituições de ensino superior privadas},
+  SCHOOL  = {Programa de Pós-Graduação em
+Tecnologia, Universidade Tecnológica Federal do Paraná,},
+  YEAR    = {2005},
+  ADDRESS = {Curitiba,},
+  PAGES   = {150},
+  SUBTITLE= {um estudo em Curitiba e região metropolitana}
+}
+
+@INBOOK{Borges2014,
+  AUTHOR    = {L. O. BORGES and O. H. YAMAMOTO},
+  booktitle  = {Psicologia, organizações e trabalho no Brasil},
+  title = {Mundo do trabalho},
+  SUBTITLE = {construção histórica e desafios contemporâneos},
+  Organization = {{BASTOS, A. V. B; BORGES-ANDRADE, J. E.; ZANELLI, J. C. (Org.)}},
+  PAGES     = {25--72},
+  PUBLISHER = {Artmed},
+  YEAR      = {2014},
+  ADDRESS   = {Porto Alegre},
+  edition      = {2}
+}
+
+@INBOOK{Candido2002,
+  AUTHOR    = {A. Candido},
+  booktitle  = {Textos de intervenção},
+  title = {A literatura e a formação do homem},
+  PAGES     = {67},
+  PUBLISHER = {Duas Cidades},
+  YEAR      = {2002},
+  ADDRESS   = {São Paulo},
+  SERIES    = {Coleção Espírito Crítico},
+}
+
+@MISC{BRASIL:1998,
+  TITLE         = {Lei n. 9.610, de 19 de fevereiro de 1998},
+  AUTHOR        = {{BRASIL}},
+  ORGANIZATION  = {Casa Civil},
+  ADDRESS       = {Brasília, DF:},
+  ORG-SHORT     = {Casa Civil},
+  YEAR          = {1998},
+  URL = {http://www.planalto.gov.br/ccivil_03/leis/L9610.htm},
+  URLACCESSDATE = {11 mar. 2025},
+  SUBTITLE      = {Altera, atualiza e consolida a legislação sobre direitos autorais e dá outras providências}
+}
+
