@@ -1,5 +1,11 @@
 %%%% CAPÍTULO 5 - CONCLUSÕES E PERSPECTIVAS
 %%
-\chapter{Conclusão (ou considerações finais)}\label{cap:conclusoeseperspectivas}
+\chapter{Considerações finais}\label{cap:conclusoeseperspectivas}
 
-Parte final do texto, na qual se apresentam as conclusões do trabalho acadêmico, usualmente denominada Considerações Finais. Pode ser usada outra denominação similar que indique a conclusão do trabalho.
+A proposta apresentada neste documento descreve uma estratégia inicial para a distribuição de aplicações fundamentadas no Paradigma Orientado a Notificações (PON) em ambientes orquestrados por Kubernetes. A natureza modular do PON, associada à possibilidade de decomposição de seus componentes em serviços independentes, sugere uma compatibilidade conceitual com abordagens baseadas em contêineres e microsserviços.
+
+A utilização de recursos providos pelo Kubernetes, tais como \textit{Deployments}, \textit{Services}, \textit{ConfigMaps} e \textit{Secrets}, fornece os mecanismos necessários para investigar aspectos relacionados à implantação, ao gerenciamento e à operação distribuída desses componentes. Além disso, funcionalidades como replicação, balanceamento de carga, tolerância a falhas e escalabilidade horizontal constituem elementos importantes para a análise do comportamento da aplicação em cenários com elevada demanda computacional.
+
+Entretanto, é importante destacar que este Trabalho de Conclusão de Curso encontra-se em fase de análise e investigação da viabilidade de integração entre a arquitetura PON e a plataforma Kubernetes. Assim, o método proposto deve ser compreendido, neste momento, como uma hipótese arquitetural a ser validada por meio de experimentos, medições e observações sistemáticas. A avaliação da comunicação entre serviços, do consumo de recursos, da latência observada e das dificuldades práticas de implantação será fundamental para determinar os benefícios e limitações dessa abordagem.
+
+Por fim, ressalta-se que a presente proposta concentra-se na distribuição dos componentes essenciais da arquitetura PON. Como perspectiva de continuidade do trabalho, poderá ser desenvolvido e integrado um módulo específico para o processamento de consultas baseadas em NOP Query, ampliando as capacidades da solução e permitindo a investigação de cenários mais complexos envolvendo processamento contínuo de eventos e análise de fluxos de dados em larga escala. Dessa forma, espera-se que os resultados obtidos neste estudo forneçam subsídios para pesquisas futuras relacionadas ao desempenho, à escalabilidade e à adoção prática do PON em ambientes distribuídos baseados em Kubernetes.

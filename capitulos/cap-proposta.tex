@@ -1,5 +1,23 @@
 
 
-\chapter{Solução Proposta}
+\chapter{Proposta de um método de distribuição de uma aplicação PON em clustar Kubernetes}
 
-Este é o principal capítulo do TCC.
+A arquitetura modular do PON, fundamentada em componentes bem definidos e em um núcleo orientado a notificações, torna a aplicação um candidato adequado para análise sob a perspectiva de distribuição em Kubernetes. Em termos de decomposição, cada entidade do PON pode ser interpretada como um serviço independente, acessível por meio de APIs ou URLs, favorecendo sua adaptação ao paradigma de microsserviços.
+
+A aplicação prova de conceito utilizada neste TCC, baseada na arquitetura de software do PON, insere-se no contexto de aplicações distribuídas e de processamento em fluxo de massas de dados com baixa latência \cite{kossoski2024tese,kossoski2024applsci}. Nesse cenário, teoricamente, componentes como o \textit{Attributes}, \textit{Premises}, Conditions, Rules, Instigations e Actions podem ser conteinerizados e executados de forma independente.
+
+A conteinerização desses componentes constitui uma etapa essencial para sua implantação em Kubernetes, pois permite encapsular a aplicação em unidades executáveis padronizadas e isoladas \cite{kossoski2024tese}. Em Kubernetes, essa organização pode ser materializada por meio de \textit{Deployments} e \textit{Services}, enquanto \textit{ConfigMaps} e \textit{Secrets} podem ser utilizados para gerenciar parâmetros de execução e configurações da aplicação \cite{kubernetes2024docs,burns2019}.
+A Figura \ref{fig:metodoproposto} apresenta uma visão geral do método proposto.
+
+
+\begin{figure*}[tb]
+\centering
+\includegraphics[width=0.99\linewidth]{figuras/proposta-distribuicao-pon-kubernetes.png}
+\caption{Visão geral do método proposto}
+\label{fig:metodoproposto}
+\end{figure*}
+
+Essa abordagem possibilita explorar recursos nativos do orquestrador, como replicação, balanceamento de carga e tolerância a falhas, além de investigar quais componentes podem ser escalados horizontalmente. Adicionalmente, a observação da comunicação entre serviços, bem como a análise de logs, métricas, eventos de replicação e falhas, constitui parte fundamental da avaliação de viabilidade proposta neste TCC \cite{kubernetes2024docs}.
+
+A fundamentação teórica apresentada sustenta a metodologia adotada ao indicar que o PON foi concebido para reduzir redundâncias e controlar o crescimento do custo computacional em cenários com grandes volumes de dados. Ao mesmo tempo, sua arquitetura modular e orientada a notificações mostra-se compatível com o modelo de serviços conteinerizados orquestrados em Kubernetes. Dessa forma, torna-se possível conduzir experimentos que investiguem como a distribuição da aplicação em um cluster afeta aspectos relacionados à organização do sistema, à utilização de recursos, à latência observada e à viabilidade prática de implantação em cenários reais de Big Data em vídeo, estabelecendo também as bases para futuras análises de desempenho e escalabilidade \cite{kossoski2024tese,kossoski2024applsci}.
+
