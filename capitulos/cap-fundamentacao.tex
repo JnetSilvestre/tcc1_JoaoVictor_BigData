@@ -173,14 +173,14 @@ Na verdade, o mecanismo central do paradigma é a chamada Cadeia de Inferência 
 Cada entidade PON pode enviar e/ou receber notificações precisas e pertinentes, permitindo assim a avaliação de estados apenas quando uma notificação chega.
 Esse comportamento colaborativo orientado a notificações oferece uma nova forma de desenvolver e executar aplicativos de software (e até mesmo de hardware) com base em pequenas entidades reativas notificáveis. \citep{linhares2020, simao2012noppicomparison}.
 
-\subsection{Cadeia de Inferêcia PON}
+\subsection{Cadeia de Inferência PON}
 \label{sec:nopchain}
 
 
 Os itens a seguir explicam as entidades NOP de acordo com a cadeia de inferência, levando em consideração a Fig. \ref{fig:nopmetamodel} e a Fig. \ref{fig:notificationflows}:
 
 \begin{itemize}
-    \item \textit{Fact Base Element} (\textit{FBE}): Entidade (por exemplo, uma instância de um tipo ou classe) que contém os \textit{Atributes} do notificador e os \textit{Methods} instigadores.
+    \item \textit{Fact Base Element} (\textit{FBE}): Entidade (por exemplo, uma instância de um tipo ou classe) que contém os \textit{Attributes} do notificador e os \textit{Methods} instigadores.
     
     \item \textit{Attribute}: Entidade responsável por armazenar um valor que representa os estados das propriedades de um \textit{FBE} e que pode notificar com precisão as \textit{Premises} relacionadas quando seu valor muda.
     
@@ -193,7 +193,7 @@ Os itens a seguir explicam as entidades NOP de acordo com a cadeia de inferênci
     
     \item \textit{Instigation}: Entidade relacionada a uma ou mais \textit{Actions} que, quando instigada por uma \textit{Action}, instiga um conjunto de entidades \textit{Method} a serem executadas, parametrizando-as adequadamente, se necessário.
     
-    \item \textit{Methos}: Entidade que, quando instigada por uma \textit{Instigation}, executa uma função ou serviço de um \textit{FBE} e, portanto, pode alterar os estados de \textit{Attributes}, alimentando assim um ciclo de inferência de notificação.
+    \item \textit{Method}: Entidade que, quando instigada por uma \textit{Instigation}, executa uma função ou serviço de um \textit{FBE} e, portanto, pode alterar os estados de \textit{Attributes}, alimentando assim um ciclo de inferência de notificação.
 \end{itemize}
 
 
@@ -203,20 +203,20 @@ Os itens a seguir explicam as entidades NOP de acordo com a cadeia de inferênci
 \includegraphics[width=0.99\linewidth]{figuras/notification-flows.png}
 \caption{Fluxos de notificação. Adaptado de \citet{kossoski2024applsci}.
 %\cite{linhares2020}
-\label{fig:notificationflows}}
+}
 \label{fig:notificationflows}
 \end{figure*}
 
 A cadeia de inferência NOP organiza o fluxo de notificação desde as entidades de base de fatos até os elementos responsáveis por decisões lógicas, estruturando a colaboração entre Fact Base Elements (FBEs), Attributes, Premises, Conditions, Rules, Actions, Instigations e Methods \cite{kossoski2024applsci}. A cada alteração relevante em um Attribute, apenas as Premises diretamente associadas são notificadas, e estas, por sua vez, provocam a reavaliação das Conditions vinculadas, que podem ou não disparar Rules e Actions, fechando um ciclo de notificações \cite{kossoski2024applsci}.
 
-Essa organização é particularmente relevante em aplicações em que se deseja evitar reavaliações desnecessárias de condições lógicas ao longo do tempo, como é o caso de consultas em fluxos de eventos de vídeo \cite{kossoski2024applsci}. Em abordagens tradicionais, é comum que verificações de padrões sejam reexecutadas ciclicamente sobre grandes volumes de dados, mesmo quando nenhum atributo essencial se alterou, o que leva a redundâncias temporais e potencial crescimento exponencial do custo computacional \cite{kossoski2024applsci,alam2020}. Na cadeia de inferência PON, ao contrário, o processamento é orientado por notificações, de modo que somente as porções da lógica efetivamente impactadas por mudanças são reavaliadas, contribuindo para o comportamento polinomial observado nos estudos do NOP Query \cite{kossoski2024applsci}. Essa característica conecta-se diretamente ao problema de custo computacional estudado neste TCC, que busca verificar, em um ambiente distribuído com Kubernetes, em que medida a organização em cadeias de inferência orientadas a notificações se mantém vantajosa do ponto de vista de desempenho e escalabilidade \cite{kossoski2024tese}.
+Essa organização é particularmente relevante em aplicações em que se deseja evitar reavaliações desnecessárias de condições lógicas ao longo do tempo, como é o caso de consultas em fluxos de eventos de vídeo \cite{kossoski2024applsci}. Em abordagens tradicionais, é comum que verificações de padrões sejam reexecutadas ciclicamente sobre grandes volumes de dados, mesmo quando nenhum atributo essencial se alterou, o que pode produzir redundâncias temporais e aumentar o custo computacional \cite{kossoski2024applsci,alam2020}. Na cadeia de inferência PON, ao contrário, o processamento é orientado por notificações, de modo que somente as porções da lógica efetivamente impactadas por mudanças são reavaliadas, contribuindo para o comportamento polinomial observado nos estudos do NOP Query \cite{kossoski2024applsci}. Essa característica conecta-se diretamente ao problema de custo computacional estudado neste TCC, que busca verificar, em um ambiente distribuído com Kubernetes, em que medida a organização em cadeias de inferência orientadas a notificações se mantém vantajosa do ponto de vista de desempenho e escalabilidade \cite{kossoski2024tese}.
 
 A organização PON reduz ou até mesmo elimina algumas das questões relacionadas aos paradigmas clássicos de desenvolvimento, como o Paradigma Imperativo (IP) e o Paradigma Declarativo (DP), que, respectivamente — e de forma notável —, incluem a Programação Orientada a Objetos (OOP) e os Sistemas Baseados em Regras (RBS) \citep{ronszcka2017nopframework2, linhares2020}. 
 Exemplos dessas questões são o acoplamento frequentemente forte entre partes do código e as redundâncias estruturais e temporais relacionadas ao processamento de avaliação lógico-causal \citep{ronszcka2017nopframework2}.
 
 As redundâncias estruturais ocorrem quando uma determinada avaliação lógica e/ou causal é repetida desnecessariamente em outra parte do código. 
 Por sua vez, as redundâncias temporais ocorrem quando uma determinada avaliação lógica e/ou causal é reexecutada desnecessariamente ao longo do tempo, e os dados envolvidos nesse cálculo não se alteraram desde a sua última execução. 
-Esses problemas ocorrem com frequência, por exemplo, em loops aninhados em linguagens IP, que geralmente tendem a causar acoplamento de código, tornando assim mais desafiador alcançar o paralelismo e a distribuição do processamento \citep{simao2009holonic, ronszcka2015noprete, linhares2020}.
+Esses problemas ocorrem com frequência, por exemplo, em loops aninhados em linguagens IP, que geralmente tendem a causar acoplamento de código, tornando assim mais desafiador alcançar o paralelismo e a distribuição do processamento \citep{simao2009holoniccontrolmetamodel, ronszcka2015noprete, linhares2020}.
 
 Os problemas mencionados acima não ocorrem no PON, uma vez que as notificações precisas, por exemplo, entre \textit{Attributes} e \textit{Premises}, evitam a redundância temporal. Além disso, as colaborações de \textit{Conditions} que compartilham \textit{Premises} evitam a redundância estrutural. 
 Nesse sentido, o PON difere das abordagens OOP porque não é orientado a loops, e difere das abordagens baseadas em regras porque não se baseia em um mecanismo de inferência monolítico orientado à busca factual \citep{simao2009holoniccontrolmetamodel, simaostadzisz2008patentepon, ronszcka2015noprete, linhares2020}. 
@@ -255,7 +255,7 @@ O processamento em fluxo (\textit{stream processing}) é um modelo no qual os da
 Nesse contexto, a organização de componentes independentes, com responsabilidades bem definidas e comunicação baseada em eventos ou mensagens, é fundamental para viabilizar uma execução em cluster \cite{burns2019,kubernetes2026documentation}. Ao decompor o sistema em módulos como coleta de dados, buffer de fluxo, gerência de consultas e processamento de eventos, torna-se possível distribuir esses módulos em diferentes nós, aplicar escalabilidade seletiva (replicando apenas os componentes mais exigidos) e observar o comportamento do sistema sob diferentes cargas \cite{burns2019}.
 
 
-\subsection{Frameworks e ferramentas de processamento big data}
+\subsection{Tecnologias de suporte à execução distribuída}
 
 A evolução de aplicações distribuídas em larga escala tem sido acompanhada pelo surgimento de frameworks e ferramentas voltados ao gerenciamento de aplicações, especialmente em ambientes baseados em contêineres \cite{burns2019,kubernetes2026documentation}. Tais ferramentas buscam apoiar o empacotamento, a implantação, o isolamento, a reprodutibilidade e a automação de rotinas operacionais, reduzindo o esforço manual na administração de sistemas distribuídos e favorecendo práticas como \textit{continuous integration} e \textit{continuous delivery} (CI/CD) \cite{burns2019}.
 
@@ -275,7 +275,7 @@ Os benefícios da conteinerização incluem portabilidade (a aplicação empacot
 
 
 
-\subsection{Gerenciamento de Cluster}
+\subsection{Orquestração de contêineres com Kubernetes}
 
 Um \textit{cluster} pode ser definido como um conjunto de máquinas (físicas ou virtuais) que cooperam para executar aplicações de forma coordenada, apresentando-se para o usuário ou para a aplicação como um único sistema lógico \cite{tanenbaum2017}. No contexto de conteinerização, o cluster é formado por nós (ou nodos) capazes de hospedar contêineres, interligados por uma rede e gerenciados por um plano de controle responsável por distribuir cargas, monitorar o estado dos recursos e reagir a falhas \cite{kubernetes2026documentation}.
 

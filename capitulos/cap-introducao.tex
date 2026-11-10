@@ -6,6 +6,10 @@
 %% Título e rótulo de capítulo (rótulos não devem conter caracteres especiais, acentuados ou cedilha)
 \chapter{Introdução}\label{cap:introducao}
 
+Aplicações que processam dados em fluxo têm se tornado relevantes em domínios que dependem de resposta rápida, como monitoramento, análise de eventos e consulta a conteúdo multimídia. No caso de vídeos, os dados podem envolver múltiplos objetos, atributos e relações espaciais e temporais, com exigências de processamento contínuo \cite{kossoski2024applsci}. Essa demanda motiva a investigação de estratégias que permitam organizar os componentes de software e controlar o custo computacional.
+
+
+
 O aumento contínuo da produção e do consumo de dados em formato de vídeo, aliado à necessidade de responder a consultas sobre eventos em tempo real, tem impulsionado o desenvolvimento de novas abordagens para processamento de dados em fluxo \cite{kossoski2025slr}. Nesse cenário, surgem desafios importantes relacionados ao custo computacional, à latência de resposta e à organização das etapas de ingestão, processamento e recuperação de informação \cite{kossoski2024applsci}. Em especial, aplicações que lidam com eventos em vídeo tendem a exigir estruturas complexas para identificar objetos, relações espaciais e padrões temporais, o que torna o problema relevante tanto do ponto de vista acadêmico quanto prático \cite{kossoski2024applsci}.
 
 A literatura recente aponta que, apesar dos avanços em computação, visão computacional e arquiteturas de processamento, ainda existem limitações quando o objetivo é consultar eventos em fluxos contínuos com baixo atraso e uso controlado de recursos \cite{kossoski2024applsci}. Parte dessas limitações está associada à forma como os sistemas são estruturados, muitas vezes com forte acoplamento entre componentes e com avaliações repetitivas que elevam o custo da execução \cite{kossoski2024applsci}. 
@@ -65,124 +69,6 @@ Adicionalmente, o Kubernetes tem se consolidado como uma das principais platafor
 
 \section{Estrutura do trabalho}
 
-Este trabalho está organizado em capítulos que acompanham a evolução da investigação proposta. O Capítulo 2 apresenta a fundamentação teórica, abordando o Paradigma Orientado a Notificações, o NOP Query, além de conceitos relacionados a aplicações distribuídas, Docker e Kubernetes. Essa base é necessária para situar o leitor e justificar as escolhas feitas ao longo do desenvolvimento.
+O Capítulo 2 apresenta os fundamentos do Paradigma Orientado a Notificações, do NOP Query e das tecnologias relacionadas a aplicações distribuídas, Docker e Kubernetes. O Capítulo 3 apresenta a proposta preliminar de distribuição da aplicação e o planejamento das atividades, a serem validados durante o TCC2. O Capítulo 4 reúne as considerações finais desta proposta, indicando as limitações e os próximos passos da investigação.
 
-O Capítulo 3 descreve a metodologia adotada, indicando os procedimentos empregados para preparar a aplicação prova de conceito, conteinerizar seus componentes e implantar a solução no cluster Kubernetes. Nessa etapa, são apresentados os critérios técnicos e as decisões que orientam a estruturação do ambiente distribuído.
-
-No Capítulo 4, são descritas as atividades de desenvolvimento, os experimentos realizados e as observações obtidas durante a execução da aplicação. Esse capítulo concentra a análise da viabilidade da abordagem, considerando funcionamento, organização dos serviços, comunicação entre componentes e limitações encontradas.
-
-Por fim, o Capítulo 5 apresenta as considerações finais, retomando os objetivos definidos no início do trabalho, sintetizando os resultados obtidos e destacando limitações da proposta. Também são indicadas possibilidades de continuidade da pesquisa, especialmente em relação a testes de desempenho, escalabilidade e aprimoramentos arquiteturais.
-
-\section{Cronograma}
-
-O desenvolvimento deste trabalho foi organizado em etapas, de modo a permitir a progressão gradual das atividades de pesquisa, implementação e escrita. Essa organização é importante porque a investigação envolve desde o estudo conceitual até a preparação do ambiente distribuído e a análise dos resultados obtidos. A tabela a seguir apresenta um cronograma genérico, com períodos indicados em meses, que pode ser adaptado conforme a evolução real do TCC.
-
-\begin{table}[htbp]
-\centering
-\caption{Cronograma genérico de desenvolvimento do TCC}
-\label{tab:cronograma}
-
-\small
-\renewcommand{\arraystretch}{1.3}
-
-\begin{tabular}{p{7.2cm}cccccccc}
-\hline
-\textbf{Etapa} &
-\textbf{M1} &
-\textbf{M2} &
-\textbf{M3} &
-\textbf{M4} &
-\textbf{M5} &
-\textbf{M6} &
-\textbf{M7} &
-\textbf{M8} \\
-\hline
-
-Revisão bibliográfica sobre NOP, NOP Query, Docker e Kubernetes
-& X & X & & & & & & \\
-
-Estudo da aplicação prova de conceito
-& X & X & X & & & & & \\
-
-Preparação do ambiente de desenvolvimento
-& & X & X & & & & & \\
-
-Conteinerização da aplicação
-& & & X & X & & & & \\
-
-Configuração do cluster Kubernetes
-& & & & X & X & & & \\
-
-Implantação e testes iniciais
-& & & & & X & X & & \\
-
-Coleta de observações e resultados
-& & & & & & X & X & \\
-
-Escrita e revisão do TCC
-& X & X & X & X & X & X & X & X \\
-
-\hline
-\end{tabular}
-\end{table}
-% Segundo \citeonline{Coulouris2013}.
-
-% Segundo \citeonline[p. 40]{Coulouris2013}.
-
-% Citação no final do Parágrafo~\cite{Coulouris2013}. 
-
-% Citação no final do Parágrafo com número de página~\cite[p. 40]{Coulouris2013}.
-
-% %(Modelo de referência: pessoa jurídica)
-% Citação no final do Parágrafo~\cite{NBR6023:2018}
-
-% %(Modelo de referência: pessoa jurídica)
-% Citação no final do Parágrafo~\cite{NBR6027:2012}
-
-% %(Modelo de referência: pessoa jurídica)
-% Citação no final do Parágrafo~\cite{NBR6028:2021}
-
-% Segundo a \citeonline{NBR14724:2011}.
-
-% Citação no final do Parágrafo~\cite{NBR10520:2002}
-
-% Citação no final do Parágrafo~\cite{NBR14724:2011}.
-
-% % (Modelo de referência de trabalho acadêmico).
-% Citação no final do Parágrafo~\cite{Andrade2005}
-
-% % (Modelo de referência: capítulo de livro).
-% Citação no final do Parágrafo~\cite{Borges2014}
-
-% % (Modelo de referência: leis, decretos, portarias, etc.)
-% Citação no final do Parágrafo~\cite{BRASIL:1998}
-
-% % (Modelo de referência: livro com subtítulo). Nome com sufixo "Von" - Configuração no bib
-% Citação no final do Parágrafo~\cite[p. 66]{KROGH:2001}
-
-% Citação no final do Parágrafo~\cite{Faina2001}
-
-% % (Modelo de referência: livro com subtítulo).
-% Citação no final do Parágrafo~\cite{Davenport2012}
-
-% % (Modelo de referência: artigo de periódico).
-% Citação no final do Parágrafo~\cite{Monteiro2009}
-
-% %(Modelo de referência: artigo de periódico). Nome familiar "Junior"
-% Citação no final do Parágrafo~\cite{Sanches2024}
-
-% % (Modelo de referência: trabalho publicado em evento).
-% Citação no final do Parágrafo~\cite{Renaux2001}
-
-\section{Contextualização}
-
-Aplicações que processam dados em fluxo têm se tornado cada vez mais relevantes em domínios que dependem de resposta rápida, como monitoramento, análise de eventos e consulta a conteúdo multimídia. No caso de vídeos, o problema se torna ainda mais complexo porque os dados são volumosos, dinâmicos e compostos por múltiplos elementos semiestruturados, como objetos, atributos e relações espaciais e temporais \cite{kossoski2024applsci}. Nesses cenários, a consulta não se limita à recuperação de registros armazenados, mas envolve a interpretação de eventos à medida que os dados chegam ao sistema, o que amplia a exigência sobre processamento, comunicação entre módulos e consumo de recursos.
-
-Kossoski, Simão e Lopes destacam que o crescimento dos dados de vídeo torna a busca por eventos em vídeos cada vez mais relevante, ao mesmo tempo em que reforça a presença de desafios relacionados ao custo computacional e à latência \cite{kossoski2024applsci}. Esses desafios aparecem tanto em abordagens que utilizam bancos de dados e estruturas tradicionais quanto em soluções voltadas ao processamento de fluxo contínuo. Quando consultas mais complexas são executadas, especialmente aquelas que envolvem comparação entre objetos, relações espaciais e janelas de tempo, o sistema pode exigir muitas avaliações internas, o que impacta diretamente o tempo de resposta \cite{kossoski2024applsci}.
-
-Dentro desse contexto, o NOP Query é apresentado como um método orientado a notificações para processamento de buscas em vídeos em tempo real, apoiado nos princípios do Paradigma Orientado a Notificações \cite{kossoski2024applsci}. A principal característica dessa abordagem é a organização do processamento em pequenas entidades colaborativas, que reagem a mudanças por meio de notificações bem definidas, evitando verificações desnecessárias e reduzindo acoplamentos \cite{kossoski2024applsci}. Em vez de depender de uma estrutura centrada em buscas intensivas ou em avaliações repetitivas, o método procura reagir ao surgimento de eventos relevantes, o que o torna conceitualmente atrativo para aplicações em fluxo.
-
-A tese de referência também sinaliza interesse em investigar arquitetura distribuída para uma aplicação de big data no domínio de video querying, utilizando ferramentas do ecossistema NOP \cite{kossoski2024applsci}. Esse ponto é importante porque a distribuição não é apenas uma decisão de infraestrutura; ela afeta a forma como os componentes se comunicam, como as tarefas são divididas e como a aplicação responde sob carga. Assim, avaliar a possibilidade de execução distribuída em cluster torna-se um passo coerente para compreender melhor o comportamento do método em um ambiente mais próximo de aplicações modernas.
-
-Nesse cenário, Docker e Kubernetes assumem papel central na proposta deste TCC. Docker permite empacotar a aplicação e suas dependências em contêineres, favorecendo reprodutibilidade, isolamento e portabilidade entre ambientes \cite{docker2024}. Kubernetes, por sua vez, atua como plataforma de orquestração de contêineres, oferecendo mecanismos para implantação, escalonamento, gerenciamento de serviços e reorganização da aplicação em um cluster \cite{kubernetes2024}. Dessa forma, essas tecnologias viabilizam a montagem de um ambiente distribuído no qual a aplicação prova de conceito pode ser executada de forma organizada, permitindo observar aspectos arquiteturais e operacionais relevantes para a investigação proposta.
 
