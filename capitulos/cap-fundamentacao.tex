@@ -232,6 +232,16 @@ Informações mais detalhadas sobre o PON e sua extensa pesquisa podem ser encon
 
 
 
+
+\section{Método NOP Query e delimitação da prova de conceito}
+\label{sec:nop-query}
+
+O NOP Query é um método orientado a notificações para o processamento de consultas sobre eventos em fluxos de vídeo. A tese de Kossoski descreve a linguagem de consulta e os componentes de coleta, gerenciamento de consultas, armazenamento intermediário do fluxo e processamento de correspondências, além das estruturas de inferência estática e dinâmica \cite{kossoski2024tese}. O artigo de Kossoski, Simão e Lopes apresenta a modelagem do método e sua avaliação experimental em termos de processamento e uso de memória \cite{kossoski2024applsci}.
+
+A arquitetura descrita nessas publicações constitui a referência conceitual deste trabalho, mas não deve ser confundida com a implementação selecionada para a prova de conceito. O núcleo PON em Python adotado nesta investigação disponibiliza entidades notificantes, atributos, premissas e condições, mas a presença dessas estruturas não demonstra, isoladamente, equivalência com a implementação do NOP Query em C++ nem suporte a consultas sobre vídeos. A aplicação Python será utilizada para investigar a distribuição de uma cadeia de notificações; sua correspondência com o modelo conceitual, suas adaptações e seus limites deverão ser documentados e verificados durante o desenvolvimento.
+
+Portanto, os resultados experimentais publicados para o método NOP Query não podem ser atribuídos antecipadamente à prova de conceito em Python. A contribuição proposta concentra-se na viabilidade de distribuir componentes e notificações, preservar o comportamento lógico esperado e identificar limitações da implantação em Kubernetes, sem pressupor aumento de desempenho.
+
 \section{Big Data}
 
 O termo \textit{Big Data} é amplamente utilizado para designar conjuntos de dados que excedem a capacidade de ferramentas tradicionais de armazenamento, processamento e análise, tanto pelo volume quanto pela velocidade de geração e pela variedade de formatos \cite{furht2016,ousous2018}. Em termos gerais, Big Data envolve dados massivos, gerados continuamente por múltiplas fontes heterogêneas, exigindo arquiteturas distribuídas e algoritmos especializados para que possam ser explorados de forma útil em tempo hábil \cite{ousous2018,alam2020}. Diversos autores destacam que Big Data não se restringe ao tamanho absoluto dos dados, mas à combinação de características que impõem desafios de desempenho, escalabilidade, qualidade dos resultados e gestão de recursos computacionais \cite{furht2016,ousous2018}.
@@ -254,6 +264,23 @@ O processamento em fluxo (\textit{stream processing}) é um modelo no qual os da
 
 Nesse contexto, a organização de componentes independentes, com responsabilidades bem definidas e comunicação baseada em eventos ou mensagens, é fundamental para viabilizar uma execução em cluster \cite{burns2019,kubernetes2026documentation}. Ao decompor o sistema em módulos como coleta de dados, buffer de fluxo, gerência de consultas e processamento de eventos, torna-se possível distribuir esses módulos em diferentes nós, aplicar escalabilidade seletiva (replicando apenas os componentes mais exigidos) e observar o comportamento do sistema sob diferentes cargas \cite{burns2019}.
 
+
+
+\subsection{Comunicação entre processos e gerenciamento de estado}
+\label{sec:comunicacao-estado-distribuido}
+
+O desacoplamento lógico entre entidades não garante, por si só, a possibilidade de executá-las em processos ou máquinas distintos. Na passagem de uma cadeia de notificações local para um sistema distribuído, torna-se necessário definir a representação das mensagens, as interfaces de comunicação e a associação entre notificações recebidas e alterações de estado. Atrasos de rede, interrupções e falhas parciais devem ser considerados como propriedades do ambiente, e não como comportamentos resolvidos automaticamente pelo paradigma \cite{tanenbaum2017,burns2019}.
+
+A separação de atributos, premissas e condições entre instâncias também exige decidir como lidar com mensagens repetidas, ordem de recebimento, perda de notificações e recuperação após reinicializações. Esses aspectos são relevantes porque avaliações lógicas dependem do estado observado por cada componente. Assim, a consistência entre instâncias e a preservação do resultado da inferência deverão constituir critérios explícitos dos testes funcionais, sem presumir uma solução de transporte ainda não escolhida \cite{tanenbaum2017}.
+
+O Kubernetes disponibiliza mecanismos para implantar e conectar instâncias conteinerizadas, mas não determina a semântica das notificações, a persistência dos atributos ou a sincronização lógica entre réplicas \cite{kubernetes2026documentation}. A definição de protocolos, fronteiras de processo e responsabilidades de estado pertence à etapa de arquitetura, e sua adequação deverá ser comprovada na execução experimental.
+
+\subsection{Sobrecarga e limites da distribuição}
+\label{sec:sobrecarga-distribuicao}
+
+Distribuir uma aplicação pode acrescentar serialização e desserialização de mensagens, comunicação de rede, coordenação entre processos e custos de recuperação de estado. Esses fatores devem ser considerados ao avaliar a granularidade da distribuição e a relação entre trabalho útil e comunicação \cite{tanenbaum2017,burns2019}. O potencial de paralelismo associado ao PON não constitui evidência de ganho de desempenho para a implementação estudada.
+
+Do mesmo modo, a existência de múltiplos \textit{Pods} ou réplicas não comprova que o processamento ocorre efetivamente entre nós distintos. A investigação deverá identificar onde os componentes executam e demonstrar a troca de notificações, a integridade dos resultados e os limites da solução. Medições de latência, consumo de CPU e memória poderão complementar essa avaliação, desde que sejam obtidas em cenários controlados e devidamente documentados \cite{kubernetes2026documentation}.
 
 \subsection{Tecnologias de suporte à execução distribuída}
 
