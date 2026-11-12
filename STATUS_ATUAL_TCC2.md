@@ -234,3 +234,12 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 - A confirmação de snapshot foi temporariamente retida por proxy de teste, uma alteração foi enviada por socket HTTP durante a espera e foi processada após a confirmação. Três PIDs reais: `1988`, `15164`, `18332`; dois efeitos nos passos 3/7, sem duplicações extras. **HTTP serializado**, não concorrência geral.
 - Capturas E07-D19 a E07-D21: nomes, bytes, SHA-256 e resultados no relatório de encerramento. ZIP local `c1-snapshot-http-20261112-190909.zip`, SHA-256 exibido `E454D6051048C37CD2276BFF6ACADCFAC04E2FE03449ABCAFCCA217C07B6FBA1`; bytes do ZIP **não foram acessados nem auditados pela IA**.
 - **Encaminhamento:** preservar ZIP e brutos, completar auditoria V11, confirmar com orientador uso de Python/3 serviços; **Etapa 08** a seguir (Docker/C2) com validação no Windows. Nenhuma alteração na `master` ou no código original, nenhum resultado de Kubernetes ou benchmark atribuído à Etapa 07.
+
+
+## Última atualização — auditoria direta do ZIP C1 (12/11/2026)
+
+- **Arquivo bruto recebido e auditado:** `c1-snapshot-http-20261112-190909.zip`, 5.867 bytes, SHA-256 `e454d6051048c37cd2276bff6acadcfac04e2fe03449abcafcca217c07b6fba1`, idêntico ao hash mostrado no PowerShell.
+- Integridade: ZIP/CRC sem erros, **13 entradas**, sendo **12/12** arquivos efetivamente cobertos por `checksums.sha256` com hashes recalculados corretos. **20/20 verificações adicionais de consistência** dos logs, estados, eventos, manifestos e causalidade aprovadas.
+- Conteúdo confirmado: commit `be6b850d599504e9ea8166f02fd87b35313e5445`, Python 3.13.9/Windows, três PIDs distintos, **5 notificações de atributo, 3 transições de condição, 2 efeitos** nos passos 3 e 7; igualdade exata entre `effects.jsonl` e `expected.jsonl`.
+- Novo relatório: `docs/tcc2/etapa-07-auditoria-zip.md`. Declarações históricas de que o ZIP não havia sido inspecionado estão **superadas a partir deste envio**. O arquivo permanece anexado à conversa e no Windows do acadêmico, não no GitHub.
+- **Etapa 07 funcionalmente concluída no escopo local C0/C1**; V11 reforçado para esta rodada, mas **parcial globalmente**. Sem novos testes da aplicação, benchmark ou execução de Kubernetes.
