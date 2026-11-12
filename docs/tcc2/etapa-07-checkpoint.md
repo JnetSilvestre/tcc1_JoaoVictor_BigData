@@ -92,3 +92,10 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 - Três processos HTTP independentes no mesmo host; proxy temporário de teste reteve ACK, alteração entrou no socket durante a espera e foi executada após confirmação. O tempo da suíte não equivale a benchmark.
 - ZIP da rodada local `c1-snapshot-http-20261112-190909.zip` com SHA-256 exibido `E454D6051048C37CD2276BFF6ACADCFAC04E2FE03449ABCAFCCA217C07B6FBA1`; sem auditoria dos bytes pelo assistente. Capturas e hashes de PNG no relatório de encerramento.
 - **Próxima conversa/etapa:** ler este checkpoint e `docs/tcc2/etapa-07-encerramento-funcional.md`; preparar Etapa 08/C2, sem presumir Kubernetes já executado. Aguardar confirmação do orientador quanto à adaptação Python, conservar V11 auditável.
+
+
+## Checkpoint mais recente — ZIP da Etapa 07 auditado diretamente
+
+O arquivo `c1-snapshot-http-20261112-190909.zip` foi recebido nesta conversa e examinado: 5.867 bytes, SHA-256 `e454d6051048c37cd2276bff6acadcfac04e2fe03449abcafcca217c07b6fba1` idêntico ao do PowerShell, **12/12** hashes internos corretos, **20/20** verificações adicionais de consistência aprovadas. Três PIDs reais, 5 notificações de atributo, 3 transições de condição e 2 efeitos nos passos 3/7, com causalidade e snapshots coerentes. Relatório `docs/tcc2/etapa-07-auditoria-zip.md`.
+
+**Status atual:** Etapa 07 concluída funcionalmente para C0/C1 mínimos; V11 reforçado mas parcial globalmente. Arquivo binário ainda não foi versionado no GitHub. Próximo trabalho: Etapa 08 (Docker/C2), com evidências na máquina do acadêmico, sem antecipar resultado de cluster multinó ou desempenho.
