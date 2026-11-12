@@ -1,7 +1,7 @@
 # TCC2 — Etapa 07: implementação e validação local (diagnóstico inicial)
 
 **Data da inspeção estática:** 2026-11-12.  
-**Estado:** diagnóstico inicial concluído; testes do código PON na máquina do acadêmico ainda **NÃO EXECUTADOS** nesta etapa.  
+**Estado em 12/11/2026:** diagnóstico estático e testes de referência comprovados por capturas da máquina do acadêmico; defeito de `Condition` reproduzido. V01–V07 continuam **não aprovados**. Ver seção 8 para evidências e checksums.  
 **Branch exclusiva para alterações:** `tcc2/desenvolvimento` no repositório da monografia. Não modificar `master`.  
 **Origem congelada para análise:** `JnetSilvestre/codigoPon@c2d525b5c675820806af34348e259bff32a6bc5f`. Não modificar o repositório de referência.  
 **Documentos obrigatórios preservados:** `docs/tcc2/etapa-04-arquitetura-distribuida.md`, `docs/tcc2/etapa-05-protocolo-experimental.md` e `docs/tcc2/etapa-06-preparacao-ambiente.md`.
@@ -101,9 +101,9 @@ Salvar logs de texto e prints originais com hora, comando, código-fonte/SHA e, 
 
 ## 7. Pendências desta publicação
 
-- **NÃO executado:** qualquer teste da aplicação PON no computador do acadêmico, incluindo compilação e scripts acima.
+- **Executados posteriormente, em 12/11/2026:** compilação sintática, `main.py` e reprodução do defeito de `Condition`, com resultados e prints documentados na seção 8. **Ainda não executados:** testes de regressão da implementação corrigida.
 - **NÃO implementado:** correções de código, fixtures, serviços HTTP, snapshot, deduplicação e oráculo C0/C1.
-- **NÃO produzido:** prints reais de execução do núcleo, logs do PON, resultados experimentais, métricas.
+- **Produzidos posteriormente:** dois prints do terminal com diagnóstico e falha, recebidos na conversa (não incorporados ao repositório). **Ainda não produzidos:** logs estruturados do PON corrigido, resultados experimentais e métricas.
 - **PENDENTE:** autorização/aderência acadêmica para adaptação da referência Python, confirmação com o orientador, definição de local definitivo dos arquivos adaptados.
 - **Versionamento:** esta publicação documental foi feita exclusivamente em `tcc2/desenvolvimento`, sem alteração dos repositórios de código-base ou da monografia LaTeX.
 
