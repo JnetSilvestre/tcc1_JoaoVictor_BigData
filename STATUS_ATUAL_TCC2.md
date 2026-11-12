@@ -1,6 +1,6 @@
 # STATUS ATUAL — TCC2
 
-Atualizado em: 2026-11-11
+Atualizado em: 2026-11-12
 
 ## Etapas
 - Etapa 02: concluída, conforme informação do acadêmico.
@@ -8,7 +8,7 @@ Atualizado em: 2026-11-11
 - Etapa 04: concluída como **especificação arquitetural**; nenhuma implementação distribuída comprovada.
 - Etapa 05: **protocolo experimental e esqueleto LaTeX documentados**; sem execução de testes.
 - Etapa 06: **infraestrutura básica concluída e validada em ambiente local**; limitações e dependências restantes documentadas.
-- Próxima: **Etapa 07 — Implementação e validação local da prova de conceito**.
+- Etapa 07: **em andamento**; diagnóstico estático e roteiro de reprodução do núcleo Python documentados em 12/11/2026, sem testes da aplicação executados até aqui.
 
 ## Repositórios e branches
 - Monografia: `JnetSilvestre/tcc1_JoaoVictor_BigData`.
@@ -48,7 +48,7 @@ Atualizado em: 2026-11-11
 - Confirmar recursos suficientes para C4/C5, definição da latência e validade das medições.
 - Revisar e integrar capítulo LaTeX e duas representações arquiteturais no momento apropriado, com compilação real.
 
-## Próxima etapa — 06: Preparação do ambiente
+## Planejamento histórico da Etapa 06 — concluída (preservado para rastreabilidade)
 1. Identificar SO, CPU, RAM, disco, virtualização e permissões da máquina real.
 2. Verificar Python, Git, Docker, Kubernetes/kubectl, versões e dependências por comandos completos e evidências de saída.
 3. Escolher uma opção realista de cluster (inclusive restrições de um só nó), sem confundir múltiplos Pods com multinó.
@@ -89,3 +89,15 @@ Atualizado em: 2026-11-11
 - As duas representações arquiteturais permanecem preservadas; nenhuma figura definitiva da implementação foi inserida na monografia.
 
 **Encaminhamento à Etapa 07:** congelar referência `JnetSilvestre/codigoPon@c2d525b5c675820806af34348e259bff32a6bc5f`, criar testes e oráculo determinístico C0, revisar `Condition`/`Rule`/IDs, implementar e validar os contratos HTTP/JSON em três processos C1 antes da conteinerização definitiva nas etapas subsequentes. Confirmar com orientador aderência da prova Python.
+
+
+## Abertura da Etapa 07 — 12/11/2026
+
+- Consultados nesta ordem: `STATUS_ATUAL_TCC2.md` e `docs/tcc2/etapa-06-preparacao-ambiente.md`; depois preservadas as decisões em `docs/tcc2/etapa-04-arquitetura-distribuida.md` e `docs/tcc2/etapa-05-protocolo-experimental.md`.
+- Inspecionados `main.py`, `pon/__init__.py`, `Notifiable`, `Notifier`, `Attribute`, `Premise`, `Condition`, `Rule`, `Action`, `Instigation` e `NOPManager` no commit fixado `JnetSilvestre/codigoPon@c2d525b5c675820806af34348e259bff32a6bc5f`.
+- Sem dependências de terceiros explicitamente importadas no núcleo examinado (apenas `json` e `asyncio` da biblioteca padrão); não foi localizado `requirements.txt` na revisão.
+- Defeitos estáticos prováveis: referência a `self.__id` em `Condition.update`; notificação aos elementos de entrada em lugar dos observadores; `asyncio.create_task` sem loop garantido em `Rule.update`; registro de IDs com risco de colisão.
+- Documento novo: `docs/tcc2/etapa-07-implementacao-validacao-local.md`, commit `c4da4d2ad7f8d23329919c9ece006039275aafb7`.
+- **Não executados:** testes Python da aplicação no host Windows, C0, C1, V01–V07, capturas da Etapa 07, medições ou implantação PON. As conclusões são de **inspeção estática**, ainda não validação dinâmica.
+- Próxima atividade: executar comandos de diagnóstico e caso mínimo da `Condition` no PowerShell da máquina de desenvolvimento; arquivar stdout/stderr e prints originais; depois implementar testes de regressão, correções, oráculo C0 e C1 com três processos.
+- **Fora do escopo atual:** Docker e Kubernetes da aplicação (Etapas 08–10); atualização dos diagramas/figuras na monografia (Etapa 13).
