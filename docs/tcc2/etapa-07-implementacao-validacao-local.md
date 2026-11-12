@@ -276,3 +276,26 @@ Arquivar saída real, códigos de retorno, print original e hash. Espera-se `Ran
 - `resultados-locais/` ignorado pelo Git; não alterar objetivos nem capítulos LaTeX, nem criar Docker/Kubernetes da aplicação.
 
 **Checkpoint para continuidade:** Etapas 04/05 preservadas; código original congelado; núcleo inicial validado por 11 testes reais (E07-D07/D08), C0 estruturado e **aguardando validação real**; depois C1 exige contratos HTTP/JSON, snapshot inicial, ordenação, deduplicação, testes V02–V07, tudo antes das Etapas 08–10. Registro de prints e arquivos reais permanece requisito para declarações de sucesso.
+
+
+## 14. Validação real do cenário C0 — 12/11/2026
+
+**Evidência:** três capturas originais de tela do Windows PowerShell, enviadas pelo acadêmico nesta conversa. Execução realizada no computador do acadêmico, não no ambiente da IA. Os PNGs permanecem nesta conversa; **não foram incorporados ao GitHub**. Seus hashes foram calculados sobre os arquivos recebidos.
+
+| ID | Nome recebido | Dimensões | Bytes | SHA-256 |
+|---|---|---|---:|---|
+| E07-D09 | `image(20261112-202443).png` | 1920x1080 | 134166 | `cfc3b0358aa1e605970c7957663e0b3b0381519c8572889370caeb078b9a0ffd` |
+| E07-D10 | `image(20261112-202532).png` | 1920x1080 | 71288 | `c5b7193aaa880505a88cd6e2215bbf077567f642bb4020eb7e9cb6b15afdba09` |
+| E07-D11 | `image(20261112-202555).png` | 1920x1080 | 40405 | `df80f651181767ae76a155c9fa864d2775439b601eee38144348c1d89318aa47` |
+
+**Observações reproduzidas nas capturas:**
+
+- Branch `tcc2/desenvolvimento` e `git pull --ff-only` via fast-forward; HEAD exibido `51b3539f8735eb56da754a6239886a3a725860ad`.
+- Python 3.13.9 e `python -m compileall -q .\\pon .\\tests .\\c0` com `Compilacao: 0`.
+- `python -m unittest discover -s tests -p "test_*.py" -v`: **Ran 18 tests in 0.478s; OK; Testes: 0**. Todos os 18 casos listados apresentam `ok`, inclusive teste positivo/negativo da CLI, oráculo independente e regressões anteriores.
+- `python -m c0.runner` retornou relatório com `status: PASS` e `C0: 0`. Campos `expected_fixture_matches_independent_oracle`, `pon_matches_manual_expected` e `pon_matches_independent_oracle` estão `true`.
+- Saída esperada/observada `[3,7]`, dois efeitos `rl1:1` e `rl1:2` em sequência, rastreáveis às transições `cn1:1` e `cn1:3` e notificações `atB:1` e `atB:3`.
+- Contagens: `request=7`, `attribute_changed=5`, `condition_changed=3`, `rule_effect=2`. Estado final `atA=6`, `atB=1`, condição verdadeira, sequências dos atributos `atA=2`, `atB=3`.
+- A tela mostra `effects.jsonl` com duas linhas e `checksums.sha256` com 5 entradas para os arquivos produzidos; os hashes dos arquivos gerados **não foram verificados independentemente a partir de seus bytes**, apenas observados na captura. `git status --short` ao final não exibiu alterações.
+
+**Resultado e limite:** cenário C0 mínimo **aprovado funcionalmente na máquina do acadêmico**, limitado a esta fixture determinística e aos 18 testes. Não se demonstrou execução interprocessos, robustez a falhas, ou desempenho distribuído. O tempo `0.478s` é o tempo da suíte de testes informado por unittest, não uma medição experimental de latência/vazão. Próximo avanço: C1 HTTP/JSON, com validação da comunicação real, snapshots e deduplicação/ordem (V02–V07).
