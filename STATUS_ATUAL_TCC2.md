@@ -117,3 +117,12 @@ Atualizado em: 2026-11-12
 - **Documentação do pacote:** `prova-conceito/README.md`, com formatação corrigida no commit `c2d253a91bbc13675a19e76fbb961ea2b45fc7ac`; atualização de evidências na Etapa 07 no commit `c4625cc46ea99122f0fef84d5aa0a3dcdf49831c`.
 - **Situação dos testes:** a referência defeituosa falhou conforme print anterior; a correção e os três novos testes **não foram executados no Windows**. Não aprovar V01 ainda. Próximo comando: `python -m unittest discover -s tests -p "test_*.py" -v` a partir de `prova-conceito`, após sincronizar a branch local.
 - **Docker e Kubernetes da aplicação:** não iniciados. As duas representações arquiteturais e o capítulo LaTeX continuam preservados.
+
+## Atualização da Etapa 07 — 12/11/2026: validação de Condition e segundo incremento
+
+- **E07-D05/E07-D06 confirmados por prints enviados pelo acadêmico:** `git pull --ff-only` completado, HEAD local `4dcaf328ef31893246260623e741eb65aa71773f`, Python 3.13.9, `compileall` retorno 0, **3/3 regressões de Condition OK em 0,003 s**, `main.py` retorno 0.
+- Arquivos PNG originais na conversa (ainda não publicados no GitHub): `image(20261112-200509).png`, SHA-256 `60391e4f7a6ca6889f413e0635e32ffe4d9cc6e2e1bc54e790c65da9841495ea`; `image(20261112-200539).png`, SHA-256 `393f224361e1aa9a25f05d81cd7691951a6b29e0903a300fc03c46d00b5f837e`.
+- **Situação de V01:** aprovação **parcial documentada apenas para Condition**; V01 completo e demais critérios V02–V07 pendentes.
+- **Segundo incremento de código publicado:** `6165bfdbcfa152218452cf91776fc0be6b345ede`, corrigindo disparo síncrono determinístico de `Rule` e consistência/colisão de IDs em `Notifier`/`NOPManager`. Adicionados `test_rule.py` (4 testes) e `test_ids.py` (4 testes); suíte prevista de 11 testes incluindo os três anteriores.
+- **Ainda não executados no Windows:** novos testes da suíte de 11; a execução real é a próxima ação. Não considerar o incremento aprovado antes de receber saída e evidência.
+- Continuam fora do escopo atual: Docker/Kubernetes da aplicação e figura definitiva na monografia. C0 completo e C1 aguardam validação do núcleo.

@@ -204,3 +204,38 @@ Arquivar capturas originais do terminal com comandos, saída e código de retorn
 ### Próximo incremento planejado
 
 Adicionar testes de `Rule` com execução síncrona determinística da ação na transição falso→verdadeiro, mantendo compatibilidade do método explícito `async def execute`; tornar colisões e troca de IDs seguras em `Notifier`/`NOPManager`; executar os testes no Windows e registrar os resultados **antes de declarar aprovação**. Não modificar o código-fonte fixado do repositório `codigoPon`.
+
+## 11. Incremento 02 — Rule, identificação de entidades e testes (12/11/2026)
+
+**Código publicado, ainda sem resultado de execução do novo incremento no Windows.**
+
+- Commit `6165bfdbcfa152218452cf91776fc0be6b345ede` exclusivamente na branch `tcc2/desenvolvimento`.
+- `prova-conceito/pon/Rule.py`: `update()` executa `Action/Instigation` diretamente quando a condição notifica transição para verdadeiro, sem `asyncio.create_task` implícito. `async def execute()` permanece awaitable quando chamado explicitamente. **Escolha justificada para C0:** efeito observável e determinístico sem depender de event loop ou `sleep`.
+- `prova-conceito/pon/Notifier.py` e `NOPManager.py`: validar IDs inteiros não negativos, preservar 0 para entidade local, rejeitar colisões antes de remover o ID anterior, impedir sobrescrita silenciosa e remoção por entidade diferente da proprietária.
+- `prova-conceito/tests/test_rule.py`: quatro testes, incluindo fixture da Etapa 05 com 7 passos e dois disparos esperados nos passos 3 e 7, execução sem loop ativo, execução dentro de loop e compatibilidade de `await rule.execute()`.
+- `prova-conceito/tests/test_ids.py`: quatro testes para IDs duplicados, troca/desregistro, valores inválidos e prevenção de remoção indevida.
+- `prova-conceito/tests/test_condition.py`: três testes anteriores preservados. **Total planejado:** 11 casos na suíte.
+- `prova-conceito/README.md`: procedimento PowerShell atualizado.
+- **Não executados até o momento desta publicação:** a suíte de 11 testes no Windows, C0 completo (oráculo independente e fixture JSONL), C1/HTTP, Docker/Kubernetes da aplicação. **Não marcar V01 como aprovado integralmente ainda.**
+- **Limites de engenharia:** efeito síncrono é adequado ao pequeno cenário funcional em processo único, mas tarefas bloqueantes, reentrância e concorrência exigirão revisão quando forem definidos os serviços C1. O registro em `NOPManager` é em memória, sem sincronização entre threads/processos nem durabilidade.
+
+### Verificação local necessária
+
+Executar a partir da pasta raiz `$HOME\\tcc2\\etapa07\\tcc2-trabalho`:
+
+```powershell
+git branch --show-current
+git status --short
+git pull --ff-only origin tcc2/desenvolvimento
+git rev-parse HEAD
+Set-Location .\\prova-conceito
+python --version
+python -m compileall -q .\\pon .\\tests
+Write-Host "Compilacao: $LASTEXITCODE"
+python -m unittest discover -s tests -p "test_*.py" -v
+Write-Host "Testes: $LASTEXITCODE"
+python .\\main.py
+Write-Host "Main: $LASTEXITCODE"
+```
+
+Arquivar saída real, códigos de retorno, print original e hash. Espera-se `Ran 11 tests`, `OK` e códigos 0; qualquer divergência será investigada como resultado real, sem correção silenciosa.
