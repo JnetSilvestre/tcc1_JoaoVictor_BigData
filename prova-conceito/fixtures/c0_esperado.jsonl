@@ -1,0 +1,2 @@
+{"schema_version":1,"run_id":"c0-minimo-v1","event_id":"c0-minimo-v1:rl1:1","entity_id":"rl1","step":3,"caused_by":"c0-minimo-v1:cn1:1","attribute_event_id":"c0-minimo-v1:atB:1","effect":"executed"}
+{"schema_version":1,"run_id":"c0-minimo-v1","event_id":"c0-minimo-v1:rl1:2","entity_id":"rl1","step":7,"caused_by":"c0-minimo-v1:cn1:3","attribute_event_id":"c0-minimo-v1:atB:3","effect":"executed"}
