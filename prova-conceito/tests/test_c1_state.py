@@ -33,13 +33,18 @@ class C1StateTests(unittest.TestCase):
     def initialize(self):
         return self.source.initialize(self.rows[0]["run_id"])
 
+    @staticmethod
+    def to_change_payload(row):
+        # seed identifica a fixture experimental, mas nao integra o contrato HTTP.
+        return {key: value for key, value in row.items() if key != "seed"}
+
     def process_rows(self):
         self.initialize()
-        return [self.source.change(row) for row in self.rows]
+        return [self.source.change(self.to_change_payload(row)) for row in self.rows]
 
     def test_snapshot_before_events_and_three_states_ready(self):
         with self.assertRaises(ContractError):
-            self.source.change(self.rows[0])
+            self.source.change(self.to_change_payload(self.rows[0]))
         with self.assertRaises(ContractError):
             self.engine.receive({
                 "schema_version": 1, "event_id": "r:atA:1",
@@ -94,7 +99,7 @@ class C1StateTests(unittest.TestCase):
 
     def test_repeated_change_request_does_not_duplicate_events(self):
         self.initialize()
-        change = self.rows[1]
+        change = self.to_change_payload(self.rows[1])
         first = self.source.change(change)
         second = self.source.change(change)
         self.assertFalse(first["duplicate_request"])
@@ -165,7 +170,7 @@ class C1StateTests(unittest.TestCase):
         self.initialize()
         before = copy.deepcopy(self.source.state())
         with self.assertRaises(ContractError):
-            self.source.change({**self.rows[1], "value": True})
+            self.source.change({**self.to_change_payload(self.rows[1]), "value": True})
         self.assertEqual(self.source.state(), before)
 
     def test_ack_loss_retry_sends_identical_event_and_deduplicates(self):
@@ -179,7 +184,7 @@ class C1StateTests(unittest.TestCase):
                 raise TimeoutError("simulacao de perda de ACK local")
 
         self.source.send_attribute = flaky_send
-        change = self.rows[1]
+        change = self.to_change_payload(self.rows[1])
         with self.assertRaises(TimeoutError):
             self.source.change(change)
         self.assertEqual(self.source.state()["pending_request_id"], change["request_id"])
