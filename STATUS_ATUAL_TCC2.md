@@ -98,6 +98,13 @@ Atualizado em: 2026-11-12
 - Sem dependências de terceiros explicitamente importadas no núcleo examinado (apenas `json` e `asyncio` da biblioteca padrão); não foi localizado `requirements.txt` na revisão.
 - Defeitos estáticos prováveis: referência a `self.__id` em `Condition.update`; notificação aos elementos de entrada em lugar dos observadores; `asyncio.create_task` sem loop garantido em `Rule.update`; registro de IDs com risco de colisão.
 - Documento novo: `docs/tcc2/etapa-07-implementacao-validacao-local.md`, commit `c4da4d2ad7f8d23329919c9ece006039275aafb7`.
-- **Não executados:** testes Python da aplicação no host Windows, C0, C1, V01–V07, capturas da Etapa 07, medições ou implantação PON. As conclusões são de **inspeção estática**, ainda não validação dinâmica.
+- **Executados no Windows e comprovados por prints em 12/11/2026:** checkout no SHA fixado e `git status --short` limpo; Python 3.13.9 e pip 25.2; `compileall` com código 0; `main.py` com código 0; reprodução do erro `AttributeError: 'Condition' object has no attribute '_Condition__id'` na transição da condição, com código 1. Referências e checksums dos prints em `docs/tcc2/etapa-07-implementacao-validacao-local.md` (seção 8).
+- **Ainda não executados/aprovados:** testes V01–V07 da aplicação adaptada, C0/C1 completos, prints de correção, medições ou implantação PON. A reprodução de defeito não equivale a aprovação de V01.
 - Próxima atividade: executar comandos de diagnóstico e caso mínimo da `Condition` no PowerShell da máquina de desenvolvimento; arquivar stdout/stderr e prints originais; depois implementar testes de regressão, correções, oráculo C0 e C1 com três processos.
 - **Fora do escopo atual:** Docker e Kubernetes da aplicação (Etapas 08–10); atualização dos diagramas/figuras na monografia (Etapa 13).
+
+## Atualização de evidências — 12/11/2026
+
+- Registro de E07-D01, E07-D02 e E07-D03 feito na Etapa 07, com outputs confirmados visualmente, hashes SHA-256 das duas capturas fornecidas, indicação de que os PNGs ainda não estão no repositório e classificação de teste funcional como **não aprovado**.
+- Commit de documentação das evidências: `d7d2cc0214128c807c546f832a084caac0d9b2cc` (somente `tcc2/desenvolvimento`).
+- Próxima tarefa: implementar teste de regressão e correção do núcleo em cópia de desenvolvimento separada da referência; repetir validação real antes de prosseguir com o restante de V01 e com C0/C1.
