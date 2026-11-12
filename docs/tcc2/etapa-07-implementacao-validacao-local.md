@@ -106,3 +106,37 @@ Salvar logs de texto e prints originais com hora, comando, código-fonte/SHA e, 
 - **NÃO produzido:** prints reais de execução do núcleo, logs do PON, resultados experimentais, métricas.
 - **PENDENTE:** autorização/aderência acadêmica para adaptação da referência Python, confirmação com o orientador, definição de local definitivo dos arquivos adaptados.
 - **Versionamento:** esta publicação documental foi feita exclusivamente em `tcc2/desenvolvimento`, sem alteração dos repositórios de código-base ou da monografia LaTeX.
+
+## 8. Evidência recebida da máquina do acadêmico — 12/11/2026
+
+**Origem:** duas capturas originais enviadas pelo acadêmico na conversa desta etapa, registrando comandos executados no Windows PowerShell em `$HOME\\tcc2\\etapa07\\codigoPon-referencia`. Os dados são observações **do computador do acadêmico**, não execução desta ferramenta de IA. Capturas preservadas na conversa, **ainda não incorporadas ao GitHub**.
+
+### E07-D01 e E07-D02 — referência, sintaxe e teste de fumaça
+
+Captura original: `image(20261112-195015).png` (857 × 859 pixels, 68.030 bytes, SHA-256 `35c196d446700e0d62a9f7e536111312fbb92f7a2c9a1917e78e7c41bfab225c`).
+
+- O comando `git checkout --detach c2d525b5c675820806af34348e259bff32a6bc5f` concluiu no commit fixado; `git rev-parse HEAD` exibiu o mesmo SHA.
+- `git status --short`: nenhuma alteração listada na captura.
+- `python --version`: `Python 3.13.9`; `python -m pip --version`: `pip 25.2` (Python 3.13).
+- `python -m compileall -q .\\pon`: código de saída `0`.
+- `python .\\main.py`: execução completa do exemplo original, com saída `Execucao: 0`. O exemplo exibiu `cn1` falsa inicialmente e após alterações, pois usa conjunção entre premissas mutuamente exclusivas.
+- **Limite:** esses dois comandos não provam funcionamento da cadeia com transição verdadeira nem execução de `Rule`/`Action`.
+
+### E07-D03 — reprodução do defeito de Condition
+
+Captura original: `image(20261112-195031).png` (857 × 859 pixels, 49.155 bytes, SHA-256 `268fff06dcb1a7f369521a6f1d0017f178b8cdc80192323e2eb28056bb266448`).
+
+Entrada real: `atA=0`, `atB=0`, condição `(atA >= 5) & (atB == 1)`;
+
+1. Estado inicial: `False`.
+2. Depois de `atA.value = 5`: `False`.
+3. Na atribuição `atB.value = 1`: **exceção real**; não houve confirmação do estado após `atB`.
+4. Stack trace: `Attribute.value` → `Notifier.update` → `Premise.update` → `Condition.update`, linha que tenta acessar `self.__id`.
+5. Erro observado: `AttributeError: 'Condition' object has no attribute '_Condition__id'`.
+6. O PowerShell exibiu `Codigo de saida: 1` após a execução.
+
+**Conclusão sustentada:** o defeito de encapsulamento em `Condition.update` foi **reproduzido** por execução real no Windows Python 3.13.9. V01 **não aprovado**; erro de execução funcional documentado. Os problemas de notificação a observadores, agendamento de `Rule` e colisão de IDs ainda são hipóteses derivadas da inspeção, **não reproduções comprovadas**.
+
+### Próxima validação necessária
+
+Preservar a cópia `codigoPon-referencia` intocada, construir/adaptar o núcleo em área de desenvolvimento da branch `tcc2/desenvolvimento`, criar teste de regressão que reproduza o erro antes da correção, corrigir `Condition` e testar a propagação correta; posteriormente abordar `Rule` e IDs. Capturar saídas dos testes anteriores e posteriores às correções e atualizar o status apenas com resultados efetivamente observados.
