@@ -239,3 +239,26 @@ Write-Host "Main: $LASTEXITCODE"
 ```
 
 Arquivar saída real, códigos de retorno, print original e hash. Espera-se `Ran 11 tests`, `OK` e códigos 0; qualquer divergência será investigada como resultado real, sem correção silenciosa.
+
+
+## 12. Terceira validação em PowerShell — suíte de 11 testes (12/11/2026)
+
+**Fonte:** duas capturas do PowerShell da máquina Windows enviadas pelo acadêmico, preservadas nesta conversa. São evidências visuais reais (não simulação). Os PNGs originais não foram incorporados ao repositório; a identificação abaixo permite arquivamento posterior.
+
+| Evidência | Captura (nome recebido) | Dimensão | Bytes | SHA-256 calculado dos bytes originais |
+|---|---|---|---:|---|
+| E07-D07 | `image(20261112-201405).png` | 1169 × 855 | 95012 | `92e0802a4d8bc4bd1c58aaff1aea5faaf094baea17a92a818783352d0075d0d4` |
+| E07-D08 | `image(20261112-201417).png` | 1169 × 855 | 28671 | `7dcff8305edd779d81dc96a704addb3ad2476b7b59cc4d81144a981b650c8ec7` |
+
+**Observações visíveis:**
+
+- `git branch --show-current` exibiu `tcc2/desenvolvimento`; `git status --short` sem linhas listadas.
+- `git pull --ff-only origin tcc2/desenvolvimento` concluiu em *Fast-forward*, com revisão local exibida `eb9d21780b4074a03accc9711d586f70ba38505b`.
+- `python --version`: **3.13.9**; `python -m compileall -q .\\pon .\\tests`: **Compilacao: 0**.
+- `python -m unittest discover -s tests -p "test_*.py" -v`: 11 casos **ok**, `Ran 11 tests in 0.011s`, `OK` e `Testes: 0`.
+- O caso `test_seven_steps_trigger_exactly_two_effects_in_order` está entre os aprovados, verificando dois efeitos nos passos 3 e 7 (dentro de um teste unitário de cadeia local).
+- `python .\\main.py` executou e terminou com `Main: 0`.
+
+**Classificação:** regressões de `Condition`, `Rule`, `Notifier` e `NOPManager` **aprovadas no escopo dos 11 casos**; boa evidência funcional parcial para V01. **Não interpretar tempo 0,011 s como medição de desempenho experimental**: é duração total relatada pelo framework de testes. C0 com fixture JSONL e oráculo independente **ainda não havia sido executado**; C1 e V02–V07 não aprovados.
+
+**Próximo incremento:** fixture JSONL versionada, oráculo independente da cadeia PON, saída estruturada, comparação automática e manifestações de execução. Manter controle de commits por branch e registrar resultados após execução real.
