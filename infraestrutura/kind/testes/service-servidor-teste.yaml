@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: servidor-teste
+  namespace: tcc2-infra-test
+spec:
+  type: ClusterIP
+  selector:
+    app: servidor-teste
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+      protocol: TCP
