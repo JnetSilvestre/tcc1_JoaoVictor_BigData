@@ -344,3 +344,13 @@ e hashes em [C1 HTTP](etapa-07-c1-http.md).
 ## 18. Evidências do C1 e ZIP arquivado localmente (12/11/2026)
 
 Reprodução C1 no Windows comprovada por prints E07-D14 a E07-D16 e arquivo ZIP local com checksum exibido no print E07-D17. Executou 37/37 testes, `C1: 0`, 12/12 verificações e dois efeitos nos passos 3 e 7 em três PIDs diferentes. O conteúdo do ZIP não foi acessado pela IA; a pasta e arquivo permanecem na máquina. SHA, critérios, limitações e classificação por V01–V07 foram registrados no novo `docs/tcc2/etapa-07-aceite-tecnico.md`. **Nova regressão de barreira de snapshot publicada, 38 testes previstos, sem execução Windows ainda.**
+
+
+## 19. E07-D18 e novo ensaio de inicialização HTTP (12/11/2026)
+
+**E07-D18 — captura original do PowerShell:** `image(20261112-215913).png`, dimensões 1920 × 1080, tamanho 150.253 bytes, SHA-256 **calculado sobre os bytes da imagem recebida**: `538070b0635b8a078750f745071a2b459fd3d9aae7610ff44b49b879d51808b9`.
+
+Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a7b448f15a998b18207a02765954019c`, Python 3.13.9, `Compilacao: 0`, `Ran 38 tests in 7.354s`, `OK`, `Testes: 0`. O teste `test_change_during_snapshot_handshake_is_rejected_before_ack` aparece com `ok`. **Esse teste é local em memória e não prova concorrência HTTP**. A duração é da suíte `unittest`, não benchmark do PON. A imagem foi enviada nesta conversa e ainda não é um arquivo bruto do repositório.
+
+- Publicado ensaio `c1/snapshot_race.py` e seu teste de integração `tests/test_c1_snapshot_http_race.py`; roteiro em `docs/tcc2/etapa-07-c1-snapshot-http.md`.
+- Não realizado ainda o novo ensaio na máquina do acadêmico. **Não classificar V07 como plenamente aprovado antes da revisão do relatório e dos logs de transporte**.

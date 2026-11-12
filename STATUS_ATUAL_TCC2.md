@@ -212,3 +212,15 @@ e hashes em [C1 HTTP](docs/tcc2/etapa-07-c1-http.md).
 - **Aceite científico:** V01–V06 aprovados somente para fixture e transporte localhost serial testados. **V07 parcial**: snapshot inicial e barreira pré-inicialização verificados, mas não a chegada concorrente de alterações durante a instalação via HTTP.
 - **Incremento novo pendente de validação Windows:** um teste local determinístico de snapshot foi acrescentado em `tests/test_c1_state.py`, commit `e77b166f78cafd13369e1a1664b340cfb4718133`. Suíte prevista: **38 testes**; não atribuir sucesso antes da execução.
 - **Próximas ações:** executar 38 testes, arquivar evidência, concluir V07 de acordo com o critério original e finalizar relatório técnico da Etapa 07. **Ainda sem Docker/Kubernetes da aplicação, medições científicas ou desenhos finais da monografia.**
+
+
+## Checkpoint recente — 12/11/2026, regressão de 38 casos e V07 HTTP
+
+**E07-D18 — captura original do PowerShell:** `image(20261112-215913).png`, dimensões 1920 × 1080, tamanho 150.253 bytes, SHA-256 **calculado sobre os bytes da imagem recebida**: `538070b0635b8a078750f745071a2b459fd3d9aae7610ff44b49b879d51808b9`.
+
+Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a7b448f15a998b18207a02765954019c`, Python 3.13.9, `Compilacao: 0`, `Ran 38 tests in 7.354s`, `OK`, `Testes: 0`. O teste `test_change_during_snapshot_handshake_is_rejected_before_ack` aparece com `ok`. **Esse teste é local em memória e não prova concorrência HTTP**. A duração é da suíte `unittest`, não benchmark do PON. A imagem foi enviada nesta conversa e ainda não é um arquivo bruto do repositório.
+
+- **Novo incremento C1 publicado, ainda não executado no Windows:** `c1/snapshot_race.py` (ensaio de HTTP com ACK de snapshot controlado), `tests/test_c1_snapshot_http_race.py` (mais um teste de integração), documentação `docs/tcc2/etapa-07-c1-snapshot-http.md`. A suíte agora tem **39 testes previstos**, não validados ainda nesta revisão.
+- Objetivo: observar requisição recebida por socket HTTP enquanto o produtor aguarda o ACK do snapshot, depois confirmar processamento e equivalência C0 sem efeitos duplicados. Mantém três PIDs reais; um proxy de teste em thread segura o ACK, não integra a arquitetura de produção.
+- **V07 ainda parcialmente aprovado** até execução real do novo ensaio. Mesmo se aprovado, não alegar suporte geral à concorrência/recuperação: serviços são HTTP seriais, sem replay/persistência.
+- **Próximo comando no Windows:** sincronizar `tcc2/desenvolvimento`, rodar 39 `unittest`, executar `python -m c1.snapshot_race --output resultados-locais/c1-snapshot-http-<data>`, salvar `manifest.json`, `validation.json`, `timeline.jsonl`, logs, checksums e capturas.

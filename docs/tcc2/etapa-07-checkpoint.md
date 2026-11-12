@@ -71,3 +71,14 @@ e hashes em [C1 HTTP](etapa-07-c1-http.md).
 - **Nova regressão adicionada, ainda não executada no Windows:** teste de barreira durante snapshot `test_change_during_snapshot_handshake_is_rejected_before_ack` em `test_c1_state.py`. A suíte agora prevê **38 testes**. Este é teste local, não de concorrência HTTP.
 - **Pendência de V07:** teste explícito de alteração durante instalação de snapshot pelo transporte HTTP ainda não realizado; demais critérios V01–V06 aprovados apenas dentro do escopo funcional C0/C1 testado.
 - **Próxima execução:** `git pull --ff-only origin tcc2/desenvolvimento`, `python -m compileall -q pon c0 c1 tests`, `python -m unittest discover -s tests -p "test_*.py" -v`; registrar outputs e hashes. Depois abordar V07 HTTP para encerramento formal.
+
+
+## Checkpoint de retomada — 12/11/2026 após 38 testes
+
+**E07-D18 — captura original do PowerShell:** `image(20261112-215913).png`, dimensões 1920 × 1080, tamanho 150.253 bytes, SHA-256 **calculado sobre os bytes da imagem recebida**: `538070b0635b8a078750f745071a2b459fd3d9aae7610ff44b49b879d51808b9`.
+
+Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a7b448f15a998b18207a02765954019c`, Python 3.13.9, `Compilacao: 0`, `Ran 38 tests in 7.354s`, `OK`, `Testes: 0`. O teste `test_change_during_snapshot_handshake_is_rejected_before_ack` aparece com `ok`. **Esse teste é local em memória e não prova concorrência HTTP**. A duração é da suíte `unittest`, não benchmark do PON. A imagem foi enviada nesta conversa e ainda não é um arquivo bruto do repositório.
+
+- **Incremento complementar publicado e pendente de Windows:** `c1/snapshot_race.py`, `tests/test_c1_snapshot_http_race.py`, `docs/tcc2/etapa-07-c1-snapshot-http.md`. Expectativa de **39 testes**, porém não declarar aprovação antes da execução.
+- O ensaio utiliza três serviços HTTP reais em localhost mais um proxy de teste que retarda o ACK do snapshot. A requisição efetiva é enviada pelo socket antes da liberação do ACK; o servidor serial a processa após a barreira, e os efeitos dos passos 3/7 devem coincidir com o esperado.
+- **Pendência científica:** V07 em escopo de inicialização serial; não testar desempenho, falha/reinício, concorrência arbitrária, Kubernetes ou múltiplos nós nesta etapa.

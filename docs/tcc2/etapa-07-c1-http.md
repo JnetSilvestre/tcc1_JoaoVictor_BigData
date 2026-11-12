@@ -94,3 +94,12 @@ A implementação do Work foi reproduzida no host acadêmico, **não apenas no a
 **Hash do ZIP mostrado pelo PowerShell, não verificado por acesso aos bytes do arquivo:** `D7A62AC62AFA23302F272D303E00DB6B622B92FA04E5B3B7F1DE7367BF735D17`. O comando selecionou a pasta C1 mais recente e criou um ZIP ao lado dela. O nome completo do ZIP não está legível no print, pois a coluna `Path` aparece truncada. As capturas estão anexadas à conversa, não armazenadas no GitHub; o ZIP continua no host Windows do acadêmico.
 
 **Avaliação de V07:** o roteiro de transporte valida readiness 503, rejeição de mudanças antes do snapshot e versões iniciais coerentes, porém não injeta alteração concorrente com a transação de instalação de snapshot. Essa lacuna permanece declarada; novo teste de barreira de estado em memória pendente de execução não é prova direta de concorrência HTTP. Para a matriz de aceite e demais limites, consultar `etapa-07-aceite-tecnico.md`.
+
+
+## Atualização V07 — teste complementar de handshake do snapshot HTTP
+
+**E07-D18 — captura original do PowerShell:** `image(20261112-215913).png`, dimensões 1920 × 1080, tamanho 150.253 bytes, SHA-256 **calculado sobre os bytes da imagem recebida**: `538070b0635b8a078750f745071a2b459fd3d9aae7610ff44b49b879d51808b9`.
+
+Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a7b448f15a998b18207a02765954019c`, Python 3.13.9, `Compilacao: 0`, `Ran 38 tests in 7.354s`, `OK`, `Testes: 0`. O teste `test_change_during_snapshot_handshake_is_rejected_before_ack` aparece com `ok`. **Esse teste é local em memória e não prova concorrência HTTP**. A duração é da suíte `unittest`, não benchmark do PON. A imagem foi enviada nesta conversa e ainda não é um arquivo bruto do repositório.
+
+Foi publicada uma verificação controlada de HTTP, com proxy de ACK de teste (não é um quarto serviço permanente) e três processos da aplicação. Para executar e arquivar `validation.json`, `timeline.jsonl`, `manifest.json`, logs e hashes, consultar `docs/tcc2/etapa-07-c1-snapshot-http.md`. **A execução no Windows deste incremento ainda está pendente.**

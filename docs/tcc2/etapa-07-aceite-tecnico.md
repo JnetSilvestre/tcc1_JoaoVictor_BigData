@@ -58,3 +58,14 @@ Os códigos HTTP observados foram produzidos pelo roteiro de testes da fixture e
 ## 6. Limites acadêmicos persistentes
 
 A adaptação Python não demonstra equivalência integral ao NOP Query C++ nem processamento de vídeo. A divisão em três processos exige confirmação do orientador. **Não** apresentar o tempo de `unittest`, o teste local de ACK perdido ou os resultados de localhost como desempenho de cluster, alta disponibilidade ou distribuição multinó.
+
+
+## 7. Evidência adicional E07-D18 e teste de transporte V07
+
+**E07-D18 — captura original do PowerShell:** `image(20261112-215913).png`, dimensões 1920 × 1080, tamanho 150.253 bytes, SHA-256 **calculado sobre os bytes da imagem recebida**: `538070b0635b8a078750f745071a2b459fd3d9aae7610ff44b49b879d51808b9`.
+
+Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a7b448f15a998b18207a02765954019c`, Python 3.13.9, `Compilacao: 0`, `Ran 38 tests in 7.354s`, `OK`, `Testes: 0`. O teste `test_change_during_snapshot_handshake_is_rejected_before_ack` aparece com `ok`. **Esse teste é local em memória e não prova concorrência HTTP**. A duração é da suíte `unittest`, não benchmark do PON. A imagem foi enviada nesta conversa e ainda não é um arquivo bruto do repositório.
+
+O teste de barreira local de snapshot foi aprovado em 38/38 regressões. Esse resultado **não remove por si só a pendência de V07 em HTTP** registrada na matriz acima.
+
+Foi acrescentado um ensaio de integração de transporte controlado com três PIDs reais e um proxy de teste de ACK, descrito em `docs/tcc2/etapa-07-c1-snapshot-http.md`. Ele faz chegar uma requisição de atributo ao socket do produtor enquanto a confirmação do snapshot está pendente, verifica a ordem por linha do tempo, executa os passos restantes da fixture e compara os dois efeitos ao esperado. **Nova suíte: 39 casos previstos, ainda sem execução Windows.** Mesmo após eventual sucesso, tratar como uma chegada serializada durante handshake, não como garantia geral de concorrência.
