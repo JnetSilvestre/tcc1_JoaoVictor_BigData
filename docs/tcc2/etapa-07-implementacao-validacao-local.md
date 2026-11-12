@@ -299,3 +299,10 @@ Arquivar saída real, códigos de retorno, print original e hash. Espera-se `Ran
 - A tela mostra `effects.jsonl` com duas linhas e `checksums.sha256` com 5 entradas para os arquivos produzidos; os hashes dos arquivos gerados **não foram verificados independentemente a partir de seus bytes**, apenas observados na captura. `git status --short` ao final não exibiu alterações.
 
 **Resultado e limite:** cenário C0 mínimo **aprovado funcionalmente na máquina do acadêmico**, limitado a esta fixture determinística e aos 18 testes. Não se demonstrou execução interprocessos, robustez a falhas, ou desempenho distribuído. O tempo `0.478s` é o tempo da suíte de testes informado por unittest, não uma medição experimental de latência/vazão. Próximo avanço: C1 HTTP/JSON, com validação da comunicação real, snapshots e deduplicação/ordem (V02–V07).
+
+
+## 15. Preparação do cenário C1 — primeiro incremento de contratos (12/11/2026)
+
+Após comprovação do cenário C0 (seção 14), foi publicado o **esquema de mensagens para C1**, sem servidores HTTP ainda: `prova-conceito/c1/protocol.py`, `c1/__init__.py` e `tests/test_c1_contracts.py`. O protocolo rejeita tipos incompatíveis, IDs incorretos, versões desconhecidas, timestamps não UTC e campos ausentes ou extras. Registra contratos de snapshot para a futura sincronização inicial. O campo `step` é opcional para rastrear a fixture C0.
+
+**Documento específico:** `docs/tcc2/etapa-07-c1-contratos.md`. **Estado:** sete novos testes versionados, total previsto de 25, pendentes de execução real no computador do acadêmico. Isto NÃO comprova V02–V07, comunicação, PIDs distintos, deduplicação nem estado inicial aplicado. O próximo incremento só começará a execução de serviços após confirmação ou diagnóstico dos testes de contrato.
