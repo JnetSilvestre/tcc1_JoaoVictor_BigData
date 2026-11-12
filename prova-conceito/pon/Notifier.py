@@ -17,14 +17,28 @@ class Notifier(Notifiable):
         return self.__id
 
     def setId(self, id: int):
+        # 0 representa entidade apenas local, sem registro no manager.
+        if isinstance(id, bool) or not isinstance(id, int) or id < 0:
+            raise ValueError("Notifier::setId: id must be a non-negative integer")
 
-        if self.__id != 0 and self.__id != id:
-            NOPManager.GetInstance().removeEntity(self)
+        if id == self.__id:
+            return
 
-        self.__id = id
+        manager = NOPManager.GetInstance()
+
+        # Validar ANTES de remover o registro anterior para preservar
+        # a entidade caso o novo ID esteja ocupado.
+        if id != 0:
+            existing = manager.entities.get(id)
+            if existing is not None and existing is not self:
+                raise ValueError(f"Notifier::setId: id {id} already registered")
 
         if self.__id != 0:
-            NOPManager.GetInstance().addEntity(self)
+            manager.removeEntity(self)
+
+        self.__id = id
+        if id != 0:
+            manager.addEntity(self)
 
     def update(self, id):
 

@@ -30,17 +30,27 @@ class NOPManager(Notifiable):
         return self.__entities
 
     def addEntity(self, notifier):
-        if notifier.getId() == 0:
+        entity_id = notifier.getId()
+        if (isinstance(entity_id, bool)
+                or not isinstance(entity_id, int)
+                or entity_id <= 0):
             raise ValueError(
-                "NOPManager::addEntity: Invalid entity with id 0"
+                "NOPManager::addEntity: Invalid entity id; expected positive integer"
             )
 
-        self.__entities[notifier.getId()] = notifier
+        # Não sobrescrever silenciosamente outra entidade do mesmo ID.
+        existing = self.__entities.get(entity_id)
+        if existing is not None and existing is not notifier:
+            raise ValueError(
+                f"NOPManager::addEntity: id {entity_id} already registered"
+            )
+
+        self.__entities[entity_id] = notifier
 
     def removeEntity(self, notifier):
         entity_id = notifier.getId()
-
-        if entity_id in self.__entities:
+        # Excluir apenas se a entidade for a verdadeira proprietária do ID.
+        if self.__entities.get(entity_id) is notifier:
             del self.__entities[entity_id]
 
     def addDriver(self, driver):

@@ -42,3 +42,30 @@ Prints originais do terminal com branch, commit (`git rev-parse HEAD`), versões
 4. Implementar três serviços Python em processos separados (C1) com contratos HTTP/JSON, ordem, deduplicação e snapshot.
 
 Docker/Kubernetes da **aplicação** ficam para as Etapas 08–10. A monografia LaTeX e os dois diagramas da arquitetura permanecem preservados até validação.
+
+
+## Segundo incremento da Etapa 07 — Rule/IDs (pendente de validação no Windows)
+
+- `Rule.update` agora executa `Action/Instigation` de modo **síncrono e determinístico** quando recebe uma notificação de condição aprovada. O método explícito `async def execute` permanece disponível para chamadas com `await`. Não há agendamento automático sem controle por `asyncio.create_task`.
+- `Notifier.setId` valida inteiros não negativos e verifica colisões antes de remover o registro anterior; `NOPManager` não substitui entidades de mesmo ID e só remove o proprietário correto do registro. ID 0 significa entidade local sem registro.
+- Testes novos em `tests/test_rule.py` (4 testes) e `tests/test_ids.py` (4 testes). A fixture mínima dos sete passos valida **duas ações nos passos 3 e 7**, ainda sem representação JSONL nem metadados de rede.
+- Essas escolhas são restritas à execução local C0. `NOPManager` continua singleton não thread-safe e não tem armazenamento persistente. C1 exigirá contratos e fronteiras de estado específicos.
+
+### Próxima execução esperada no PowerShell
+
+```powershell
+Set-Location "$HOME\\tcc2\\etapa07\\tcc2-trabalho"
+git branch --show-current
+git status --short
+git pull --ff-only origin tcc2/desenvolvimento
+git rev-parse HEAD
+Set-Location .\\prova-conceito
+python -m compileall -q .\\pon .\\tests
+Write-Host "Compilacao: $LASTEXITCODE"
+python -m unittest discover -s tests -p "test_*.py" -v
+Write-Host "Testes: $LASTEXITCODE"
+python .\\main.py
+Write-Host "Main: $LASTEXITCODE"
+```
+
+**Saída planejada, não observada ainda no Windows:** 11 testes `OK` e códigos de saída 0. Se ocorrer falha, preservar traceback e código de saída para diagnóstico.
