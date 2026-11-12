@@ -62,3 +62,10 @@ O PowerShell criou no computador do acadêmico `resultados-locais/c1-snapshot-ht
 - Próximo marco técnico: **Etapa 08 — Docker e C2**, com dependências/imagens fixadas e evidências locais; depois Etapas 09–10 Kubernetes/C3. Diagramas finais e capítulos experimentais somente com evidências do que for implementado nas etapas correspondentes.
 
 **Declaração de encerramento:** a **Etapa 07 está concluída funcionalmente para a prova mínima C0/C1**. A inspeção independente dos artefatos brutos, V11 completo, decisões acadêmicas com orientador e os próximos cenários (C2/C3) são pendências explícitas, não resultados ocultos ou presumidos.
+
+
+## 7. Auditoria do ZIP original — atualização posterior
+
+Em 12/11/2026, o acadêmico anexou o ZIP original `c1-snapshot-http-20261112-190909.zip`, que foi **inspecionado diretamente**: SHA-256 `e454d6051048c37cd2276bff6acadcfac04e2fe03449abcafcca217c07b6fba1`, 5.867 bytes, CRC sem erros, **12/12 checksums internos verificados** e **20/20 checagens adicionais de consistência** aprovadas. Estados, PIDs, registros causais e efeitos dos passos 3 e 7 coincidem com os resultados anteriores.
+
+Ver relatório `docs/tcc2/etapa-07-auditoria-zip.md`. Essa evidência **supera apenas a pendência histórica de acesso aos bytes desse ZIP**; o aceite V01–V07 permanece restrito aos cenários ensaiados e V11 continua **parcial no conjunto do TCC2**. Não foi feito novo benchmark nem execução Docker/Kubernetes.
