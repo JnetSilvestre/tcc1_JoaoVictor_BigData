@@ -7,7 +7,8 @@ Atualizado em: 2026-11-11
 - Etapa 03: concluída; referência `2eb080b93a38db47ea1149bb660a5379c6478bd4`.
 - Etapa 04: concluída como **especificação arquitetural**; nenhuma implementação distribuída comprovada.
 - Etapa 05: **protocolo experimental e esqueleto LaTeX documentados**; sem execução de testes.
-- Próxima: **Etapa 06 — Preparação do ambiente**.
+- Etapa 06: **infraestrutura básica concluída e validada em ambiente local**; limitações e dependências restantes documentadas.
+- Próxima: **Etapa 07 — Implementação e validação local da prova de conceito**.
 
 ## Repositórios e branches
 - Monografia: `JnetSilvestre/tcc1_JoaoVictor_BigData`.
@@ -53,3 +54,38 @@ Atualizado em: 2026-11-11
 3. Escolher uma opção realista de cluster (inclusive restrições de um só nó), sem confundir múltiplos Pods com multinó.
 4. Definir requests/limits e possibilidade de coleta de CPU, RAM, rede e latência compatíveis com o ambiente.
 5. Registrar inventário, scripts de diagnóstico e verificações reais; avançar para a Etapa 07 apenas com ambiente validado.
+
+
+## Encerramento da Etapa 06 — 11/11/2026 (horário local, logs UTC em 12/11)
+
+**Situação:** infraestrutura de desenvolvimento preparada e operacional, com limitações explícitas. Registro integral: `docs/tcc2/etapa-06-preparacao-ambiente.md`.
+
+**Ambiente confirmado por prints de comandos executados na máquina do acadêmico:**
+- Windows 10 Home 64 bits, Intel i5-9300H (4 núcleos/8 threads), 15,84 GB RAM utilizável, C: 69,44 GB livres na coleta inicial, WSL2 e virtualização disponíveis.
+- Python 3.13.9, pip 25.2, venv criado e validado; Git 2.45.0.windows.1; acesso remoto às branches dos dois repositórios confirmado.
+- Docker Desktop 4.99.0 / Engine 29.9.3; hello-world com Exited (0); build próprio Python Linux/amd64 e execução com Exited (0), Python na imagem 3.13.18.
+- kind v0.33.0; cluster `tcc2-pon` Kubernetes v1.37.0 (um control-plane + um worker), ambos Ready; DNS e Service validados com Nginx/curl e HTTP 200 em dois percursos entre Pods posicionados em nós virtuais diferentes.
+- `kubectl top` indisponível por ausência da Metrics API; `docker stats --no-stream` funcional, mas somente amostra pontual de nós virtuais, não medições do PON.
+- Namespace `tcc2-infra-test` removido, dois nós permaneceram Ready e cluster preservado. Contêiner local `tcc2-python-validacao` ainda sem prova de remoção; não executar limpeza genérica.
+
+**Arquivos reprodutíveis adicionados na branch permanente:**
+- `infraestrutura/kind/kind-config.yaml`
+- `infraestrutura/kind/testes/pod-servidor-teste.yaml`
+- `infraestrutura/kind/testes/service-servidor-teste.yaml`
+- `infraestrutura/kind/testes/pod-cliente-teste.yaml`
+- `infraestrutura/docker/teste-python/Dockerfile`
+- `infraestrutura/docker/teste-python/teste.py`
+
+**Commits relevantes:** documentação de base `93cdba227074dca8e23831653ed4294caf107bcf`; imagem de teste `7af27c944e18e14dccae90dccdef87edf77cb929` e `88144ce30ffe1e349de62334c11972ae2e31d082`; consolidação técnica `20943378fd85f8f6b01027e0227d4701ba12c621`. O SHA deste status é o commit de encerramento a registrar pela própria publicação.
+
+**Limitações e ressalvas científicas:**
+- Dois nós kind virtuais no mesmo computador não demonstram máquinas físicas distintas nem escalabilidade física.
+- Leituras de RAM com outros programas abertos não são condições controladas; medição adicional com aplicativos fechados não foi realizada.
+- A imagem `python:3.13-slim` foi usada por tag, não congelada por digest na prova preliminar.
+- Não houve testes do núcleo PON nem implantação de `attribute-source`, `logic-engine` e `rule-executor`; C0–C5/F1 e V01–V12 da aplicação continuam pendentes.
+- Não há `requirements.txt` no commit inspecionado do `codigoPon`; imports Python verificados na árvore principal referenciam módulos locais e bibliotecas padrão `json`/`asyncio`. A compatibilidade funcional permanece por provar.
+- Windows 10 Home / Docker Desktop e memória compartilhada são limitações de suporte e reprodutibilidade; monitoramento por serviço e séries históricas não instrumentados.
+- Capturas originais enviadas em conversa não foram incorporadas ao repositório; preservar arquivos e hashes quando arquivar evidências.
+- As duas representações arquiteturais permanecem preservadas; nenhuma figura definitiva da implementação foi inserida na monografia.
+
+**Encaminhamento à Etapa 07:** congelar referência `JnetSilvestre/codigoPon@c2d525b5c675820806af34348e259bff32a6bc5f`, criar testes e oráculo determinístico C0, revisar `Condition`/`Rule`/IDs, implementar e validar os contratos HTTP/JSON em três processos C1 antes da conteinerização definitiva nas etapas subsequentes. Confirmar com orientador aderência da prova Python.
