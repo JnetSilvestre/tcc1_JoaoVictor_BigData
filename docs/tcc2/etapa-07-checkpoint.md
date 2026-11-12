@@ -82,3 +82,13 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 - **Incremento complementar publicado e pendente de Windows:** `c1/snapshot_race.py`, `tests/test_c1_snapshot_http_race.py`, `docs/tcc2/etapa-07-c1-snapshot-http.md`. Expectativa de **39 testes**, porém não declarar aprovação antes da execução.
 - O ensaio utiliza três serviços HTTP reais em localhost mais um proxy de teste que retarda o ACK do snapshot. A requisição efetiva é enviada pelo socket antes da liberação do ACK; o servidor serial a processa após a barreira, e os efeitos dos passos 3/7 devem coincidir com o esperado.
 - **Pendência científica:** V07 em escopo de inicialização serial; não testar desempenho, falha/reinício, concorrência arbitrária, Kubernetes ou múltiplos nós nesta etapa.
+
+
+## Último checkpoint — 12/11/2026: encerramento funcional C0/C1
+
+**Situação mais recente:** Etapa 07 **concluída funcionalmente no escopo C0/C1**, com V01–V07 aceitos apenas para a fixture e testes locais especificados. Relatório de encerramento: `docs/tcc2/etapa-07-encerramento-funcional.md`. Não há prova de distribuição multinó, desempenho experimental, persistência ou recuperação de falhas.
+
+- E07-D19/D20/D21: 39/39 testes reais `unittest` aprovados no Windows, 11,152 s (tempo da suíte); 7/7 checks `true` do ensaio V07 por HTTP; `V07-HTTP: 0`, efeitos `[3,7]`. Revisão realmente testada: `be6b850d599504e9ea8166f02fd87b35313e5445`.
+- Três processos HTTP independentes no mesmo host; proxy temporário de teste reteve ACK, alteração entrou no socket durante a espera e foi executada após confirmação. O tempo da suíte não equivale a benchmark.
+- ZIP da rodada local `c1-snapshot-http-20261112-190909.zip` com SHA-256 exibido `E454D6051048C37CD2276BFF6ACADCFAC04E2FE03449ABCAFCCA217C07B6FBA1`; sem auditoria dos bytes pelo assistente. Capturas e hashes de PNG no relatório de encerramento.
+- **Próxima conversa/etapa:** ler este checkpoint e `docs/tcc2/etapa-07-encerramento-funcional.md`; preparar Etapa 08/C2, sem presumir Kubernetes já executado. Aguardar confirmação do orientador quanto à adaptação Python, conservar V11 auditável.

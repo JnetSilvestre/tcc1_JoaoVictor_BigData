@@ -67,3 +67,10 @@ git status --short
 Se confirmado, o ensaio amplia V07 para a situação controlada de *chegada de uma requisição enquanto o ACK do snapshot permanece pendente* no produtor serial. Não cobre chegada durante mutação da réplica, vários clientes simultâneos, quebra de processo, persistência, retransmissões arbitrárias, mudança de nó ou recuperação. Tais limites devem aparecer na monografia e na transição para Docker/Kubernetes.
 
 **Não converter testes de localhost ou durações do unittest em métricas de cluster.** A imagem de arquitetura definitiva deve refletir a implementação realmente validada, não uma hipótese.
+
+
+## 6. Execução confirmada no Windows — 12/11/2026
+
+**Este trecho substitui as expectativas anteriores por resultados observados, preservando o protocolo do ensaio.** Código `be6b850d599504e9ea8166f02fd87b35313e5445`; `compileall: 0`, `39/39 unittest OK em 11,152s`, `python -m c1.snapshot_race` `PASS`, `V07-HTTP: 0`, 7 checks `true` e dois efeitos nos passos 3 e 7. Os PIDs foram `1988`, `15164`, `18332` (proxy de teste executado em thread à parte).
+
+As capturas E07-D19–D21 e seus SHA-256 constam no relatório `docs/tcc2/etapa-07-encerramento-funcional.md`. A sequência temporal registrada confirma que a alteração foi enviada antes da liberação do ACK, sendo recebida depois pelo produtor serial. Os limites de concorrência, tolerância a falhas e persistência da seção 5 continuam válidos. O arquivo ZIP local foi gerado com hash exibido, mas não enviado ao repositório.

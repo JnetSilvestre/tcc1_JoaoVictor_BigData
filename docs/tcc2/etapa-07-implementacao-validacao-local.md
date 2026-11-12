@@ -354,3 +354,10 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 
 - Publicado ensaio `c1/snapshot_race.py` e seu teste de integração `tests/test_c1_snapshot_http_race.py`; roteiro em `docs/tcc2/etapa-07-c1-snapshot-http.md`.
 - Não realizado ainda o novo ensaio na máquina do acadêmico. **Não classificar V07 como plenamente aprovado antes da revisão do relatório e dos logs de transporte**.
+
+
+## 20. Encerramento funcional — E07-D19 a E07-D21 (12/11/2026)
+
+**Apenas para C0/C1 mínimos**, a Etapa 07 foi concluída funcionalmente no Windows. Em `be6b850d599504e9ea8166f02fd87b35313e5445`, o acadêmico executou 39 testes `unittest` aprovados em 11,152s, compilação com código 0 e o ensaio `c1.snapshot_race` com `PASS`, `V07-HTTP: 0`, sete checks verdadeiros e efeitos nos passos 3 e 7. Três PIDs distintos com transporte HTTP local. O ensaio V07 usou um proxy de ACK de teste para reter confirmação do snapshot enquanto uma alteração chegou ao socket, processada depois pelo servidor serial.
+
+**Inventário auditável, SHA-256 dos PNGs, hash exibido do ZIP local, matriz V01–V07 e limites:** `docs/tcc2/etapa-07-encerramento-funcional.md`. V11 com auditoria de bytes do ZIP e confirmação acadêmica pelo orientador permanecem pendentes. Etapas Docker/Kubernetes e experimentos de desempenho ainda não foram executados.

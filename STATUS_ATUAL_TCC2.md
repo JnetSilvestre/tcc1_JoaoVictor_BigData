@@ -224,3 +224,13 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 - Objetivo: observar requisição recebida por socket HTTP enquanto o produtor aguarda o ACK do snapshot, depois confirmar processamento e equivalência C0 sem efeitos duplicados. Mantém três PIDs reais; um proxy de teste em thread segura o ACK, não integra a arquitetura de produção.
 - **V07 ainda parcialmente aprovado** até execução real do novo ensaio. Mesmo se aprovado, não alegar suporte geral à concorrência/recuperação: serviços são HTTP seriais, sem replay/persistência.
 - **Próximo comando no Windows:** sincronizar `tcc2/desenvolvimento`, rodar 39 `unittest`, executar `python -m c1.snapshot_race --output resultados-locais/c1-snapshot-http-<data>`, salvar `manifest.json`, `validation.json`, `timeline.jsonl`, logs, checksums e capturas.
+
+
+## Encerramento funcional Etapa 07 — execução real 12/11/2026
+
+**Situação mais recente:** Etapa 07 **concluída funcionalmente no escopo C0/C1**, com V01–V07 aceitos apenas para a fixture e testes locais especificados. Relatório de encerramento: `docs/tcc2/etapa-07-encerramento-funcional.md`. Não há prova de distribuição multinó, desempenho experimental, persistência ou recuperação de falhas.
+
+- **Último commit efetivamente testado no Windows:** `be6b850d599504e9ea8166f02fd87b35313e5445`, branch `tcc2/desenvolvimento`, Python 3.13.9, compilação 0, `39/39 unittest OK em 11,152 s`, `V07-HTTP: 0` e `status=PASS` com 7 checks true.
+- A confirmação de snapshot foi temporariamente retida por proxy de teste, uma alteração foi enviada por socket HTTP durante a espera e foi processada após a confirmação. Três PIDs reais: `1988`, `15164`, `18332`; dois efeitos nos passos 3/7, sem duplicações extras. **HTTP serializado**, não concorrência geral.
+- Capturas E07-D19 a E07-D21: nomes, bytes, SHA-256 e resultados no relatório de encerramento. ZIP local `c1-snapshot-http-20261112-190909.zip`, SHA-256 exibido `E454D6051048C37CD2276BFF6ACADCFAC04E2FE03449ABCAFCCA217C07B6FBA1`; bytes do ZIP **não foram acessados nem auditados pela IA**.
+- **Encaminhamento:** preservar ZIP e brutos, completar auditoria V11, confirmar com orientador uso de Python/3 serviços; **Etapa 08** a seguir (Docker/C2) com validação no Windows. Nenhuma alteração na `master` ou no código original, nenhum resultado de Kubernetes ou benchmark atribuído à Etapa 07.

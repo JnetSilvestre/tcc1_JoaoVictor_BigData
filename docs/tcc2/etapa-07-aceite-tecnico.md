@@ -69,3 +69,14 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 O teste de barreira local de snapshot foi aprovado em 38/38 regressões. Esse resultado **não remove por si só a pendência de V07 em HTTP** registrada na matriz acima.
 
 Foi acrescentado um ensaio de integração de transporte controlado com três PIDs reais e um proxy de teste de ACK, descrito em `docs/tcc2/etapa-07-c1-snapshot-http.md`. Ele faz chegar uma requisição de atributo ao socket do produtor enquanto a confirmação do snapshot está pendente, verifica a ordem por linha do tempo, executa os passos restantes da fixture e compara os dois efeitos ao esperado. **Nova suíte: 39 casos previstos, ainda sem execução Windows.** Mesmo após eventual sucesso, tratar como uma chegada serializada durante handshake, não como garantia geral de concorrência.
+
+
+## 8. Atualização conclusiva após evidências E07-D19–D21 (12/11/2026)
+
+**A matriz da seção 4 era uma avaliação intermediária** (V07 parcial). Após a execução real do ensaio HTTP de barreira, a classificação **mais recente** de V07 é: **aprovado apenas para chegada controlada de requisição durante espera do ACK do snapshot, processada em servidor HTTP serial**. As demais classificações de V01–V06 seguem válidas apenas no escopo ensaiado; não há garantia de concorrência geral.
+
+- Código de referência e revisão executada: `be6b850d599504e9ea8166f02fd87b35313e5445`.
+- Suite do Windows: **39/39 OK em 11,152s**, compilação 0, `V07-HTTP: 0`, sete checks do relatório `true`, efeitos nos passos 3/7 e três PIDs distintos. As capturas E07-D19–D21 comprovam a execução.
+- `timeline.jsonl`: `snapshot_installed_downstream` → `snapshot_ack_held` → `concurrent_change_sent` → `snapshot_ack_released` → `concurrent_change_responded`.
+- ZIP local com hash exibido `E454D6051048C37CD2276BFF6ACADCFAC04E2FE03449ABCAFCCA217C07B6FBA1`; sem acesso direto ao binário ou auditoria independente.
+- **Relatório final e limites:** `docs/tcc2/etapa-07-encerramento-funcional.md` contém classificação V01–V07, evidências E07-D19–D21 e pendências V11/academia. Não confundir este marco local com teste de Kubernetes ou desempenho distribuído.
