@@ -1,6 +1,6 @@
 # TCC2 — Etapa 07: C1 incremento 02 — máquinas de estado em memória
 
-**Estado:** código e 11 testes adicionais publicados; execução da nova suíte no Windows **ainda não observada**. O cenário C1 com HTTP e processos distintos também não foi executado.
+**Estado:** 36 testes confirmados pelo print E07-D13 ao final deste documento. O incremento de transporte está em [C1 HTTP](etapa-07-c1-http.md).
 
 ## Referências de continuidade
 
@@ -52,7 +52,7 @@ Write-Host "Testes: $LASTEXITCODE"
 git status --short
 ```
 
-**Resultado esperado, ainda não medido na máquina do acadêmico:** `Ran 36 tests`, `OK`, códigos de saída 0. Registrar integralmente falhas, logs e capturas. Não executar serviços HTTP ou Docker/Kubernetes por causa desses testes.
+**Resultado observado em E07-D13:** `Ran 36 tests`, `OK`, códigos de saída 0. Registrar integralmente falhas, logs e capturas. Não executar serviços HTTP ou Docker/Kubernetes por causa desses testes.
 
 ## Próximos passos
 

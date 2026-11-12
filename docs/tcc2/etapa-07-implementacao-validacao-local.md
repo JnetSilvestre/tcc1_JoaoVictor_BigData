@@ -330,3 +330,12 @@ SHA-256: `c1a9fdb5fedd4a144a01d4b392b271bfba4dd5f37c8bc240e5534780726a7f69`.
 Branch `tcc2/desenvolvimento`, HEAD `52dd849727f179ec938172def7c37daeecec302b`,
 Python 3.13.9, `compileall` retorno 0, 36/36 `unittest` OK em 0.471 s, retorno 0.
 O tempo é da suíte. A evidência cobre as máquinas de estado em memória.
+
+## C1 HTTP/JSON — rodada automatizada
+
+Três processos em localhost, snapshot inicial e fixture C0 executados com
+`PASS`, 12 verificações verdadeiras e efeitos nos passos 3 e 7. A suíte
+integrada passou com 37 testes nesta sessão. A reprodução do C1 pelo acadêmico
+aguarda nova saída. Evidência anterior E07-D13 registra 36/36 testes das
+máquinas de estado no PowerShell do acadêmico. Procedimento, alcance de V02–V07
+e hashes em [C1 HTTP](etapa-07-c1-http.md).
