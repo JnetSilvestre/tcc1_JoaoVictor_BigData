@@ -63,3 +63,8 @@ git status --short
 5. Consolidar evidências e limites antes de concluir a Etapa 07; Docker/Kubernetes da aplicação continuam reservados às Etapas 08–10.
 
 **Nota científica:** os três papéis são uma adaptação experimental Python. O código não demonstra equivalência ao NOP Query C++, processamento de vídeo ou desempenho distribuído.
+
+
+## Ajuste de consistência da fixture
+
+O arquivo JSONL C0 inclui `seed` para reprodução experimental, mas o contrato C1 (`POST /attributes/change`) não inclui esse metadado. Os testes em `test_c1_state.py` agora extraem apenas `run_id`, `request_id`, `entity_id`, `value` e `step` para formar o payload compatível. Correção documental e de teste no commit `92f6066a4a1f2af4e89fe69f7b18e05aa22d024f`. Não foi necessária alteração de contrato.
