@@ -161,3 +161,11 @@ Atualizado em: 2026-11-12
 - **Incremento C1 publicado, ainda NÃO executado no Windows:** pacote `prova-conceito/c1/protocol.py` e `__init__.py`, sete regressões em `tests/test_c1_contracts.py`, documentação `docs/tcc2/etapa-07-c1-contratos.md`. Commits de implementação `cb56eabbb003c1b146c12b6311c0326c258ccb2b`, `e90a3ae942072b4c7cb3b2222a371639fc6f634b` e `eaa03334a256c5ab97ae8e841476ab61980f8ac6`, documentação `d9a12f10e67ed8fb21c0b9d23239b4f6d69dac88`.
 - **Próxima execução solicitada:** sincronizar branch `tcc2/desenvolvimento`, compilar, executar `unittest` (25 casos previstos), enviar prints para validação. Não confundir contratos validáveis com três serviços rodando.
 - **Depois:** implementar máquinas de estado, snapshot, ordenação/deduplicação, transporte HTTP/JSON em três processos e validar V02–V07 contra C0. Nenhum Docker/Kubernetes da aplicação, sem modificar capítulos LaTeX/figuras ou a referência original.
+
+
+## Checkpoint — contratos C1 validados em 12/11/2026
+
+- **E07-D12:** screenshot `image(20261112-203727).png`, 1920 × 1080, 135.992 bytes, SHA-256 `a20f0d787f2ceeb7c53dbfe7c362ca14bee695a6214d2ddd1c81b2ad09680d0c`. Origem: PowerShell do acadêmico, ainda não arquivado no GitHub.
+- **Validação real:** HEAD `fe7e4d9b066d3c3f69b3d781ed9184c9ee2d8943`, Python 3.13.9, compilação 0, **25/25 unittest OK em 0.542 s**, `Testes: 0`.
+- **Comprova:** C0 mínimo aprovado anteriormente e sete testes de contratos C1 aprovados; **não comprova** os serviços C1, snapshots instalados, deduplicação real no transporte, PIDs separados nem V02–V07 completos.
+- **Próximo incremento:** máquinas de estado `attribute-source`, `logic-engine`, `rule-executor`; testes de snapshot, ordenação, duplicatas e efeitos. Depois HTTP/JSON em processos diferentes, ainda sem Docker/Kubernetes da aplicação.
