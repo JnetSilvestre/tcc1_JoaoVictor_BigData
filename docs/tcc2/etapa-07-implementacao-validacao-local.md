@@ -315,3 +315,10 @@ Após comprovação do cenário C0 (seção 14), foi publicado o **esquema de me
 Comandos e saídas legíveis: branch `tcc2/desenvolvimento`, `git pull --ff-only` por fast-forward, HEAD `fe7e4d9b066d3c3f69b3d781ed9184c9ee2d8943`; Python 3.13.9; `python -m compileall -q .\\pon .\\c0 .\\c1 .\\tests` com `Compilacao: 0`; `python -m unittest discover -s tests -p "test_*.py" -v` com 25 testes `ok`, `Ran 25 tests in 0.542s`, `OK`, `Testes: 0`.
 
 **Classificação:** sete testes novos de validação estrutural dos contratos C1 e as 18 regressões anteriores passaram. O sistema de mensagens ainda **não foi executado por HTTP, nem em três processos**. Portanto V02–V07 não estão aprovados por este teste; a duração da suíte não é medição experimental.
+
+
+## 17. C1 — máquinas de estado propostas (12/11/2026)
+
+Após a aprovação real dos 25 testes de contratos (E07-D12), publicadas as classes `AttributeSource`, `LogicEngine` e `RuleExecutor` em `prova-conceito/c1/state.py`, junto de 11 testes locais em `tests/test_c1_state.py`. Código disponível nos commits `efbc597fc733b14fb31bbb07bcca3232f30a2f5a` e `21c1de121fbe862bceed8883b64674096212a576`; procedimento detalhado em `docs/tcc2/etapa-07-c1-estados.md`.
+
+**Estado rigoroso:** ainda não executados no Windows os novos testes (36 previstos), tampouco C1 entre três PIDs. A troca entre papéis usa **callbacks no mesmo processo para testes unitários**, não HTTP. O avaliador usa `Attribute/Premise/Condition` e o executor `Rule/Action/Instigation`; as notificações têm snapshots, IDs, ordem e detecção de duplicação. Não há persistência nem recuperação automática, e o snapshot inicial da prova exige watermarks zero. V02–V07 permanecem pendentes de evidências interprocessos.
