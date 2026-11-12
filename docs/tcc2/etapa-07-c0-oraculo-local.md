@@ -42,3 +42,8 @@ Get-Content .\resultados-locais\c0-minimo\checksums.sha256
 Preservar capturas originais das execuções, \`git rev-parse HEAD\`, entradas, saídas, \`checksums.sha256\`, \`manifest.json\`, JSONL e códigos de retorno. Os arquivos de execução são locais e **não devem ser versionados indiscriminadamente**; para arquivamento científico, decidir diretório e tamanho antes de publicar. Não confundir a duração de \`unittest\` com benchmark.
 
 A execução C0 não requer Docker, Kubernetes, portas ou redes. C1 utilizará os mesmos \`run_id\`, IDs de eventos e oráculo, mas exigirá contratos HTTP/JSON, snapshots, deduplicação e sequenciamento próprios. Uma transição local não demonstra entrega de rede.
+
+
+## Validação observada na máquina do acadêmico — 12/11/2026
+
+As capturas E07-D09/E07-D10/E07-D11 (hashes e descrição na seção 14 de `docs/tcc2/etapa-07-implementacao-validacao-local.md`) mostram Python 3.13.9, `Compilacao: 0`, **18/18 testes OK**, `C0: 0`, `status: PASS`, comparação coincidente entre fixture esperada, oráculo independente e efeitos PON. Foram observados dois efeitos, nas etapas 3 e 7, e 7 requisições, 5 alterações de atributo e 3 transições de condição. Os arquivos brutos permanecem no computador do acadêmico, não foram importados ao GitHub. Isto comprova C0 mínimo, não C1 ou Kubernetes.
