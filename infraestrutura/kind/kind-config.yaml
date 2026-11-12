@@ -1,0 +1,7 @@
+# Etapa 06 — configuracao multinó kind executada no Windows/WSL2 com Docker
+# Nós virtuais no mesmo host físico; NÃO equivale a multinó físico.
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+  - role: worker
