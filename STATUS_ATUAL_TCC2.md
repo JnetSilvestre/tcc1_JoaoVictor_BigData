@@ -153,3 +153,11 @@ Atualizado em: 2026-11-12
 - **Evidências:** E07-D09 a E07-D11 com nomes/dimensões/SHA-256 das 3 capturas na seção 14 de `docs/tcc2/etapa-07-implementacao-validacao-local.md`; PNGs e arquivos brutos da rodada não estão versionados no GitHub.
 - **Classificação:** C0 mínimo **aprovado funcionalmente**; V01 e parte do controle de regressão V11 sustentados pelas evidências. **C1, V02–V07 interprocessos e etapas Docker/Kubernetes da aplicação seguem não executados**. Duração de `unittest` não é benchmark.
 - **Próxima etapa técnica dentro da Etapa 07:** implementar `attribute-source`, `logic-engine`, `rule-executor` em três processos HTTP/JSON com snapshot antes das alterações, `event_id` estável, sequência por origem, deduplicação e saída comparável ao oráculo C0; executar testes reais antes de considerar V02–V07 aprovados.
+
+
+## Checkpoint de continuidade — C1, incremento 01 (12/11/2026)
+
+- **Base real aprovada:** C0 no Windows (18/18 testes, `status: PASS`, 2 efeitos nos passos 3/7) conforme E07-D09–D11; nenhuma medição de desempenho da aplicação.
+- **Incremento C1 publicado, ainda NÃO executado no Windows:** pacote `prova-conceito/c1/protocol.py` e `__init__.py`, sete regressões em `tests/test_c1_contracts.py`, documentação `docs/tcc2/etapa-07-c1-contratos.md`. Commits de implementação `cb56eabbb003c1b146c12b6311c0326c258ccb2b`, `e90a3ae942072b4c7cb3b2222a371639fc6f634b` e `eaa03334a256c5ab97ae8e841476ab61980f8ac6`, documentação `d9a12f10e67ed8fb21c0b9d23239b4f6d69dac88`.
+- **Próxima execução solicitada:** sincronizar branch `tcc2/desenvolvimento`, compilar, executar `unittest` (25 casos previstos), enviar prints para validação. Não confundir contratos validáveis com três serviços rodando.
+- **Depois:** implementar máquinas de estado, snapshot, ordenação/deduplicação, transporte HTTP/JSON em três processos e validar V02–V07 contra C0. Nenhum Docker/Kubernetes da aplicação, sem modificar capítulos LaTeX/figuras ou a referência original.
