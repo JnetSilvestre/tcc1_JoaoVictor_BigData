@@ -135,3 +135,12 @@ Atualizado em: 2026-11-12
 - **Aprovado parcialmente:** V01 no alcance dos testes unitários da cadeia local, incluindo dois disparos nos passos 3/7; **ainda pendentes** oráculo independente/fixture JSONL e execução documentada do cenário C0 completo; C1/V02–V07, Docker/Kubernetes da aplicação não executados.
 - **Continuidade:** preparar C0 com rastreamento determinístico de `AttributeChanged`, `ConditionChanged` e efeitos; comparação contra oráculo manual e independente. Registrar execução na máquina antes de avançar a C1. 
 - **Preservado:** referência `codigoPon@c2d525b5c675820806af34348e259bff32a6bc5f`, decisões Etapas 04/05, objetivos TCC1, figuras e capítulos LaTeX.
+
+
+## Checkpoint mais recente — Etapa 07, C0 estruturado (12/11/2026)
+
+- **Última validação real do usuário:** 11 regressões Python aprovadas, execução `main.py` retorno 0, HEAD da execução `eb9d21780b4074a03accc9711d586f70ba38505b`, evidências E07-D07/E07-D08 e SHA-256 na seção 12 do documento da Etapa 07.
+- **Novo código publicado, não validado ainda no Windows:** `f75b9c8be0d7d6eb54eb091d49dc3d3c1df1bf0a` — fixture JSONL fixa, expected JSONL manual, oráculo independente, cadeia PON com trace, comparador e sete novos testes. Instruções em `docs/tcc2/etapa-07-c0-oraculo-local.md`.
+- **Próxima ação comprovável:** `git pull --ff-only`, suíte `unittest` (18 casos previstos), `python -m c0.runner` e exame de `validation.json`, `effects.jsonl`, `trace.jsonl`, `manifest.json`, `checksums.sha256`, com prints reais e exit codes. Registrar falhas sem mascarar.
+- **Não executados/comprovados:** o novo C0 completo e os serviços HTTP C1; V02–V07 permanecem pendentes. Sem Docker/Kubernetes da aplicação, sem métricas experimentais nem figuras finais.
+- **Rastreabilidade da continuidade:** decisões Etapas 04/05, status Etapa 06 e referência original `codigoPon@c2d525b5c675820806af34348e259bff32a6bc5f` permanecem inalterados. Usar este checkpoint e a seção 13 da Etapa 07 como contexto mínimo em vez de carregar toda a conversa.

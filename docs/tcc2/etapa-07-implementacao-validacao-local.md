@@ -262,3 +262,17 @@ Arquivar saída real, códigos de retorno, print original e hash. Espera-se `Ran
 **Classificação:** regressões de `Condition`, `Rule`, `Notifier` e `NOPManager` **aprovadas no escopo dos 11 casos**; boa evidência funcional parcial para V01. **Não interpretar tempo 0,011 s como medição de desempenho experimental**: é duração total relatada pelo framework de testes. C0 com fixture JSONL e oráculo independente **ainda não havia sido executado**; C1 e V02–V07 não aprovados.
 
 **Próximo incremento:** fixture JSONL versionada, oráculo independente da cadeia PON, saída estruturada, comparação automática e manifestações de execução. Manter controle de commits por branch e registrar resultados após execução real.
+
+
+## 13. Incremento 03 — C0 rastreável e oráculo independente (12/11/2026)
+
+**Commit de implementação:** `f75b9c8be0d7d6eb54eb091d49dc3d3c1df1bf0a`, branch `tcc2/desenvolvimento`. A validação dinâmica no Windows **ainda não foi realizada** para este incremento. Consulte `docs/tcc2/etapa-07-c0-oraculo-local.md` para comandos e critérios.
+
+- Fixture versionada com sete entradas do protocolo da Etapa 05, `run_id=c0-minimo-v1`, `seed=20260501`, atributos `atA`/`atB`, valores iniciais 0.
+- `fixtures/c0_esperado.jsonl`: arquivo de duas saídas esperadas definidas previamente, passos 3 e 7. Sequências previstas: atributo `atA` duas mudanças, `atB` três; `cn1` três transições; `rl1` duas execuções.
+- `c0/oracle.py`: oráculo lógico independente, sem importar o pacote PON; `c0/pon_execution.py`: cadeia PON real com notificações locais e rastreamento causal.
+- `c0/runner.py`: compara saídas em ordem e multiplicidade, gera JSONL, manifesto e checksums, retorna código 1 em divergência funcional ou 2 em entrada inválida; código 0 planejado apenas em igualdade exata.
+- `tests/test_c0.py`: sete casos novos, incluindo teste negativo de divergência, total de 18 casos na suíte.
+- `resultados-locais/` ignorado pelo Git; não alterar objetivos nem capítulos LaTeX, nem criar Docker/Kubernetes da aplicação.
+
+**Checkpoint para continuidade:** Etapas 04/05 preservadas; código original congelado; núcleo inicial validado por 11 testes reais (E07-D07/D08), C0 estruturado e **aguardando validação real**; depois C1 exige contratos HTTP/JSON, snapshot inicial, ordenação, deduplicação, testes V02–V07, tudo antes das Etapas 08–10. Registro de prints e arquivos reais permanece requisito para declarações de sucesso.

@@ -69,3 +69,10 @@ Write-Host "Main: $LASTEXITCODE"
 ```
 
 **Saída planejada, não observada ainda no Windows:** 11 testes `OK` e códigos de saída 0. Se ocorrer falha, preservar traceback e código de saída para diagnóstico.
+
+
+## Terceiro incremento — C0 com oráculo independente (pendente de testes no Windows)
+
+Criados `fixtures/c0_minimo.jsonl`, `fixtures/c0_esperado.jsonl`, `c0/oracle.py`, `c0/pon_execution.py`, `c0/runner.py` e `tests/test_c0.py`. A documentação detalhada está em `docs/tcc2/etapa-07-c0-oraculo-local.md` na raiz do repositório da monografia. O arquivo esperado foi escrito como referência estática da sequência de sete passos; o oráculo independente não importa o núcleo PON. `resultados-locais/` está ignorado pelo Git para não misturar logs com alterações de código.
+
+**Próximo teste:** `python -m unittest discover -s tests -p "test_*.py" -v` (18 casos previstos) e `python -m c0.runner`. As saídas esperadas só poderão ser declaradas observadas após prints e arquivos gerados no computador do acadêmico. C1 ainda não foi implementado.
