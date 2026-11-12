@@ -78,3 +78,19 @@ concorrente durante a instalação, recuperação de rede, persistência, replay
 após reinício ou latência experimental. Docker e Kubernetes da aplicação
 pertencem aos incrementos seguintes. A origem do núcleo permanece fixada em
 `JnetSilvestre/codigoPon@c2d525b5c675820806af34348e259bff32a6bc5f`.
+
+
+## Reprodução confirmada no Windows do acadêmico — 12/11/2026
+
+A implementação do Work foi reproduzida no host acadêmico, **não apenas no ambiente Work**: Git `f37dbc998eb5114a60335f5275c86b6e8bedee61`, Python 3.13.9, compilação 0, 37/37 testes `unittest` OK, `C1: 0`, `status: PASS` e 12 checks true; PIDs `20472`, `19548`, `22276`, portas `52911`, `52910`, `52909`, efeitos passos 3/7. O ZIP local foi criado e seu SHA exibido por PowerShell, mas o ZIP ainda não foi inspecionado/transferido para o GitHub.
+
+| ID | Arquivo (captura na conversa) | SHA-256 do PNG verificado | Resultado |
+|---|---|---|---|
+| E07-D14 | `image(20261112-210144).png` | `9dadee3396b98d554eab392d70b47780643fb16089656d2f7b22be6e0964ad27` | Git fast-forward, 37 testes de integração iniciados, revisão do projeto |
+| E07-D15 | `image(20261112-210212).png` | `38eab7a9468ce68b7a6fd9660c1ffe0c0bd0639e6a88f94586337b012deb9003` | 37/37 OK, `C1: 0`, `status=PASS`, 12/12 verificações verdadeiras, manifesto e PIDs |
+| E07-D16 | `image(20261112-210250).png` | `81ef8d4f0987fb596c5d677aa193567cca2a3884f63a64be58ff0c32e731f037` | `checksums.sha256` dos artefatos da rodada |
+| E07-D17 | `image(20261112-214847).png` | `e7b9bd7ad6545c9321aeee05655af9ee892be774c7e98b4704451c327f303bbe` | `Compress-Archive` e hash SHA-256 do arquivo ZIP local |
+
+**Hash do ZIP mostrado pelo PowerShell, não verificado por acesso aos bytes do arquivo:** `D7A62AC62AFA23302F272D303E00DB6B622B92FA04E5B3B7F1DE7367BF735D17`. O comando selecionou a pasta C1 mais recente e criou um ZIP ao lado dela. O nome completo do ZIP não está legível no print, pois a coluna `Path` aparece truncada. As capturas estão anexadas à conversa, não armazenadas no GitHub; o ZIP continua no host Windows do acadêmico.
+
+**Avaliação de V07:** o roteiro de transporte valida readiness 503, rejeição de mudanças antes do snapshot e versões iniciais coerentes, porém não injeta alteração concorrente com a transação de instalação de snapshot. Essa lacuna permanece declarada; novo teste de barreira de estado em memória pendente de execução não é prova direta de concorrência HTTP. Para a matriz de aceite e demais limites, consultar `etapa-07-aceite-tecnico.md`.

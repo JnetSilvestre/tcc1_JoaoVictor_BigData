@@ -203,3 +203,12 @@ integrada passou com 37 testes nesta sessão. A reprodução do C1 pelo acadêmi
 aguarda nova saída. Evidência anterior E07-D13 registra 36/36 testes das
 máquinas de estado no PowerShell do acadêmico. Procedimento, alcance de V02–V07
 e hashes em [C1 HTTP](docs/tcc2/etapa-07-c1-http.md).
+
+
+## Atualização mais recente — 12/11/2026, evidências C1 e ZIP local
+
+- **C1 validado no Windows pelo acadêmico:** revisão testada `f37dbc998eb5114a60335f5275c86b6e8bedee61`, Python 3.13.9, compilação 0, **37/37** testes `unittest` OK em 7,388 s, `C1: 0`, `PASS`, 12/12 verificações verdadeiras; efeitos nos passos 3 e 7; três PIDs distintos `20472`, `19548`, `22276`.
+- **ZIP das evidências:** criado pelo acadêmico no Windows; hash SHA-256 mostrado `D7A62AC62AFA23302F272D303E00DB6B622B92FA04E5B3B7F1DE7367BF735D17`; bytes do ZIP não acessados pela IA. Prints E07-D14–E07-D17 na conversa, hashes verificados e inventário em `docs/tcc2/etapa-07-aceite-tecnico.md`.
+- **Aceite científico:** V01–V06 aprovados somente para fixture e transporte localhost serial testados. **V07 parcial**: snapshot inicial e barreira pré-inicialização verificados, mas não a chegada concorrente de alterações durante a instalação via HTTP.
+- **Incremento novo pendente de validação Windows:** um teste local determinístico de snapshot foi acrescentado em `tests/test_c1_state.py`, commit `e77b166f78cafd13369e1a1664b340cfb4718133`. Suíte prevista: **38 testes**; não atribuir sucesso antes da execução.
+- **Próximas ações:** executar 38 testes, arquivar evidência, concluir V07 de acordo com o critério original e finalizar relatório técnico da Etapa 07. **Ainda sem Docker/Kubernetes da aplicação, medições científicas ou desenhos finais da monografia.**

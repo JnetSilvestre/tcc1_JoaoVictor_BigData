@@ -62,3 +62,12 @@ integrada passou com 37 testes nesta sessão. A reprodução do C1 pelo acadêmi
 aguarda nova saída. Evidência anterior E07-D13 registra 36/36 testes das
 máquinas de estado no PowerShell do acadêmico. Procedimento, alcance de V02–V07
 e hashes em [C1 HTTP](etapa-07-c1-http.md).
+
+
+## Checkpoint consolidado para próximas conversas — 12/11/2026
+
+- **C0 e C1 mínimos confirmados na máquina Windows:** C1 em `f37dbc998eb5114a60335f5275c86b6e8bedee61`, compilação 0, 37/37 `unittest` OK em 7,388 s, `C1: 0`, 12/12 checks true, 2 efeitos nos passos 3/7, três processos HTTP/JSON no mesmo host.
+- **Novo inventário:** `docs/tcc2/etapa-07-aceite-tecnico.md` contém a matriz V01–V07, screenshots E07-D14–D17 e SHA exibido do ZIP local. O ZIP não está no repositório nem foi verificado diretamente pela IA.
+- **Nova regressão adicionada, ainda não executada no Windows:** teste de barreira durante snapshot `test_change_during_snapshot_handshake_is_rejected_before_ack` em `test_c1_state.py`. A suíte agora prevê **38 testes**. Este é teste local, não de concorrência HTTP.
+- **Pendência de V07:** teste explícito de alteração durante instalação de snapshot pelo transporte HTTP ainda não realizado; demais critérios V01–V06 aprovados apenas dentro do escopo funcional C0/C1 testado.
+- **Próxima execução:** `git pull --ff-only origin tcc2/desenvolvimento`, `python -m compileall -q pon c0 c1 tests`, `python -m unittest discover -s tests -p "test_*.py" -v`; registrar outputs e hashes. Depois abordar V07 HTTP para encerramento formal.

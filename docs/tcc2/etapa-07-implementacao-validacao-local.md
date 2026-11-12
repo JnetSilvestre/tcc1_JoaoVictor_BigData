@@ -339,3 +339,8 @@ integrada passou com 37 testes nesta sessão. A reprodução do C1 pelo acadêmi
 aguarda nova saída. Evidência anterior E07-D13 registra 36/36 testes das
 máquinas de estado no PowerShell do acadêmico. Procedimento, alcance de V02–V07
 e hashes em [C1 HTTP](etapa-07-c1-http.md).
+
+
+## 18. Evidências do C1 e ZIP arquivado localmente (12/11/2026)
+
+Reprodução C1 no Windows comprovada por prints E07-D14 a E07-D16 e arquivo ZIP local com checksum exibido no print E07-D17. Executou 37/37 testes, `C1: 0`, 12/12 verificações e dois efeitos nos passos 3 e 7 em três PIDs diferentes. O conteúdo do ZIP não foi acessado pela IA; a pasta e arquivo permanecem na máquina. SHA, critérios, limitações e classificação por V01–V07 foram registrados no novo `docs/tcc2/etapa-07-aceite-tecnico.md`. **Nova regressão de barreira de snapshot publicada, 38 testes previstos, sem execução Windows ainda.**
