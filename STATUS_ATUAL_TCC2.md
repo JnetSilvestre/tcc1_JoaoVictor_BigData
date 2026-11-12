@@ -2,6 +2,13 @@
 
 Atualizado em: 2026-11-12
 
+## Leitura rápida — última situação verificada
+
+- Última execução real do acadêmico: **25/25 testes aprovados**, Python 3.13.9, HEAD `fe7e4d9b066d3c3f69b3d781ed9184c9ee2d8943`; print E07-D12 (hash registrado).
+- O novo incremento de estados C1 foi publicado e a suite subiu para **36 casos previstos**, **ainda sem validação real no Windows**.
+- Consultar o checkpoint enxuto `docs/tcc2/etapa-07-checkpoint.md` antes de ler o histórico detalhado; próximo comando: `git pull --ff-only` e rodar os 36 testes.
+- C1 ainda não é multiprocesso nem HTTP; seguir para os serviços só depois da regressão local.
+
 ## Etapas
 - Etapa 02: concluída, conforme informação do acadêmico.
 - Etapa 03: concluída; referência `2eb080b93a38db47ea1149bb660a5379c6478bd4`.
