@@ -1,6 +1,8 @@
 """Regressões C1 de estado em memória; NÃO são testes HTTP/multiprocesso."""
 
 import copy
+from concurrent.futures import ThreadPoolExecutor
+from threading import Event
 import unittest
 
 from c0.io import read_jsonl
@@ -197,6 +199,44 @@ class C1StateTests(unittest.TestCase):
         self.assertEqual(self.source.state()["pending_request_id"], None)
         self.assertEqual(self.source.state()["attributes"]["atA"], 5)
         self.assertEqual(len(self.engine.state()["received_ids"]), 1)
+
+    def test_change_during_snapshot_handshake_is_rejected_before_ack(self):
+        """Barreira determinística LOCAL: não é teste de concorrência HTTP."""
+        entered = Event()
+        release = Event()
+        actual_send = self.source.send_snapshot
+
+        def delayed_snapshot(snapshot):
+            entered.set()
+            if not release.wait(timeout=5):
+                raise TimeoutError("timeout na barreira de snapshot do teste")
+            return actual_send(snapshot)
+
+        self.source.send_snapshot = delayed_snapshot
+        payload = self.to_change_payload(self.rows[1])
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            future = pool.submit(self.source.initialize, self.rows[0]["run_id"])
+            try:
+                self.assertTrue(entered.wait(timeout=5))
+                self.assertFalse(self.source.ready)
+                self.assertFalse(self.engine.ready)
+                with self.assertRaisesRegex(ContractError, "nao inicializado"):
+                    self.source.change(payload)
+                self.assertEqual(self.source.state()["attributes"], {
+                    "atA": 0, "atB": 0,
+                })
+                self.assertEqual(self.source.state()["sequences"], {
+                    "atA": 0, "atB": 0,
+                })
+            finally:
+                release.set()
+            self.assertTrue(future.result(timeout=5)["ready"])
+
+        self.assertTrue(self.source.change(payload)["changed"])
+        self.assertEqual(self.source.state()["attributes"]["atA"], 5)
+        self.assertEqual(self.engine.state()["attributes"]["atA"], 5)
+        self.assertEqual(self.source.state()["sequences"]["atA"], 1)
+        self.assertEqual(self.engine.state()["sequences"]["atA"], 1)
 
     def test_nonzero_watermark_requires_replay_not_implemented(self):
         self.initialize()
