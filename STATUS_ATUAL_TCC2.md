@@ -169,3 +169,13 @@ Atualizado em: 2026-11-12
 - **Validação real:** HEAD `fe7e4d9b066d3c3f69b3d781ed9184c9ee2d8943`, Python 3.13.9, compilação 0, **25/25 unittest OK em 0.542 s**, `Testes: 0`.
 - **Comprova:** C0 mínimo aprovado anteriormente e sete testes de contratos C1 aprovados; **não comprova** os serviços C1, snapshots instalados, deduplicação real no transporte, PIDs separados nem V02–V07 completos.
 - **Próximo incremento:** máquinas de estado `attribute-source`, `logic-engine`, `rule-executor`; testes de snapshot, ordenação, duplicatas e efeitos. Depois HTTP/JSON em processos diferentes, ainda sem Docker/Kubernetes da aplicação.
+
+
+## Checkpoint de continuidade — C1, máquinas de estado publicadas (12/11/2026)
+
+- **Última execução real comprovada no Windows:** 25/25 testes, `Compilacao: 0`, `Testes: 0`, Python 3.13.9, HEAD `fe7e4d9b066d3c3f69b3d781ed9184c9ee2d8943`, evidência E07-D12 (print e SHA-256 na seção 16 do documento da Etapa 07).
+- **Novo incremento ainda não executado no Windows:** `prova-conceito/c1/state.py` (commit `efbc597fc733b14fb31bbb07bcca3232f30a2f5a`) e `prova-conceito/tests/test_c1_state.py` (commit `21c1de121fbe862bceed8883b64674096212a576`). São 11 novos testes de estado (suíte prevista de 36 testes).
+- **Arquitetura em código:** `AttributeSource`, `LogicEngine`, `RuleExecutor`, snapshots antes das notificações, sequências/IDs, deduplicação, erro explícito para lacunas e estados em memória. `RuleExecutor` utiliza de fato `Attribute → Premise → Condition → Rule → Action → Instigation`. Transporte ainda por callbacks locais, **sem HTTP ou PIDs distintos**.
+- **Limitações:** snapshot inicial apenas com watermarks zero; sem ressincronização/replay automático, sem persistência, sem concorrência thread-safe; se houver falha parcial no avaliador, sinaliza `faulted`. Falha de ACK simulada é teste unitário, não experimento de rede.
+- **Documento para retomar a conversa:** `docs/tcc2/etapa-07-c1-estados.md`. **Próxima execução do acadêmico:** `git pull --ff-only`, `compileall`, `unittest` de 36 casos, capturas e códigos de saída; depois implementar HTTP/JSON entre três processos e validar V02–V07.
+- **Preservados:** decisões Etapas 04/05, código original `codigoPon@c2d525b5c675820806af34348e259bff32a6bc5f`, monografia LaTeX, figuras conceituais; nenhuma implantação da aplicação em Docker/Kubernetes.
