@@ -306,3 +306,12 @@ Arquivar saída real, códigos de retorno, print original e hash. Espera-se `Ran
 Após comprovação do cenário C0 (seção 14), foi publicado o **esquema de mensagens para C1**, sem servidores HTTP ainda: `prova-conceito/c1/protocol.py`, `c1/__init__.py` e `tests/test_c1_contracts.py`. O protocolo rejeita tipos incompatíveis, IDs incorretos, versões desconhecidas, timestamps não UTC e campos ausentes ou extras. Registra contratos de snapshot para a futura sincronização inicial. O campo `step` é opcional para rastrear a fixture C0.
 
 **Documento específico:** `docs/tcc2/etapa-07-c1-contratos.md`. **Estado:** sete novos testes versionados, total previsto de 25, pendentes de execução real no computador do acadêmico. Isto NÃO comprova V02–V07, comunicação, PIDs distintos, deduplicação nem estado inicial aplicado. O próximo incremento só começará a execução de serviços após confirmação ou diagnóstico dos testes de contrato.
+
+
+## 16. Evidência C1 — testes dos contratos aprovados no Windows (12/11/2026)
+
+**E07-D12:** arquivo de captura original enviado na conversa `image(20261112-203727).png`, dimensões 1920 × 1080, 135.992 bytes, SHA-256 `a20f0d787f2ceeb7c53dbfe7c362ca14bee695a6214d2ddd1c81b2ad09680d0c`. Imagem está preservada na conversa e **não foi incorporada ao GitHub**.
+
+Comandos e saídas legíveis: branch `tcc2/desenvolvimento`, `git pull --ff-only` por fast-forward, HEAD `fe7e4d9b066d3c3f69b3d781ed9184c9ee2d8943`; Python 3.13.9; `python -m compileall -q .\\pon .\\c0 .\\c1 .\\tests` com `Compilacao: 0`; `python -m unittest discover -s tests -p "test_*.py" -v` com 25 testes `ok`, `Ran 25 tests in 0.542s`, `OK`, `Testes: 0`.
+
+**Classificação:** sete testes novos de validação estrutural dos contratos C1 e as 18 regressões anteriores passaram. O sistema de mensagens ainda **não foi executado por HTTP, nem em três processos**. Portanto V02–V07 não estão aprovados por este teste; a duração da suíte não é medição experimental.
