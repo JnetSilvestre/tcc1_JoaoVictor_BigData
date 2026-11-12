@@ -175,3 +175,32 @@ Write-Host "Main: $LASTEXITCODE"
 ```
 
 Arquivar capturas originais do terminal com comandos, saída e código de retorno. A expectativa é `Ran 3 tests`, `OK` e retorno 0, **mas isso não foi confirmado na máquina do acadêmico**. Se falhar, registrar íntegro o erro antes de modificar o código. A aprovação desses testes será **parcial de V01**: eles não exercitam `Rule`/`Action` nem comprovam os efeitos completos do oráculo C0.
+
+## 10. Validação real da correção de Condition — prints do PowerShell (12/11/2026)
+
+**Origem:** duas capturas enviadas pelo acadêmico nesta conversa após executar o incremento publicado na branch `tcc2/desenvolvimento`, checkout local `4dcaf328ef31893246260623e741eb65aa71773f`. Os PNGs originais foram fornecidos na conversa, mas **ainda não estão arquivados no GitHub**. Esta seção registra evidência observada, não uma simulação de execução.
+
+| Identificador | Arquivo da captura | Dimensões | SHA-256 do arquivo recebido |
+| --- | --- | --- | --- |
+| E07-D05 | `image(20261112-200509).png` | 1169 × 916 | `60391e4f7a6ca6889f413e0635e32ffe4d9cc6e2e1bc54e790c65da9841495ea` |
+| E07-D06 | `image(20261112-200539).png` | 1169 × 658 | `393f224361e1aa9a25f05d81cd7691951a6b29e0903a300fc03c46d00b5f837e` |
+
+### E07-D05 — sincronização e revisão
+
+- `git branch --show-current` exibiu `tcc2/desenvolvimento`.
+- `git status --short` não apresentou linhas antes da atualização.
+- `git pull --ff-only origin tcc2/desenvolvimento` concluiu com `Fast-forward`, trouxe a pasta `prova-conceito` e arquivos de documentação; HEAD local mostrado após a atualização: `4dcaf328ef31893246260623e741eb65aa71773f`.
+
+### E07-D06 — testes executados no Windows
+
+- `python --version`: `Python 3.13.9`.
+- `python -m compileall -q .\\pon .\\tests`: `Compilacao: 0`.
+- `python -m unittest discover -s tests -p "test_*.py" -v`: `Ran 3 tests in 0.003s`, `OK` e `Testes: 0`.
+- Casos `test_condition_approves_only_when_both_premises_are_true`, `test_nested_conditions_propagate_to_observers` e `test_notifications_only_on_condition_transitions`: os três exibiram `ok`.
+- `python .\\main.py`: finalizou com `Main: 0`, sem erros aparentes; a condição contraditória desse exemplo permaneceu falsa em todos os passos.
+
+**Interpretação:** o defeito de `Condition` previamente reproduzido foi corrigido e os três testes de regressão da correção passaram na máquina documentada. Esse subconjunto de V01 tem evidência positiva, mas **V01 completo/C0 ainda estão pendentes**, pois `Rule`, `Action`, `Instigation` e os dois efeitos previstos nos passos 3/7 não foram validados. Não houve C1 ou medições de desempenho.
+
+### Próximo incremento planejado
+
+Adicionar testes de `Rule` com execução síncrona determinística da ação na transição falso→verdadeiro, mantendo compatibilidade do método explícito `async def execute`; tornar colisões e troca de IDs seguras em `Notifier`/`NOPManager`; executar os testes no Windows e registrar os resultados **antes de declarar aprovação**. Não modificar o código-fonte fixado do repositório `codigoPon`.
