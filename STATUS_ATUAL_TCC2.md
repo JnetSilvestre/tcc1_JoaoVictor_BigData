@@ -144,3 +144,12 @@ Atualizado em: 2026-11-12
 - **Próxima ação comprovável:** `git pull --ff-only`, suíte `unittest` (18 casos previstos), `python -m c0.runner` e exame de `validation.json`, `effects.jsonl`, `trace.jsonl`, `manifest.json`, `checksums.sha256`, com prints reais e exit codes. Registrar falhas sem mascarar.
 - **Não executados/comprovados:** o novo C0 completo e os serviços HTTP C1; V02–V07 permanecem pendentes. Sem Docker/Kubernetes da aplicação, sem métricas experimentais nem figuras finais.
 - **Rastreabilidade da continuidade:** decisões Etapas 04/05, status Etapa 06 e referência original `codigoPon@c2d525b5c675820806af34348e259bff32a6bc5f` permanecem inalterados. Usar este checkpoint e a seção 13 da Etapa 07 como contexto mínimo em vez de carregar toda a conversa.
+
+
+## Checkpoint Etapa 07 — 12/11/2026: C0 comprovado
+
+- **Execução real no Windows:** branch `tcc2/desenvolvimento`, HEAD `51b3539f8735eb56da754a6239886a3a725860ad`, Python 3.13.9; `compileall` retorno 0; **18/18 testes `unittest` OK em 0.478s**; execução `python -m c0.runner` retornou `C0: 0`, relatório `status: PASS`.
+- **Saídas C0 observadas:** 2 efeitos nos passos 3 e 7, 7 requisições, 5 mudanças de atributos, 3 transições de condição, final `atA=6`/`atB=1`, sequências `atA=2`, `atB=3`. Igualdade observada entre fixture manual, oráculo independente e execução PON.
+- **Evidências:** E07-D09 a E07-D11 com nomes/dimensões/SHA-256 das 3 capturas na seção 14 de `docs/tcc2/etapa-07-implementacao-validacao-local.md`; PNGs e arquivos brutos da rodada não estão versionados no GitHub.
+- **Classificação:** C0 mínimo **aprovado funcionalmente**; V01 e parte do controle de regressão V11 sustentados pelas evidências. **C1, V02–V07 interprocessos e etapas Docker/Kubernetes da aplicação seguem não executados**. Duração de `unittest` não é benchmark.
+- **Próxima etapa técnica dentro da Etapa 07:** implementar `attribute-source`, `logic-engine`, `rule-executor` em três processos HTTP/JSON com snapshot antes das alterações, `event_id` estável, sequência por origem, deduplicação e saída comparável ao oráculo C0; executar testes reais antes de considerar V02–V07 aprovados.
