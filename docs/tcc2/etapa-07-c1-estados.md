@@ -68,3 +68,11 @@ git status --short
 ## Ajuste de consistência da fixture
 
 O arquivo JSONL C0 inclui `seed` para reprodução experimental, mas o contrato C1 (`POST /attributes/change`) não inclui esse metadado. Os testes em `test_c1_state.py` agora extraem apenas `run_id`, `request_id`, `entity_id`, `value` e `step` para formar o payload compatível. Correção documental e de teste no commit `92f6066a4a1f2af4e89fe69f7b18e05aa22d024f`. Não foi necessária alteração de contrato.
+
+## E07-D13 — validação das máquinas de estado (12/11/2026)
+
+Captura original do PowerShell do acadêmico: `image(20261112-204915).png`.
+SHA-256: `c1a9fdb5fedd4a144a01d4b392b271bfba4dd5f37c8bc240e5534780726a7f69`.
+Branch `tcc2/desenvolvimento`, HEAD `52dd849727f179ec938172def7c37daeecec302b`,
+Python 3.13.9, `compileall` retorno 0, 36/36 `unittest` OK em 0.471 s, retorno 0.
+O tempo é da suíte. A evidência cobre as máquinas de estado em memória.

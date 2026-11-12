@@ -322,3 +322,11 @@ Comandos e saídas legíveis: branch `tcc2/desenvolvimento`, `git pull --ff-only
 Após a aprovação real dos 25 testes de contratos (E07-D12), publicadas as classes `AttributeSource`, `LogicEngine` e `RuleExecutor` em `prova-conceito/c1/state.py`, junto de 11 testes locais em `tests/test_c1_state.py`. Código disponível nos commits `efbc597fc733b14fb31bbb07bcca3232f30a2f5a` e `21c1de121fbe862bceed8883b64674096212a576`; procedimento detalhado em `docs/tcc2/etapa-07-c1-estados.md`.
 
 **Estado rigoroso:** ainda não executados no Windows os novos testes (36 previstos), tampouco C1 entre três PIDs. A troca entre papéis usa **callbacks no mesmo processo para testes unitários**, não HTTP. O avaliador usa `Attribute/Premise/Condition` e o executor `Rule/Action/Instigation`; as notificações têm snapshots, IDs, ordem e detecção de duplicação. Não há persistência nem recuperação automática, e o snapshot inicial da prova exige watermarks zero. V02–V07 permanecem pendentes de evidências interprocessos.
+
+## E07-D13 — validação das máquinas de estado (12/11/2026)
+
+Captura original do PowerShell do acadêmico: `image(20261112-204915).png`.
+SHA-256: `c1a9fdb5fedd4a144a01d4b392b271bfba4dd5f37c8bc240e5534780726a7f69`.
+Branch `tcc2/desenvolvimento`, HEAD `52dd849727f179ec938172def7c37daeecec302b`,
+Python 3.13.9, `compileall` retorno 0, 36/36 `unittest` OK em 0.471 s, retorno 0.
+O tempo é da suíte. A evidência cobre as máquinas de estado em memória.

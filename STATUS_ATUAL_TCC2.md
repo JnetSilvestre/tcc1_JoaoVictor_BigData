@@ -186,3 +186,11 @@ Atualizado em: 2026-11-12
 - **Limitações:** snapshot inicial apenas com watermarks zero; sem ressincronização/replay automático, sem persistência, sem concorrência thread-safe; se houver falha parcial no avaliador, sinaliza `faulted`. Falha de ACK simulada é teste unitário, não experimento de rede.
 - **Documento para retomar a conversa:** `docs/tcc2/etapa-07-c1-estados.md`. **Próxima execução do acadêmico:** `git pull --ff-only`, `compileall`, `unittest` de 36 casos, capturas e códigos de saída; depois implementar HTTP/JSON entre três processos e validar V02–V07.
 - **Preservados:** decisões Etapas 04/05, código original `codigoPon@c2d525b5c675820806af34348e259bff32a6bc5f`, monografia LaTeX, figuras conceituais; nenhuma implantação da aplicação em Docker/Kubernetes.
+
+## E07-D13 — validação das máquinas de estado (12/11/2026)
+
+Captura original do PowerShell do acadêmico: `image(20261112-204915).png`.
+SHA-256: `c1a9fdb5fedd4a144a01d4b392b271bfba4dd5f37c8bc240e5534780726a7f69`.
+Branch `tcc2/desenvolvimento`, HEAD `52dd849727f179ec938172def7c37daeecec302b`,
+Python 3.13.9, `compileall` retorno 0, 36/36 `unittest` OK em 0.471 s, retorno 0.
+O tempo é da suíte. A evidência cobre as máquinas de estado em memória.
