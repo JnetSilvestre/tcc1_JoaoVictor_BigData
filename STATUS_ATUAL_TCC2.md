@@ -126,3 +126,12 @@ Atualizado em: 2026-11-12
 - **Segundo incremento de código publicado:** `6165bfdbcfa152218452cf91776fc0be6b345ede`, corrigindo disparo síncrono determinístico de `Rule` e consistência/colisão de IDs em `Notifier`/`NOPManager`. Adicionados `test_rule.py` (4 testes) e `test_ids.py` (4 testes); suíte prevista de 11 testes incluindo os três anteriores.
 - **Ainda não executados no Windows:** novos testes da suíte de 11; a execução real é a próxima ação. Não considerar o incremento aprovado antes de receber saída e evidência.
 - Continuam fora do escopo atual: Docker/Kubernetes da aplicação e figura definitiva na monografia. C0 completo e C1 aguardam validação do núcleo.
+
+
+## Checkpoint Etapa 07 — 12/11/2026, 11 testes reais aprovados
+
+- **E07-D07/D08**: prints originais `image(20261112-201405).png` e `image(20261112-201417).png`; hashes SHA-256, dimensões, saídas e limites de validade constam na seção 12 de `docs/tcc2/etapa-07-implementacao-validacao-local.md`. PNGs ainda somente na conversa.
+- **Ambiente:** Python 3.13.9 em Windows; HEAD `eb9d21780b4074a03accc9711d586f70ba38505b`, branch `tcc2/desenvolvimento`. `compileall` retorno 0, **11/11 testes `unittest` OK em 0.011 s**, `main.py` retorno 0. A duração da suíte é apenas tempo de teste, não benchmark PON.
+- **Aprovado parcialmente:** V01 no alcance dos testes unitários da cadeia local, incluindo dois disparos nos passos 3/7; **ainda pendentes** oráculo independente/fixture JSONL e execução documentada do cenário C0 completo; C1/V02–V07, Docker/Kubernetes da aplicação não executados.
+- **Continuidade:** preparar C0 com rastreamento determinístico de `AttributeChanged`, `ConditionChanged` e efeitos; comparação contra oráculo manual e independente. Registrar execução na máquina antes de avançar a C1. 
+- **Preservado:** referência `codigoPon@c2d525b5c675820806af34348e259bff32a6bc5f`, decisões Etapas 04/05, objetivos TCC1, figuras e capítulos LaTeX.
