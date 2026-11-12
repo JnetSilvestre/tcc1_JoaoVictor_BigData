@@ -48,3 +48,8 @@ Write-Host "Testes: $LASTEXITCODE"
 3. Validar V02–V07 e a equivalência da saída C1 com o oráculo C0; preservar PIDs, logs JSONL, scripts e hashes.
 
 Não usar Docker/Kubernetes da aplicação nesta etapa. Não classificar V02–V07 como aprovados antes de provas reais.
+
+
+## Evidência de execução real dos contratos — 12/11/2026
+
+E07-D12, captura `image(20261112-203727).png` (1920 × 1080, 135.992 bytes; SHA-256 `a20f0d787f2ceeb7c53dbfe7c362ca14bee695a6214d2ddd1c81b2ad09680d0c`). PowerShell do acadêmico mostrou HEAD `fe7e4d9b066d3c3f69b3d781ed9184c9ee2d8943`, Python 3.13.9, `Compilacao: 0`, **25/25 unittest OK em 0.542s**, `Testes: 0`. Captura não incorporada ao GitHub. Isso comprova validação de contratos e regressões, não comunicação HTTP, separação de PIDs ou V02–V07 completos.
