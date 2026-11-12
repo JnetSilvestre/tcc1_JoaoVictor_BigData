@@ -107,4 +107,13 @@ Atualizado em: 2026-11-12
 
 - Registro de E07-D01, E07-D02 e E07-D03 feito na Etapa 07, com outputs confirmados visualmente, hashes SHA-256 das duas capturas fornecidas, indicação de que os PNGs ainda não estão no repositório e classificação de teste funcional como **não aprovado**.
 - Commit de documentação das evidências: `d7d2cc0214128c807c546f832a084caac0d9b2cc` (somente `tcc2/desenvolvimento`).
-- Próxima tarefa: implementar teste de regressão e correção do núcleo em cópia de desenvolvimento separada da referência; repetir validação real antes de prosseguir com o restante de V01 e com C0/C1.
+- Correção inicial de `Condition` e três testes de regressão adicionados em `prova-conceito/`, **ainda sem execução comprovada no Windows**. Próximo passo: atualizar o clone local com `git pull --ff-only` e executar o `unittest` da prova adaptada antes de avançar com Rule/IDs e C0/C1.
+
+## Incremento da Etapa 07 — regressão isolada de Condition (12/11/2026)
+
+- **E07-D04:** imagem do terminal prova clone de `tcc2/desenvolvimento`, branch ativa e `git status --short` limpo. PNG original somente nesta conversa: `image(20261112-195720).png`; SHA-256 `2f9494d6524e10821f665e1dd530b7e9feb1f80dcb7c4ab57be932da73ff224b`.
+- **Código incluído:** cópia rastreável de `JnetSilvestre/codigoPon@c2d525b5c675820806af34348e259bff32a6bc5f` em `prova-conceito/`. Commit `41792b5a459b348c39eacb4ad63e63b7f61cb15f` somente na branch `tcc2/desenvolvimento`.
+- **Correção restrita:** `Condition.update` usa notificação aos observadores e `getId()`; criados três testes `unittest` para transição, repetição e composição aninhada. `Rule`, `NOPManager` e demais módulos mantidos da fonte nesta primeira alteração.
+- **Documentação do pacote:** `prova-conceito/README.md`, com formatação corrigida no commit `c2d253a91bbc13675a19e76fbb961ea2b45fc7ac`; atualização de evidências na Etapa 07 no commit `c4625cc46ea99122f0fef84d5aa0a3dcdf49831c`.
+- **Situação dos testes:** a referência defeituosa falhou conforme print anterior; a correção e os três novos testes **não foram executados no Windows**. Não aprovar V01 ainda. Próximo comando: `python -m unittest discover -s tests -p "test_*.py" -v` a partir de `prova-conceito`, após sincronizar a branch local.
+- **Docker e Kubernetes da aplicação:** não iniciados. As duas representações arquiteturais e o capítulo LaTeX continuam preservados.
