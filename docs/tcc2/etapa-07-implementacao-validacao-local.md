@@ -1,7 +1,7 @@
 # TCC2 — Etapa 07: implementação e validação local (diagnóstico inicial)
 
 **Data da inspeção estática:** 2026-11-12.  
-**Estado em 12/11/2026:** diagnóstico estático e testes de referência comprovados por capturas da máquina do acadêmico; defeito de `Condition` reproduzido. V01–V07 continuam **não aprovados**. Ver seção 8 para evidências e checksums.  
+**Estado em 12/11/2026:** diagnóstico estático e testes da referência comprovados por capturas do Windows; defeito de `Condition` reproduzido; cópia adaptada e testes de regressão publicados posteriormente, **ainda sem execução comprovada no Windows**. V01–V07 continuam **não aprovados**. Ver seções 8–9.  
 **Branch exclusiva para alterações:** `tcc2/desenvolvimento` no repositório da monografia. Não modificar `master`.  
 **Origem congelada para análise:** `JnetSilvestre/codigoPon@c2d525b5c675820806af34348e259bff32a6bc5f`. Não modificar o repositório de referência.  
 **Documentos obrigatórios preservados:** `docs/tcc2/etapa-04-arquitetura-distribuida.md`, `docs/tcc2/etapa-05-protocolo-experimental.md` e `docs/tcc2/etapa-06-preparacao-ambiente.md`.
@@ -102,7 +102,7 @@ Salvar logs de texto e prints originais com hora, comando, código-fonte/SHA e, 
 ## 7. Pendências desta publicação
 
 - **Executados posteriormente, em 12/11/2026:** compilação sintática, `main.py` e reprodução do defeito de `Condition`, com resultados e prints documentados na seção 8. **Ainda não executados:** testes de regressão da implementação corrigida.
-- **NÃO implementado:** correções de código, fixtures, serviços HTTP, snapshot, deduplicação e oráculo C0/C1.
+- **Implementado posteriormente:** correção isolada de `Condition` e três testes unitários no diretório `prova-conceito/` (seção 9). **Ainda não implementados:** correções de `Rule`/IDs, fixture e oráculo C0 completos, três serviços HTTP, snapshot e deduplicação.
 - **Produzidos posteriormente:** dois prints do terminal com diagnóstico e falha, recebidos na conversa (não incorporados ao repositório). **Ainda não produzidos:** logs estruturados do PON corrigido, resultados experimentais e métricas.
 - **PENDENTE:** autorização/aderência acadêmica para adaptação da referência Python, confirmação com o orientador, definição de local definitivo dos arquivos adaptados.
 - **Versionamento:** esta publicação documental foi feita exclusivamente em `tcc2/desenvolvimento`, sem alteração dos repositórios de código-base ou da monografia LaTeX.
@@ -140,3 +140,38 @@ Entrada real: `atA=0`, `atB=0`, condição `(atA >= 5) & (atB == 1)`;
 ### Próxima validação necessária
 
 Preservar a cópia `codigoPon-referencia` intocada, construir/adaptar o núcleo em área de desenvolvimento da branch `tcc2/desenvolvimento`, criar teste de regressão que reproduza o erro antes da correção, corrigir `Condition` e testar a propagação correta; posteriormente abordar `Rule` e IDs. Capturar saídas dos testes anteriores e posteriores às correções e atualizar o status apenas com resultados efetivamente observados.
+
+## 9. Cópia de desenvolvimento e regressão de Condition — 12/11/2026
+
+### E07-D04 — branch de trabalho preparada
+
+O acadêmico forneceu print adicional `image(20261112-195720).png` (30.751 bytes, SHA-256 `2f9494d6524e10821f665e1dd530b7e9feb1f80dcb7c4ab57be932da73ff224b`). A captura mostra o clone de `JnetSilvestre/tcc1_JoaoVictor_BigData` em `$HOME\\tcc2\\etapa07\\tcc2-trabalho`, `git branch --show-current` retornando `tcc2/desenvolvimento` e `git status --short` sem arquivos alterados. O print não inclui `git rev-parse HEAD` da monografia; não inferir SHA local a partir do clone.
+
+### Incremento técnico publicado na branch (não testado na máquina do acadêmico)
+
+- **Commit:** `41792b5a459b348c39eacb4ad63e63b7f61cb15f` — código-base Python reproduzido do commit `JnetSilvestre/codigoPon@c2d525b5c675820806af34348e259bff32a6bc5f` em `prova-conceito/main.py` e `prova-conceito/pon/*.py`.
+- **Alteração funcional única nesse incremento:** `prova-conceito/pon/Condition.py` passa a enviar notificações aos observadores com `self.notify()` e usa `self.getId()` para não acessar indevidamente o atributo privado de `Notifier`.
+- **Testes adicionados, mas AINDA NÃO EXECUTADOS no Windows:** `prova-conceito/tests/test_condition.py` contém três testes com `unittest`: aprovação após duas premissas verdadeiras, sequência de transições com ausência de notificações redundantes e propagação entre condições aninhadas.
+- **Documentação:** `prova-conceito/README.md` e `prova-conceito/.gitignore`; correção da formatação Markdown no commit `c2d253a91bbc13675a19e76fbb961ea2b45fc7ac`.
+- **Sem alteração:** `codigoPon-referencia` permanece fixado no commit original; `Rule`, `Notifier`, `NOPManager` continuam como no código de referência, até regressões próprias.
+
+### Próxima execução no PowerShell
+
+Executar em `$HOME\\tcc2\\etapa07\\tcc2-trabalho`:
+
+```powershell
+git branch --show-current
+git status --short
+git pull --ff-only origin tcc2/desenvolvimento
+git rev-parse HEAD
+Set-Location .\\prova-conceito
+python --version
+python -m compileall -q .\\pon .\\tests
+Write-Host "Compilacao: $LASTEXITCODE"
+python -m unittest discover -s tests -p "test_*.py" -v
+Write-Host "Testes: $LASTEXITCODE"
+python .\\main.py
+Write-Host "Main: $LASTEXITCODE"
+```
+
+Arquivar capturas originais do terminal com comandos, saída e código de retorno. A expectativa é `Ran 3 tests`, `OK` e retorno 0, **mas isso não foi confirmado na máquina do acadêmico**. Se falhar, registrar íntegro o erro antes de modificar o código. A aprovação desses testes será **parcial de V01**: eles não exercitam `Rule`/`Action` nem comprovam os efeitos completos do oráculo C0.
