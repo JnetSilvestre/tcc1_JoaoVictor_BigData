@@ -164,3 +164,13 @@ Códigos de saída e logs devem ser preservados e analisados antes de classifica
 - Verificar contêineres `running`, IDs Docker distintos, rede correta, ausência de mapeamento de portas host, `GET /health/live` por DNS dentro da rede e logs de `listening`. Antes do snapshot, `/health/ready` é esperado 503; nenhum resultado de regra deve ter sido produzido.
 - Evitar colisão com recursos existentes: interromper se rede ou nomes já existirem; não remover/reiniciar contêineres anteriores nem tocar no kind.
 - Ainda faltam E08-I05, fixture e equivalência C2↔C0/C1; figuras futuras devem distinguir separação por contêiner no mesmo host de distribuição física multinó.
+
+## 15. E08-D09 — falha real na inspeção da label no PowerShell (13/11/2026)
+
+- Captura PowerShell recebida na conversa: `image(20261113-210012).png`, 111.269 bytes; SHA-256 **calculado nos bytes recebidos**: `4eaf907129c646850fe36ca5335c71f9073c398b0c17ce1e92e705885f796b18`. PNG ainda não incorporado ao GitHub.
+- HEAD atualizado por fast-forward até `c43cd1d6aa9e8ef2a015117f2fb15b8f5afda1bd`; sem indício de alteração no código do contêiner desde o build `dbefcd2cf3d2fbf220cff8eda34d52189e08192a`.
+- Falha no passo 2, consulta da label OCI no `docker image inspect --format '{{index .Config.Labels "org.opencontainers.image.revision"}}'`: **`template parsing error: template: :1: function "org" not defined`**. O PowerShell e a CLI Docker não preservaram as aspas internas da expressão Go template.
+- O `throw 'Imagem inexistente ou revisao divergente'` foi consequência genérica do erro de template; **não há evidência de imagem ausente ou de label divergente**.
+- Como o fluxo parou no passo 2 antes de `docker network create`, **esta tentativa não criou rede ou contêineres C2**. Os comandos de inicialização exibidos no topo do print são entrada do bloco, não saída de execução.
+- Correção proposta para validar no Windows: `docker image inspect` sem `--format`, processar JSON com `ConvertFrom-Json`, ler a propriedade `.Config.Labels.'org.opencontainers.image.revision'`. Comparar ao SHA do código do build. Repetir E08-D09 com essa leitura; não alterar a imagem nem o núcleo PON.
+- **E08-D09 não aprovado. E08-I04 continua pendente.** Preservar saída original e não tratar erro de script como falha funcional da aplicação.

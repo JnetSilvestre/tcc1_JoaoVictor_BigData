@@ -12,6 +12,7 @@
 - Iniciar três contêineres independentes a partir **da mesma imagem testada**: `tcc2-c2-rule-executor`, `tcc2-c2-logic-engine`, `tcc2-c2-attribute-source`; porta interna 8080, DNS por aliases iguais aos nomes dos papéis.
 - Exigir evidência real de `docker ps`, `docker network inspect`, IDs distintos, três logs `listening` e GET HTTP interno `/health/live` de origem→avaliador e avaliador→executor.
 - Deixar estados não inicializados (readiness 503), sem enviar fixture nesta rodada. Não concluir equivalência C2 nesta etapa parcial.
+- **E08-D09 primeira tentativa falhou antes de criar recursos:** `docker image inspect --format '{{index .Config.Labels "org.opencontainers.image.revision"}}'` retornou `template parsing error: function "org" not defined` no PowerShell. Captura `image(20261113-210012).png`, SHA-256 `4eaf907129c646850fe36ca5335c71f9073c398b0c17ce1e92e705885f796b18`. Correção: ler JSON completo com `ConvertFrom-Json`, depois comparar label. E08-D09 permanece pendente.
 
 ## Limitações e preservação
 - Uma rede Docker/contêineres no mesmo Windows/WSL2 não constitui multinó físico.
