@@ -1,4 +1,4 @@
-"""Cliente HTTP/JSON para os serviços C1 em loopback."""
+"""Cliente HTTP/JSON: loopback em C1, hostname de rede interna em C2."""
 
 import json
 from urllib.error import HTTPError
@@ -12,10 +12,10 @@ class ResponseError(Exception):
         self.body = body
 
 
-def request(port, path, payload=None):
+def request(port, path, payload=None, host="127.0.0.1"):
     data = None if payload is None else json.dumps(payload, allow_nan=False).encode("utf-8")
     message = Request(
-        f"http://127.0.0.1:{port}{path}", data=data,
+        f"http://{host}:{port}{path}", data=data,
         headers={"Content-Type": "application/json"},
     )
     opener = build_opener(ProxyHandler({}))

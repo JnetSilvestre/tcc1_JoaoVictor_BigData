@@ -1,13 +1,14 @@
 # STATUS ATUAL — TCC2
 
-Atualizado em: 2026-11-12
+Atualizado em: 2026-11-13
 
 ## Leitura rápida — última situação verificada
 
-- Última execução real do acadêmico: **25/25 testes aprovados**, Python 3.13.9, HEAD `fe7e4d9b066d3c3f69b3d781ed9184c9ee2d8943`; print E07-D12 (hash registrado).
-- O novo incremento de estados C1 foi publicado e a suite subiu para **36 casos previstos**, **ainda sem validação real no Windows**.
-- Consultar o checkpoint enxuto `docs/tcc2/etapa-07-checkpoint.md` antes de ler o histórico detalhado; próximo comando: `git pull --ff-only` e rodar os 36 testes.
-- C1 ainda não é multiprocesso nem HTTP; seguir para os serviços só depois da regressão local.
+- **Etapa 07 concluída funcionalmente em C0/C1:** 39 testes reais aprovados no Windows, V01–V07 nos casos ensaiados; código testado em `be6b850d599504e9ea8166f02fd87b35313e5445`. O ZIP V07 foi auditado diretamente (12/12 hashes internos, 20/20 checagens).
+- **Etapa 08 aberta em 13/11/2026:** E08-D01/D02 comprovam branch limpa e Docker/WSL2 operacionais; E08-D03 comprova atualização fast-forward ao HEAD `3dadef829846fdf5f0bcf0c47c956b44eb89d821`, compilação 0 e 39/39 testes OK em 10,813 s na máquina do acadêmico. Capturas e SHA-256 em `docs/tcc2/etapa-08-diagnostico-rede.md`.
+- **E08-I01 diagnóstico aprovado. E08-I02 adaptação mínima de endereços HTTP publicada, mas NÃO testada no Windows:** manter loopback C1 como padrão; permitir escuta e destinos DNS configuráveis para futuro C2; regressões novas ainda pendentes.
+- **Não executado:** build dos três contêineres, rede interna C2, validação funcional C2, medições ou Kubernetes da aplicação.
+- Branch permanente: `tcc2/desenvolvimento`; preservar `master` e a referência original `JnetSilvestre/codigoPon@c2d525b5c675820806af34348e259bff32a6bc5f`.
 
 ## Etapas
 - Etapa 02: concluída, conforme informação do acadêmico.
@@ -15,7 +16,7 @@ Atualizado em: 2026-11-12
 - Etapa 04: concluída como **especificação arquitetural**; nenhuma implementação distribuída comprovada.
 - Etapa 05: **protocolo experimental e esqueleto LaTeX documentados**; sem execução de testes.
 - Etapa 06: **infraestrutura básica concluída e validada em ambiente local**; limitações e dependências restantes documentadas.
-- Etapa 07: **em andamento**; diagnóstico estático e roteiro de reprodução do núcleo Python documentados em 12/11/2026, sem testes da aplicação executados até aqui.
+- Etapa 07: **concluída funcionalmente em C0/C1** em 12/11/2026; evidências e limitações documentadas no encerramento e na auditoria do ZIP.
 
 ## Repositórios e branches
 - Monografia: `JnetSilvestre/tcc1_JoaoVictor_BigData`.

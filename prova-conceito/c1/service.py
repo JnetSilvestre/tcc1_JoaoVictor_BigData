@@ -1,4 +1,4 @@
-"""Um papel C1 por processo, com HTTP/JSON serial em loopback."""
+"""Um papel por processo: HTTP/JSON serial em C1 e C2."""
 
 import argparse
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -13,12 +13,12 @@ ROLES = ("attribute-source", "logic-engine", "rule-executor")
 MAX_BODY = 65536
 
 
-def build_role(role, downstream, emit):
+def build_role(role, downstream, emit, downstream_host="127.0.0.1"):
     def forward(path):
         def send(payload):
             emit("send", path=path, payload=payload)
             try:
-                result = request(downstream, path, payload)
+                result = request(downstream, path, payload, host=downstream_host)
             except (OSError, ResponseError, ValueError) as error:
                 raise ContractError(f"falha downstream: {error}", status=502) from error
             if result.get("ready") is False:
@@ -42,7 +42,7 @@ def build_role(role, downstream, emit):
     return state, {"/init/snapshot": state.initialize, "/notifications/condition": state.receive}
 
 
-def serve(role, port, downstream):
+def serve(role, port, downstream, listen_host="127.0.0.1", downstream_host="127.0.0.1"):
     identity = {"service": role, "pid": os.getpid()}
 
     def emit(event_type, **fields):
@@ -50,7 +50,7 @@ def serve(role, port, downstream):
             **identity, "timestamp": utc_now(), "event_type": event_type, **fields,
         }, ensure_ascii=True), flush=True)
 
-    state, mutations = build_role(role, downstream, emit)
+    state, mutations = build_role(role, downstream, emit, downstream_host=downstream_host)
 
     class Handler(BaseHTTPRequestHandler):
         def setup(self):
@@ -111,7 +111,7 @@ def serve(role, port, downstream):
             emit("mutation", path=self.path, payload=payload, status=status, response=result)
             self.respond(status, result)
 
-    with HTTPServer(("127.0.0.1", port), Handler) as server:
+    with HTTPServer((listen_host, port), Handler) as server:
         emit("listening", port=server.server_port)
         server.serve_forever()
 
@@ -121,10 +121,15 @@ def main():
     parser.add_argument("role", choices=ROLES)
     parser.add_argument("--port", type=int, default=0)
     parser.add_argument("--downstream-port", type=int)
+    parser.add_argument("--listen-host", default="127.0.0.1",
+                        help="Interface de escuta (C1: loopback; C2: 0.0.0.0 na rede interna)")
+    parser.add_argument("--downstream-host", default="127.0.0.1",
+                        help="Endereco do proximo servico (C1: loopback; C2: DNS Docker)")
     args = parser.parse_args()
     if args.role != "rule-executor" and not 1 <= (args.downstream_port or 0) <= 65535:
         parser.error("informe --downstream-port para este papel")
-    serve(args.role, args.port, args.downstream_port)
+    serve(args.role, args.port, args.downstream_port,
+          listen_host=args.listen_host, downstream_host=args.downstream_host)
 
 
 if __name__ == "__main__":
