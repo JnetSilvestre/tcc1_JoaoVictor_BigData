@@ -1,6 +1,7 @@
 # TCC2 / C2 - imagem de execucao compartilhada pelos tres papeis.
-# Digest obtido no Docker Desktop do academico em E08-D05, linux/amd64.
-FROM python:3.13-slim@sha256:e48f59cdba69a3cbd9ed2cf0f348d90d45a8d35d098134cf1070bc106ee9ed90
+# Digest de manifesto linux/amd64 listado no registro em E08-D07.
+# E08-D08 deve confirmar a resolucao direta antes de aprovar o build.
+FROM python:3.13-slim@sha256:48d884813cf44e927cf64c5529dd630dd3b18338c6dc727991eef9b71e934a20
 
 WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 \

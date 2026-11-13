@@ -115,3 +115,28 @@ Códigos de saída e logs devem ser preservados e analisados antes de classifica
 - O Dockerfile foi publicado, mas nenhum build C2 aprovado. A falha ocorreu na resolução da imagem base antes de copiar/iniciar o PON; não constitui prova de defeito funcional do código Python.
 - Diagnóstico em aberto: verificar no registro Docker Hub por `docker buildx imagetools inspect` a validade do digest remoto usado no `FROM`. A referência mostrada por `docker pull`/`docker image inspect` em E08-D05 não deve ser presumida resolvível pelo BuildKit sem confirmação.
 - **Próximo ato:** executar comandos de inspeção somente leitura para comparar digest do registro, digest da referência com falha, imagem local. Não alterar código nem remover imagens até identificar causa e nova referência correta.
+
+## 12. E08-D07 — diagnóstico real do manifesto remoto (13/11/2026)
+
+- Evidência original: cinco PNGs enviados pelo acadêmico nesta conversa. SHA-256 abaixo calculados diretamente sobre os bytes recebidos, sem afirmar que foram versionados no GitHub.
+
+| ID | PNG original | Bytes | SHA-256 |
+|---|---|---:|---|
+| E08-D07a | `image(20261113-204432).png` | 127232 | `4d2265087cc45e40e28ee3b535886bb7079505b720fd50a5fe7554f05077d961` |
+| E08-D07b | `image(20261113-204441).png` | 145493 | `55e4b0f96444b94fd1fb74d473a515bbb37e6e29b3a32e3b978ac0bdd621dafe` |
+| E08-D07c | `image(20261113-204450).png` | 145493 | `55e4b0f96444b94fd1fb74d473a515bbb37e6e29b3a32e3b978ac0bdd621dafe` |
+| E08-D07d | `image(20261113-204522).png` | 148450 | `d6d25307f469bfd306d566f0ec0120f2107980f2d4048273e05dfc5f4161c1f9` |
+| E08-D07e | `image(20261113-204531).png` | 63978 | `2e430c77269a860ae0121ee21115dc06f6e47e6039ac86fa642fb6cae1cc4243` |
+
+- Git fast-forward ao HEAD `a9c74cd22044055798fd70542f526d7921879dde`; sem modificações locais ao final.
+- `docker buildx imagetools inspect docker.io/library/python:3.13-slim` retornou código **0**, índice OCI multi-plataforma de digest `sha256:e48f59cdba69a3cbd9ed2cf0f348d90d45a8d35d098134cf1070bc106ee9ed90`.
+- Nesse índice consta um manifesto `linux/amd64` com digest `sha256:48d884813cf44e927cf64c5529dd630dd3b18338c6dc727991eef9b71e934a20`.
+- `docker buildx imagetools inspect docker.io/library/python:3.13-slim@sha256:e48f59cdba69a3cbd9ed2cf0f348d90d45a8d35d098134cf1070bc106ee9ed90` retornou **1**, `not found`, reproduzindo a falha anterior de resolução explícita. A existência do índice via tag **não comprova que sua consulta por digest funcionará** neste ambiente.
+- Imagem local consultada: Linux/amd64, RepoDigests exibido, sem alterações locais do Git. Ainda sem sucesso de build da aplicação nem teste de comunicação entre contêineres.
+
+### Decisão E08-I03 (tentativa controlada)
+
+- Alterar **apenas a referência FROM** para o digest `sha256:48d884813cf44e927cf64c5529dd630dd3b18338c6dc727991eef9b71e934a20` do manifesto `linux/amd64` listado na saída do registro, preservando a tag `python:3.13-slim` como identificador legível.
+- Não atribuir causalidade definitiva à falha do índice: trata-se de uma referência que a consulta direta não resolveu. O manifesto específico é **candidato**, não referência já aprovada.
+- Próximo passo **E08-D08**: testar `docker buildx imagetools inspect` diretamente para o novo digest; só se retorno 0, repetir o build, identificação da imagem e smoke tests. Se falhar, interromper e preservar a saída real antes de qualquer outra alteração.
+- Sem execução de Kubernetes, sem medição de desempenho, sem conclusão do C2. Não modificar os módulos PON/HTTP.
