@@ -3,7 +3,7 @@
 **Data de abertura:** 13/11/2026. **Branch de trabalho:** `tcc2/desenvolvimento`.  
 **Referência C1 comprovada:** `be6b850d599504e9ea8166f02fd87b35313e5445`.  
 **HEAD inicial da Etapa 08 após sincronização:** `3dadef829846fdf5f0bcf0c47c956b44eb89d821`.  
-**Estado:** E08-I01 aprovado no Windows; código E08-I02 preparado, **pendente de validação no Windows**. Sem Dockerfiles nem execução de C2.
+**Estado:** E08-I01 e E08-I02 aprovados no Windows; E08-I03 (imagens Docker) ainda em preparação. Nenhum build C2 executado.
 
 ## 1. Evidências reais recebidas
 
@@ -32,7 +32,7 @@ Os hashes abaixo foram calculados sobre os bytes dos PNGs recebidos nesta conver
 
 Arquivos: `prova-conceito/c1/client.py`, `c1/service.py`, `tests/test_c2_network_config.py`. Defaults C1 de `127.0.0.1` são mantidos. A única mudança é parametrização do endereço de escuta e do cliente; não modificar máquinas de estado nem payloads. Três novos testes isolados verificam URL, encaminhamento de snapshot via hostname e CLI (C1 padrão e C2 parametrizado).
 
-**Situação da publicação:** testes não executados pelo acadêmico para este incremento. E08-I02 permanece **não aprovado** até recebimento de saída real do PowerShell (esperados 42 testes, se nenhum outro teste for acrescentado).
+**E08-I02 aprovado por evidência real:** HEAD `cae5f40e43bba9b1a4f01d1f4286f5e2abe0ae91`, compilação 0, 42 testes OK e `Testes: 0` no Windows. Ainda não houve execução de rede Docker.
 
 ## 5. Comando de validação local após atualizar a branch
 
@@ -52,3 +52,21 @@ git status --short
 ## 6. Limites e próximo marco
 
 Não afirmar que há rede Docker ou contêineres PON rodando neste marco. A próxima etapa após regressão é o desenho dos Dockerfiles e do processo de construção/rastreio de imagens; antes disso, arquivar a prova de regressão e investigar qualquer falha. Kubernetes e distribuição entre nós permanecem Etapas 09–10. Dados reais futuros deverão alimentar diagramas e tabelas da monografia na Etapa 13.
+
+## 7. E08-D04 — regressão real no Windows (13/11/2026)
+
+- Fast-forward até `cae5f40e43bba9b1a4f01d1f4286f5e2abe0ae91`, branch `tcc2/desenvolvimento`.
+- `Compilacao: 0`; `Ran 42 tests in 11.564s`; `OK`; `Testes: 0`; Git final sem alterações.
+- Três novos testes verificam configuração de hostname/CLI com mocks: aprovação funcional de parametrização, não prova de comunicação Docker.
+- A duração 11,564 s é da suíte, não medição de desempenho PON.
+
+| Evidência | PNG original | Bytes | SHA-256 calculado dos bytes recebidos |
+|---|---|---:|---|
+| E08-D04a | `image(20261113-200758).png` | 144367 | `a38669c521c23456f85d43356bfacab58646260b6a8d74c85b3f491d0dbd0d33` |
+| E08-D04b | `image(20261113-200811).png` | 71318 | `f8a00645992c6e21a0fa7957f958a5778b293eae798a15c941bef7bef90875f3` |
+
+PNG originais recebidos nesta conversa, ainda não publicados no repositório.
+
+## 8. Próximo passo E08-I03 — procedência da imagem base
+
+Consultar no Windows a versão Python, arquitetura, imagem ID e RepoDigests da imagem oficial `python:3.13-slim` após download com plataforma `linux/amd64`. Registrar digest obtido para então criar Dockerfile(s) com base congelada, `.dockerignore` e builds de serviço. Não utilizar Docker/Kubernetes como evidência de execução da aplicação até os testes efetivos de C2.
