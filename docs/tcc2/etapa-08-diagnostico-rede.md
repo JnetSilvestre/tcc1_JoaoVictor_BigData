@@ -70,3 +70,38 @@ PNG originais recebidos nesta conversa, ainda não publicados no repositório.
 ## 8. Próximo passo E08-I03 — procedência da imagem base
 
 Consultar no Windows a versão Python, arquitetura, imagem ID e RepoDigests da imagem oficial `python:3.13-slim` após download com plataforma `linux/amd64`. Registrar digest obtido para então criar Dockerfile(s) com base congelada, `.dockerignore` e builds de serviço. Não utilizar Docker/Kubernetes como evidência de execução da aplicação até os testes efetivos de C2.
+
+## 9. E08-D05 — identificação real da imagem base (13/11/2026)
+
+- Evidência: captura PowerShell `image(20261113-201558).png` recebida nesta conversa.
+- SHA-256 da captura original calculado dos bytes recebidos: `39a2f3eb7a4b57cb4b9e9138b42b544984ffdc2a73a081856413d0a6da8173ef`.
+- `docker pull --platform linux/amd64 python:3.13-slim`: `Digest: sha256:e48f59cdba69a3cbd9ed2cf0f348d90d45a8d35d098134cf1070bc106ee9ed90`, download informado como concluído.
+- `docker image inspect`: `ImageID=sha256:e48f59cdba69a3cbd9ed2cf0f348d90d45a8d35d098134cf1070bc106ee9ed90`, `RepoDigests=["python@sha256:e48f59cdba69a3cbd9ed2cf0f348d90d45a8d35d098134cf1070bc106ee9ed90"]`, `OS=linux`, `Architecture=amd64`.
+- Execução `docker run --rm --network none --platform linux/amd64 --entrypoint python python:3.13-slim --version`: `Python 3.13.18`.
+- HEAD `94a2acd9f91124a988c9d46fc8558cf1822363a3`, branch sincronizada, status Git final limpo; nós kind preservados e `tcc2-python-validacao` permanece parado, com Exit 0.
+- **Aceite E08-D05:** imagem de base identificada e teste isolado do interpretador concluído no Windows. Isso não comprova execução do PON na imagem.
+
+## 10. E08-I03 — construção mínima sob validação
+
+- Novo `prova-conceito/Dockerfile` fixa a imagem base pelo digest capturado em E08-D05; a construção deve usar `--platform linux/amd64`.
+- `.dockerignore` mantém fora do contexto testes, fixtures, resultados locais e caches. `COPY` inclui somente núcleo `pon` e cinco módulos HTTP de runtime de `c1`.
+- **Decisão arquitetural:** construir **uma imagem de runtime reutilizável** e executar **três contêineres diferentes**, cada um com `role` e parâmetros próprios. O isolamento depende dos contêineres, não de três cópias distintas da mesma imagem. Os três serviços continuam um por contêiner.
+- Runtime usa UID/GID 10001, logs stdout não-bufferizados, sem bibliotecas Python externas instaladas; C0/oráculo, testes e fixture ficam no host para comparar resultados de C2 posteriormente.
+- Execução como serviço usará `python -m c1.service <role> --port 8080 --listen-host 0.0.0.0` e, quando necessário, `--downstream-host <nome-dns> --downstream-port 8080`; endpoints de mutação não serão expostos publicamente. A rede Docker e as instâncias não serão criadas neste incremento.
+- `LABEL org.opencontainers.image.revision` deve receber o HEAD completo como argumento de build. Imagens construídas localmente podem não apresentar `RepoDigests`; registrar ID local, tag, plataforma e revisão, sem inventar digest de publicação.
+- **Situação:** Dockerfile e `.dockerignore` publicados no GitHub, **ainda sem build, smoke test nem validação de comunicação no Windows**.
+
+### Procedimento planejado para validação de imagem
+
+A partir da raiz do repositório, após sincronizar a branch e confirmar `git status --short` limpo:
+
+```powershell
+$sha = git rev-parse HEAD
+$tag = "tcc2-pon:c2-e08-$($sha.Substring(0,12))"
+docker build --platform linux/amd64 --progress=plain --build-arg "VCS_REF=$sha" -t $tag -f .\prova-conceito\Dockerfile .\prova-conceito
+docker image inspect $tag --format 'ID={{.Id}} OS={{.Os}} ARCH={{.Architecture}} REV={{index .Config.Labels "org.opencontainers.image.revision"}}'
+docker run --rm --network none --platform linux/amd64 --entrypoint python $tag -c "import os; import pon, c1.service; print('UID:', os.getuid()); print('IMPORTS: OK')"
+docker run --rm --network none --platform linux/amd64 $tag rule-executor --help
+```
+
+Códigos de saída e logs devem ser preservados e analisados antes de classificar E08-I03 como aprovado.

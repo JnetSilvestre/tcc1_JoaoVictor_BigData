@@ -8,7 +8,7 @@
 - C0/C1 funcionalmente aprovados nos casos ensaiados, dois efeitos nos passos 3 e 7; referência `codigoPon@c2d525b5c675820806af34348e259bff32a6bc5f` intocada.
 
 ## Próximo incremento E08-I03
-Obter no Windows digest e versão exata de `python:3.13-slim` para `linux/amd64`, identificar ID e plataforma, antes de criar Dockerfile(s) e `.dockerignore`. Depois construir/testar imagens dos serviços e registrar IDs/digests reais.
+E08-D05 aprovado: imagem `python:3.13-slim` Linux/amd64, Python 3.13.18, digest `sha256:e48f59cdba69a3cbd9ed2cf0f348d90d45a8d35d098134cf1070bc106ee9ed90`; print `image(20261113-201558).png`, SHA-256 `39a2f3eb7a4b57cb4b9e9138b42b544984ffdc2a73a081856413d0a6da8173ef`. `prova-conceito/Dockerfile` e `.dockerignore` publicados, ainda não executados no Windows. Próximo: build de imagem comum, inspeção do ID e smoke test sem rede.
 
 ## Limites
 Os 42 testes incluem mock de DNS; não comprovam C2. Não houve build Docker PON, rede Docker PON, equivalência C2, Kubernetes da aplicação, medições de desempenho ou arquivamento dos PNGs originais.

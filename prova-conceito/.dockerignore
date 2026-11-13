@@ -1,0 +1,16 @@
+.git
+.gitignore
+.venv/
+**/.venv/
+__pycache__/
+**/__pycache__/
+*.pyc
+**/*.pyc
+.pytest_cache/
+**/.pytest_cache/
+resultados-locais/
+tests/
+fixtures/
+c0/
+README.md
+main.py
