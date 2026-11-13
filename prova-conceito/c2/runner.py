@@ -138,8 +138,7 @@ def run(output):
             raise ValueError("alteracoes locais detectadas")
         delta = subprocess.run(
             ["git", "diff", "--quiet", BUILD_SHA, "HEAD", "--",
-             "prova-conceito/pon", "prova-conceito/c1",
-             "prova-conceito/Dockerfile", "prova-conceito/.dockerignore"],
+             "pon", "c1", "Dockerfile", ".dockerignore"],
             cwd=PROJECT_ROOT, check=False,
         )
         if delta.returncode:
