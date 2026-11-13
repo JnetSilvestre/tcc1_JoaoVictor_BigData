@@ -219,3 +219,32 @@ Códigos de saída e logs devem ser preservados e analisados antes de classifica
 - Preflight: Git limpo, runtime inalterado desde build, três contêineres Running com IDs distintos, rede bridge interna, mesmo snapshot `c0-minimo-v1:snapshot:0`, estado inicial zerado, ausência de mutações de atributo prévias inclusive eventos redundantes (detectados nos logs).
 - Comparações: fixture manual, C0 local da aplicação, oráculo independente, ordem/causalidade e contagem de notificações em logs. Diretório novo `resultados-locais/` (ignorado pelo Git), captura em `finally` dos três logs e `checksums.sha256`, sem parar contêineres.
 - **Estado:** código da ferramenta publicado, ainda não testado no Windows, fixture C2 ainda não aplicada. Próxima ação: compilar + 45 testes, depois executar uma única rodada `python -m c2.runner --output ...`; nunca reenviar em caso de falha parcial sem diagnóstico dos arquivos.
+
+## 20. E08-D11 — fixture Docker C2 executada e aprovada no Windows (13/11/2026)
+
+**Evidência real:** três capturas PowerShell recebidas nesta conversa. Os hashes abaixo foram calculados sobre os bytes originais recebidos e NÃO representam auditoria direta do diretório de artefatos, ainda não enviado:
+
+| Evidência | Captura original | Bytes | SHA-256 da captura |
+|---|---|---:|---|
+| E08-D11a | `image(20261113-212344).png` | 157303 | `0a5455d94e0154d33fa0b780212c46257612725334aab37fc654e74577a6d55a` |
+| E08-D11b | `image(20261113-212359).png` | 105568 | `e421ff0f0061c64b390c5c8a624e7f3a6b5ec46f3efe089d270c744feb8ccbb9` |
+| E08-D11c | `image(20261113-212416).png` | 23491 | `b18cc1d27d3613fa51b338b29809ce148d6da49fe496a3b6e629e3fe59697453` |
+
+- Git Windows sincronizado no commit `5eee8e7a7c931491d3668cc9472a46191de6180c`, branch `tcc2/desenvolvimento`, status final limpo.
+- Compilação Python: `Compilacao: 0`.
+- Regressão: **`Ran 45 tests in 11.028s`**, `OK`, `Testes: 0`. Duração da suíte, não benchmark.
+- Executor C2 iniciado uma vez: `python -m c2.runner --output resultados-locais/c2-20261113-182248`; saída `C2: 0`; relatório exibido `scenario=C2`, `run_id=c0-minimo-v1`, `status=PASS`, `started_changes=true`.
+- No relatório de saída, 11 verificações booleanas foram exibidas como `true`: `transport_and_causality`, `matches_manual`, `matches_oracle`, `matches_c0`, `effect_steps`, `final_attributes`, `attribute_sequences`, `condition`, `condition_sequence`, `event_counts`, `ready_no_fault`.
+- Efeitos exibidos em `effects.jsonl`: exatamente **2**, primeiro no passo **3**, `event_id=c0-minimo-v1:rl1:1`, `caused_by=c0-minimo-v1:cn1:1`, `attribute_event_id=c0-minimo-v1:atB:1`; segundo no passo **7**, `event_id=c0-minimo-v1:rl1:2`, `caused_by=c0-minimo-v1:cn1:3`, `attribute_event_id=c0-minimo-v1:atB:3`. Em ambos `effect=executed`.
+- O script informou equivalência com fixture manual, C0 local e oráculo independente: verificações `matches_manual=true`, `matches_oracle=true`, `matches_c0=true`, com contagens e causalidade confirmadas no relatório. Não generalizar para outras fixtures nem para medição de performance.
+- A captura lista **13 linhas SHA-256** em `checksums.sha256`, cobrindo logs JSONL dos três serviços, entrada/esperado, C0, oráculo, transcrições, estados e manifesto/validação. **Os bytes destes 13 artefatos ainda NÃO foram inspecionados independentemente.**
+- Três contêineres permaneciam `Up` ao final; saída do PowerShell mostrou `Compilacao: 0`, `Testes: 0`, `C2: 0`. Nenhum processo Kubernetes da aplicação foi criado nesta etapa.
+
+**Classificação:** E08-D11 **aprovado no escopo da fixture determinística pelos logs/resumo da execução real no Windows**. Auditoria direta da pasta/ZIP e cobertura de cenários de falha permanecem pendentes. Não executar a fixture novamente nos contêineres já inicializados e modificados.
+
+### Próximo incremento E08-D12 — auditoria de artefatos
+
+- Preservar diretório de rodada `prova-conceito/resultados-locais/c2-20261113-182248` exatamente como produzido.
+- Verificar no Windows a lista e hashes de cada arquivo coberto em `checksums.sha256`; comparar arquivos presentes; empacotar o diretório inteiro em um ZIP e calcular seu SHA-256.
+- Solicitar ZIP nesta conversa para auditoria dos **bytes**: recalcular hashes de todos os artefatos e verificar conteúdo/contagens/cadeias causais independentemente. Só depois registrar aprovação documental da auditoria.
+- Não repetir snapshot nem as sete requisições de alteração. Outros casos V01–V07 no Docker, logs adicionais, análise de limitações e encerramento E08 ainda precisarão ser planejados, sem prometer novos resultados.

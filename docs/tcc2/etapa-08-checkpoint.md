@@ -42,3 +42,16 @@
 - `prova-conceito/c2/runner.py` usa a biblioteca padrão e `docker exec` por argumentos (sem problemas de aspas PowerShell) para aplicar 7 passos somente após preflight de snapshot e logs limpos; não reinicia contêineres.
 - `prova-conceito/tests/test_c2_runner.py` adiciona 3 testes de pré-condição. Esperados **45 testes** totais (42 anteriores + 3), não realizados ainda no host.
 - Em caso de erro, salva logs e `validation.json` FAIL; não reexecutar a fixture automaticamente. Efeitos, C0/oráculo, estados, entradas e hashes são coletados para auditoria após o ensaio.
+
+## E08-D11 — execução REAL aprovada no Windows (13/11/2026)
+
+- Código do runner testado: `5eee8e7a7c931491d3668cc9472a46191de6180c`, build da imagem mantido `dbefcd2cf3d2fbf220cff8eda34d52189e08192a`.
+- `Compilacao: 0`, 45 testes OK em 11,028 s (não benchmark), `Testes: 0`, rodada C2 `PASS` e `C2: 0` com 11 checks verdadeiros.
+- Dois efeitos de regra em passos 3 e 7, igualdade sinalizada com manual/oráculo/C0; cinco eventos de atributo e três de condição verificados pelo runner nos logs no âmbito da fixture; três contêineres Up.
+- Pasta de evidências no Windows: `prova-conceito/resultados-locais/c2-20261113-182248` (ignorada pelo Git). Capturas originais `image(20261113-212344).png`, `image(20261113-212359).png`, `image(20261113-212416).png`, SHA-256 no diagnóstico Etapa 08.
+
+## Próximo E08-D12 — auditoria por bytes
+
+- **Não rerodar o runner** nem reenviar passos ou snapshot na mesma rodada. Preservar os contêineres e seus logs.
+- Verificar no Windows as 13 entradas de `checksums.sha256` e empacotar a pasta de execução em ZIP. Enviar ZIP e seu SHA-256 para inspeção independente. Prints só comprovam as saídas exibidas, não substituem análise dos arquivos completos.
+- Depois decidir se é necessária rodada separada e limpa para casos Vxx adversariais, sem avançar para Kubernetes.
