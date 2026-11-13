@@ -37,3 +37,8 @@
 - C2 funcional, V02/V04/V05–V07 via Docker, métricas, figuras finais e Kubernetes estão pendentes.
 - Não apagar kind, contêineres anteriores ou evidências; não executar `docker system prune`.
 - Documentação detalhada: `docs/tcc2/etapa-08-diagnostico-rede.md`.
+
+## E08-D11 — ferramenta de ensaio publicada, ainda sem teste no Windows
+- `prova-conceito/c2/runner.py` usa a biblioteca padrão e `docker exec` por argumentos (sem problemas de aspas PowerShell) para aplicar 7 passos somente após preflight de snapshot e logs limpos; não reinicia contêineres.
+- `prova-conceito/tests/test_c2_runner.py` adiciona 3 testes de pré-condição. Esperados **45 testes** totais (42 anteriores + 3), não realizados ainda no host.
+- Em caso de erro, salva logs e `validation.json` FAIL; não reexecutar a fixture automaticamente. Efeitos, C0/oráculo, estados, entradas e hashes são coletados para auditoria após o ensaio.

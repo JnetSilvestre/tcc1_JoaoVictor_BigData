@@ -211,3 +211,11 @@ Códigos de saída e logs devem ser preservados e analisados antes de classifica
 - Coletar transcript de cada POST, estados finais, logs por contêiner, hashes SHA-256 de entradas/saídas e manifesto de imagem/commit. Comparar efeitos e causalidade com fixture manual, C0 e `c0.oracle.calculate_expected_effects` independente.
 - Resultado desejado mas **ainda não observado em Docker**: cinco notificações de atributos, três transições de condição e dois efeitos nos passos 3 e 7. Não apresentar como aprovado antes de receber logs reais.
 - Se houver erro durante mutação parcial, **não reenviar a fixture automaticamente**; preservar estado e logs. Ainda não há recuperação persistente/replay comprovados. Kubernetes fora do escopo da etapa.
+
+## 19. E08-D11 — executor reprodutível de fixture (preparado, não executado)
+
+- Scripts adicionados: `prova-conceito/c2/__init__.py`, `prova-conceito/c2/runner.py`, `prova-conceito/tests/test_c2_runner.py`.
+- A imagem C2 aprovada permanece imutável: o executor roda **no Python do Windows** e usa `docker exec` para chamar HTTP `127.0.0.1:8080` dentro do contêiner de origem, que repassa notificações aos outros pela rede interna Docker.
+- Preflight: Git limpo, runtime inalterado desde build, três contêineres Running com IDs distintos, rede bridge interna, mesmo snapshot `c0-minimo-v1:snapshot:0`, estado inicial zerado, ausência de mutações de atributo prévias inclusive eventos redundantes (detectados nos logs).
+- Comparações: fixture manual, C0 local da aplicação, oráculo independente, ordem/causalidade e contagem de notificações em logs. Diretório novo `resultados-locais/` (ignorado pelo Git), captura em `finally` dos três logs e `checksums.sha256`, sem parar contêineres.
+- **Estado:** código da ferramenta publicado, ainda não testado no Windows, fixture C2 ainda não aplicada. Próxima ação: compilar + 45 testes, depois executar uma única rodada `python -m c2.runner --output ...`; nunca reenviar em caso de falha parcial sem diagnóstico dos arquivos.
