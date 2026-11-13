@@ -23,6 +23,15 @@
 - Confirmar contêineres ativos e estados ainda não inicializados; enviar uma única inicialização `POST /init/snapshot` ao produtor e conferir encadeamento até executor.
 - Exigir `ready=true` nos três, mesma versão de snapshot, valores e watermarks iniciais, zero efeitos. Não aplicar fixture ainda. Se falhar parcialmente, preservar contêineres e logs antes de outra tentativa.
 
+## E08-D10 aprovado (13/11/2026)
+- Captura original `image(20261113-210955).png`, SHA-256 `fb949fba22f6b79796adaded539f8f92a890ba3bee36b8a553ed07cab15c29af` (não versionada).
+- Rede interna preservada. Três serviços passaram de `ready=false` para `ready=true` com mesmo `run_id=c0-minimo-v1` e versão `c0-minimo-v1:snapshot:0`. Atributos/seq. iniciais 0, condição false, executor sem efeitos; logs de snapshot send/mutation/ack e contêineres Up.
+- **Não reenviar snapshot.** C2 não passou pela fixture.
+
+## Próximo E08-D11
+- Verificar pré-condições de zero mutações de `/attributes/change` via logs, estados iniciais e contêineres. Executar sete passos sequenciais da fixture versionada e preservar HTTP, logs, estados, SHA-256 e manifesto.
+- Comparar efeitos/ordem/causalidade com `fixtures/c0_esperado.jsonl`, C0 e oráculo independente. Se falhar parcialmente, bloquear reexecução automática.
+
 ## Limitações e preservação
 - Uma rede Docker/contêineres no mesmo Windows/WSL2 não constitui multinó físico.
 - C2 funcional, V02/V04/V05–V07 via Docker, métricas, figuras finais e Kubernetes estão pendentes.

@@ -193,3 +193,21 @@ Códigos de saída e logs devem ser preservados e analisados antes de classifica
 - Verificar `ready=true`, `snapshot_version=c0-minimo-v1:snapshot:0`, sequência 0 e atributos iniciais `atA=0`, `atB=0` (produtor/avaliador), condição e aprovação falsas, nenhum efeito registrado no executor.
 - Coletar logs `docker logs` dos três serviços para evidenciar `send`, `ack`, `mutation` de snapshot, com cuidado para não chamar `POST` duas vezes se script interromper depois da inicialização.
 - **Não enviar ainda a sequência de alterações determinísticas**. Ela será ensaiada em incremento seguinte, com confrontação ao oráculo C0/fixture manual.
+
+## 17. E08-D10 — snapshot inicial realmente validado em C2 (13/11/2026)
+
+- Captura original da sessão Windows `image(20261113-210955).png`, 139616 bytes, SHA-256 `fb949fba22f6b79796adaded539f8f92a890ba3bee36b8a553ed07cab15c29af`. Original na conversa, **não versionado no GitHub**.
+- `git pull --ff-only` atualizou o clone para `df42f0447ac1c5ad579d600ea6fc6646a7ac432e`, somente documentação desde o build da imagem `tcc2-pon:c2-e08-dbefcd2cf3d2`.
+- Rede `tcc2-pon-c2` consultada com `Internal=true`; três contêineres ativos com estados `ready=false`, `run_id=null` antes do POST.
+- `POST /init/snapshot` no `attribute-source` com `run_id=c0-minimo-v1`: resposta observada `{"duplicate": false, "ready": true, "snapshot_version": "c0-minimo-v1:snapshot:0"}` (HTTP 200).
+- `GET /state` nos três: `run_id=c0-minimo-v1`, `snapshot_version=c0-minimo-v1:snapshot:0`, `ready=true`. Produtor e avaliador com atributos `atA=0, atB=0`, sequências `atA=0, atB=0`; avaliador com `condition=false`, `condition_sequence=0`, `condition_events=[]`, `received_ids=[]`, `faulted=false`; executor com `approved=false`, `condition_sequence=0`, `effects=[]`, `received_ids=[]`, `faulted=false`.
+- Logs JSON dos serviços mostram encaminhamento de snapshot `send`, recebimento `mutation`, confirmação `ack` entre produtor→avaliador→executor; todos permanecem `Up`. Script concluiu `E08-D10: SNAPSHOT VALIDADO` sem exceção.
+- **Aceite E08-D10:** propagação real do snapshot/ACKs por HTTP na rede Docker e estados iniciais consistentes comprovados. Isso **não demonstra** ainda propagação de alterações, transições, efeitos C2 ou equivalência funcional com o oráculo.
+
+## 18. Próxima atividade E08-D11 — executar fixture sem repetir snapshot
+
+- Estado herdado: três contêineres **já inicializados**, executar somente sete chamadas `POST /attributes/change` da fixture versionada `prova-conceito/fixtures/c0_minimo.jsonl`, em ordem, pelo produtor.
+- Antes de mutar o estado, validar estados iniciais e consultar logs da origem para garantir ausência de mutações prévias em `/attributes/change` (inclusive passo 1 que não modifica valor). Se existirem, bloquear repetição e diagnosticar.
+- Coletar transcript de cada POST, estados finais, logs por contêiner, hashes SHA-256 de entradas/saídas e manifesto de imagem/commit. Comparar efeitos e causalidade com fixture manual, C0 e `c0.oracle.calculate_expected_effects` independente.
+- Resultado desejado mas **ainda não observado em Docker**: cinco notificações de atributos, três transições de condição e dois efeitos nos passos 3 e 7. Não apresentar como aprovado antes de receber logs reais.
+- Se houver erro durante mutação parcial, **não reenviar a fixture automaticamente**; preservar estado e logs. Ainda não há recuperação persistente/replay comprovados. Kubernetes fora do escopo da etapa.
