@@ -105,3 +105,13 @@ docker run --rm --network none --platform linux/amd64 $tag rule-executor --help
 ```
 
 Códigos de saída e logs devem ser preservados e analisados antes de classificar E08-I03 como aprovado.
+
+## 11. E08-D06 — falha real de resolução do FROM (13/11/2026)
+
+- **Evidência recebida:** `image(20261113-203658).png`, 1920x1080, PNG original; SHA-256 calculado `93822efcdbd3fc2aa816ed6aae7592e63b25606b42d7005430f2aa21a4fe03cd`.
+- Git: fast-forward para `f2f54475ca45cfcd0845ee694fcf1680bed046f6`; branch exclusiva, status limpo antes da execução.
+- Build: `docker build --platform linux/amd64 --progress=plain ...` interrompido em `[internal] load metadata for docker.io/library/python:3.13-slim@sha256:e48f59cdba69a3cbd9ed2cf0f348d90d45a8d35d098134cf1070bc106ee9ed90`.
+- Erro observado: `docker.io/library/python:3.13-slim@sha256:e48f59cdba69a3cbd9ed2cf0f348d90d45a8d35d098134cf1070bc106ee9ed90: not found`. `Build: 1`. PowerShell encerrou por `throw "Build Docker falhou."`, logo **não houve execução da inspeção de imagem construída nem dos smoke tests**.
+- O Dockerfile foi publicado, mas nenhum build C2 aprovado. A falha ocorreu na resolução da imagem base antes de copiar/iniciar o PON; não constitui prova de defeito funcional do código Python.
+- Diagnóstico em aberto: verificar no registro Docker Hub por `docker buildx imagetools inspect` a validade do digest remoto usado no `FROM`. A referência mostrada por `docker pull`/`docker image inspect` em E08-D05 não deve ser presumida resolvível pelo BuildKit sem confirmação.
+- **Próximo ato:** executar comandos de inspeção somente leitura para comparar digest do registro, digest da referência com falha, imagem local. Não alterar código nem remover imagens até identificar causa e nova referência correta.
