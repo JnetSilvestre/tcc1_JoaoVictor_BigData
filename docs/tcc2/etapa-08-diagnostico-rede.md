@@ -174,3 +174,22 @@ Códigos de saída e logs devem ser preservados e analisados antes de classifica
 - Como o fluxo parou no passo 2 antes de `docker network create`, **esta tentativa não criou rede ou contêineres C2**. Os comandos de inicialização exibidos no topo do print são entrada do bloco, não saída de execução.
 - Correção proposta para validar no Windows: `docker image inspect` sem `--format`, processar JSON com `ConvertFrom-Json`, ler a propriedade `.Config.Labels.'org.opencontainers.image.revision'`. Comparar ao SHA do código do build. Repetir E08-D09 com essa leitura; não alterar a imagem nem o núcleo PON.
 - **E08-D09 não aprovado. E08-I04 continua pendente.** Preservar saída original e não tratar erro de script como falha funcional da aplicação.
+
+## 16. E08-D09 — três contêineres em rede Docker interna comprovados (13/11/2026)
+
+- Evidência real: captura de PowerShell `image(20261113-210408).png`, **126.879 bytes**, SHA-256 calculado sobre os bytes recebidos **`53ecd7f79bc5fe5c35282f3ec4ce70a55fad6f94af90581a9f6703e5228d49c1`**. PNG original recebido na conversa; não versionado no GitHub.
+- Git local do acadêmico: fast-forward para `dd546f284aff576fe02c5aecfb318a1535b075f7`; imagem usada `tcc2-pon:c2-e08-dbefcd2cf3d2`, produzida a partir do código `dbefcd2cf3d2fbf220cff8eda34d52189e08192a`; plataforma Linux/amd64. Nenhum rebuild necessário para commits documentais.
+- `docker network create --driver bridge --internal tcc2-pon-c2` retornou ID de rede. `docker network inspect`: `Driver=bridge`, `Internal=true`, **três membros**.
+- Três contêineres `Running=true` com identificadores Docker distintos: `tcc2-c2-rule-executor`, `tcc2-c2-logic-engine`, `tcc2-c2-attribute-source`; mesma imagem, porta interna 8080 e sem binding publicado ao host (verificações do script concluídas).
+- `docker exec` no produtor: HTTP GET `http://logic-engine:8080/health/live` com resposta `{'service':'logic-engine','pid':1,'live':True}`. No avaliador: HTTP GET `http://rule-executor:8080/health/live` com resposta `{'service':'rule-executor','pid':1,'live':True}`. Consultas confirmam resolução DNS e comunicação real pelo transporte HTTP entre contêineres.
+- Cada contêiner informou PID interno 1, fato compatível com namespaces PID isolados; PID interno não deve substituir ID Docker para identificar instâncias.
+- `GET /state` nos três serviços: `ready=False`, esperado antes do snapshot. Logs JSONL de cada serviço mostram evento `listening`, porta 8080. Saída final `E08-D09: VALIDACOES CONCLUIDAS`.
+- **Aceite E08-I04 no escopo de infraestrutura:** isolamento por contêiner, rede privada, resolução DNS, HTTP de saúde e estados frios verificados no Windows. **Não demonstra ainda entrega de AttributeChanged/ConditionChanged, snapshot instalado, dois efeitos, equivalência com C0/C1, recuperação, métricas ou multinó físico.**
+
+### Próximo incremento E08-D10 (planejado, não executado)
+
+- Fazer preflight dos três contêineres ativos na rede `tcc2-pon-c2` e de `ready=false` em cada estado; abortar sem mutação se já houver inicialização prévia.
+- Enviar somente `POST /init/snapshot` ao `attribute-source`, com `run_id=c0-minimo-v1` (fixture versionada), executando dentro do contêiner de origem; o código encaminha ao `logic-engine` e ao `rule-executor` por HTTP/JSON com ACKs.
+- Verificar `ready=true`, `snapshot_version=c0-minimo-v1:snapshot:0`, sequência 0 e atributos iniciais `atA=0`, `atB=0` (produtor/avaliador), condição e aprovação falsas, nenhum efeito registrado no executor.
+- Coletar logs `docker logs` dos três serviços para evidenciar `send`, `ack`, `mutation` de snapshot, com cuidado para não chamar `POST` duas vezes se script interromper depois da inicialização.
+- **Não enviar ainda a sequência de alterações determinísticas**. Ela será ensaiada em incremento seguinte, com confrontação ao oráculo C0/fixture manual.
