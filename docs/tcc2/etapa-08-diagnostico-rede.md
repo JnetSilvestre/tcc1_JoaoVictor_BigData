@@ -140,3 +140,27 @@ Códigos de saída e logs devem ser preservados e analisados antes de classifica
 - Não atribuir causalidade definitiva à falha do índice: trata-se de uma referência que a consulta direta não resolveu. O manifesto específico é **candidato**, não referência já aprovada.
 - Próximo passo **E08-D08**: testar `docker buildx imagetools inspect` diretamente para o novo digest; só se retorno 0, repetir o build, identificação da imagem e smoke tests. Se falhar, interromper e preservar a saída real antes de qualquer outra alteração.
 - Sem execução de Kubernetes, sem medição de desempenho, sem conclusão do C2. Não modificar os módulos PON/HTTP.
+
+## 13. E08-D08 — construção de imagem PON aprovada no Windows (13/11/2026)
+
+- Evidências originais recebidas na conversa, com identificação SHA-256 sobre os bytes dos PNGs (arquivos ainda não incorporados ao GitHub):
+
+| ID | PNG original | Bytes | SHA-256 |
+|---|---|---:|---|
+| E08-D08a | `image(20261113-205032).png` | 121646 | `f75edb60178c39b3d75293afc516141851795434cdb8da97e91501f49d538f4d` |
+| E08-D08b | `image(20261113-205057).png` | 60669 | `d20793cbb68b2827579fca7e6c98c839b578fc99c3fe09f3e8bbfef1725cbc2e` |
+
+- Git no Windows: fast-forward até `dbefcd2cf3d2fbf220cff8eda34d52189e08192a`, branch `tcc2/desenvolvimento`, status final limpo.
+- `docker buildx imagetools inspect` da referência específica `python:3.13-slim@sha256:48d884813cf44e927cf64c5529dd630dd3b18338c6dc727991eef9b71e934a20`: `Registro: 0`.
+- `docker build --platform linux/amd64 ...` completado: `Build: 0`; tag local `tcc2-pon:c2-e08-dbefcd2cf3d2`. Docker reportou plataforma Linux/amd64, 176 MB na lista de imagens e label de revisão `dbefcd2cf3d2fbf220cff8eda34d52189e08192a`.
+- Smoke test sem rede: usuário `10001`, Python `3.13.18`, `IMPORTS: OK`, `Imports: 0`; CLI `python -m c1.service rule-executor --help` exibida com sucesso, `CLI: 0`.
+- **Aceite E08-I03:** imagem Linux/amd64 construída, inspecionada e executada em testes mínimos no computador do acadêmico. Não houve três serviços executando simultaneamente, comunicação HTTP entre contêineres, inicialização da fixture nem equivalência funcional C2.
+
+## 14. Incremento planejado E08-I04 — topologia de rede Docker
+
+- **Próxima validação E08-D09 (não executada):** criar rede `bridge` **interna** nomeada `tcc2-pon-c2`, sem portas publicadas no host; iniciar `tcc2-c2-rule-executor`, `tcc2-c2-logic-engine` e `tcc2-c2-attribute-source`, todos a partir da imagem já construída `tcc2-pon:c2-e08-dbefcd2cf3d2`.
+- Nomes DNS projetados via aliases: `rule-executor`, `logic-engine`, `attribute-source`; todos escutam na porta interna 8080, `--listen-host 0.0.0.0`; origem e avaliador usam `--downstream-host` com os aliases relevantes. Três instâncias, uma por papel, sem réplicas adicionais.
+- Confirmar tag/label e ausência de mudanças no diretório `prova-conceito/` desde o commit da imagem antes do start; não reconstruir a imagem após commits somente documentais.
+- Verificar contêineres `running`, IDs Docker distintos, rede correta, ausência de mapeamento de portas host, `GET /health/live` por DNS dentro da rede e logs de `listening`. Antes do snapshot, `/health/ready` é esperado 503; nenhum resultado de regra deve ter sido produzido.
+- Evitar colisão com recursos existentes: interromper se rede ou nomes já existirem; não remover/reiniciar contêineres anteriores nem tocar no kind.
+- Ainda faltam E08-I05, fixture e equivalência C2↔C0/C1; figuras futuras devem distinguir separação por contêiner no mesmo host de distribuição física multinó.
