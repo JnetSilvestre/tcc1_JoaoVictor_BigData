@@ -58,3 +58,10 @@ Script Python no host Windows, invocando `docker exec` por lista de argumentos, 
 ## 5. Critério de encerramento E08
 
 Provar funcionalidade C2 da fixture e auditar evidências (concluído); complementar V03/V05/V06 com delimitação de escopo; revisar V07 quanto à cobertura real; consolidar topologia, comandos, logs, imagens/digests, hashes, limitações e checkpoint, preservando insumos para a monografia. Kubernetes seguirá somente na Etapa 09.
+
+## 6. Continuidade real E08-D17A e E08-D17B (15/11/2026)
+
+- **E08-D17A aprovado:** rede V05 bridge interna, 3 contêineres em execução, IDs distintos, sem portas publicadas, logs `listening`.
+- **E08-D17B aprovado:** preflight de saúde e estado frio via HTTP real nos três contêineres. Print `image(20261115-174707).png` (93.598 bytes), SHA-256 `514ec8a34b30ec28d4afb95c65908b548ac559e124144c0e6a7b2fbfac9b3582`. Original na conversa e não versionado no GitHub. Estado de cada papel como esperado e Git limpo.
+- A subseção anterior descrevia o desenvolvimento do executor como D17B; o diagnóstico de saúde recebeu o identificador **D17B** na execução real. Para evitar colisões, o próximo incremento é **E08-D17C (snapshot funcional)**; a automação posterior da deduplicação será numerada após esse aceite.
+- **Não realizado:** qualquer snapshot ou notificação V05 e a verificação dos ACKs de deduplicação; só a infraestrutura e o estado frio foram aprovados. Não reiniciar contêineres.

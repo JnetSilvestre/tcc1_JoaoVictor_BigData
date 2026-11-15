@@ -101,3 +101,8 @@
 - Protocolo Etapa 05 e `c1/state.py`/`c1/protocol.py`/`c1/service.py` consultados. V05 espera ACK `duplicate=true` sem novo efeito e conflitos com HTTP 409; V06 espera rejeição explícita HTTP 409 de lacunas/out-of-order com estado preservado.
 - Novo documento `docs/tcc2/etapa-08-v05-v06-plano.md` detalha as duas bancadas separadas, testes, riscos e auditoria. **Próximo E08-D17A:** criar rede `tcc2-pon-c2-v05` e contêineres `tcc2-v05-*`, sem qualquer snapshot ou mensagem. Agir somente na branch `tcc2/desenvolvimento` e não alterar imagem, master, origem codigoPon ou kind.
 - V05 e V06 ainda não executados no host. E08-D16 permanece aprovado e auditado.
+
+## E08-D17A/D17B — infraestrutura e estado frio V05 aprovados (15/11/2026)
+- E08-D17A: saída PowerShell e Docker Desktop mostraram 3 contêineres V05 com IDs Docker diferentes, imagem C2 aprovada, rede `tcc2-pon-c2-v05` bridge e `Internal=true`, sem portas publicadas, logs `listening` porta 8080. Git `8812cf05bb54dbdda968b607ee8a5fd9eb278c02` limpo.
+- E08-D17B: screenshot `image(20261115-174707).png`, 93.598 bytes, SHA-256 recalculado `514ec8a34b30ec28d4afb95c65908b548ac559e124144c0e6a7b2fbfac9b3582`. `LIVE: OK` + `COLD STATE: OK` nos 3; fonte atA/atB 0, sequências zero, sem pendência, `ready=false`/`run_id=null`; avaliador attributes=null, condition=null, received_ids/condition_events vazios, faulted=false; executor approved=null, effects/received_ids vazios, faulted=false. Git final sem modificações.
+- **D17C próximo:** somente snapshot V05 distinto, validar `ready=true` nos 3, `run_id=v05-dedup-v1`, `snapshot_version=v05-dedup-v1:snapshot:0`, estado inicial sem efeitos. Não executar notificações duplicadas antes do aceite. Não repetir POST se houver erro parcial: preservar logs.
