@@ -175,3 +175,12 @@
 - Confronto JSON: evento base `v05-dedup-v1:atA:1` com `value=5`; novo conflito idêntico exceto `value=6`. HTTP 409, corpo `event_id reutilizado com payload diferente`; estados antes/depois iguais em bytes (SHA `648e82a9e90f1962ce7a47d2785c1b8b3a738ddd79a6c3c7cfde8a09c5316778`), incluindo 0 efeitos; fonte 7→7, logic 6→7 com um registro HTTP 409 e executor 2→2.
 - Resultado **E08-D17I APROVADO** no caso ensaiado. Laudo `docs/tcc2/etapa-08-auditoria-v05-conflito.md`. E08-D17H deixou de estar pendente de auditoria de bytes.
 - Próximo E08-D17J: preflight frio/ready da condição na mesma bancada V05, sem POST, e somente após aceite avançar para `atB=1`. Não repetir conflito E08-D17H, não reiniciar serviços, não modificar imagem/codigoPon/master/kind.
+
+## E08-D17J — preflight V05 para condição aprovado no Windows (15/11/2026)
+
+- Captura real `image(20261115-185446).png` recebida: **102.442 bytes**, SHA-256 recalculado `198375f957fb03bbcae26e36ae32310e91abba0d8e18dc67eed1f215599c7c96`, resolução 1920×1080; original permanece na conversa.
+- HEAD Windows `7e4069c0df5f93ab4313d4968e65375c72ef40b6` após fast-forward, branch `tcc2/desenvolvimento` e Git final limpo. Rede `tcc2-pon-c2-v05` driver=bridge `Internal=true`.
+- `/health/live`: 3/3 `LIVE: OK`. `/state`: 3/3 `STATE: OK`, `ready=true`, `run_id=v05-dedup-v1`, `snapshot_version=v05-dedup-v1:snapshot:0`. Fonte e avaliador `atA=5,atB=0` com sequências `1,0`; avaliador `condition=false`, `condition_sequence=0`, `received_ids=["v05-dedup-v1:atA:1"]`; executor `approved=false`, `condition_sequence=0`, `received_ids=[]`, `effects=[]`. Três contêineres V05 UP. Nenhum POST nesta etapa.
+- **E08-D17J APROVADO como preflight, não como transição ou deduplicação de condição**.
+- **E08-D17K preparado no repositório, ainda NÃO executado no Windows:** `prova-conceito/c2/v05_condition_first.py` para um único `POST /attributes/change` com `atB=1`, `request_id=v05-req-atB-1`, `step=2`, após verificar hashes/estado/topologia/logs, com evidências pré/pós e captura do `ConditionChanged` original. `tests/test_c2_v05_condition_first.py` adiciona 8 testes locais, que ainda não foram executados no Windows.
+- Esperado, não medido: condição `true`, sequência 1, aprovação da regra `true` e 1 efeito, `event_id=v05-dedup-v1:cn1:1` causado por `v05-dedup-v1:atB:1`; capturar a mensagem com timestamp original para ensaio de replay posterior. Não repetir POST em caso de falha.

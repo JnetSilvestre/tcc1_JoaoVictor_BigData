@@ -34,6 +34,8 @@ Atualizado em: 2026-11-15
 
 - **E08-D17I auditado independentemente (15/11/2026):** ZIP `c2-v05-conflict-20261115-154229.zip` de **7.683 bytes**, SHA-256 `4aef50d86c83feceb8c007dfa959e82a5e57a9ced23df2ef827a7d39839f327b`, CRC sem erros, **15/15 arquivos íntegros e 14/14 hashes internos corretos**. JSON de conflito alterou exclusivamente `value:5→6` com mesmo `event_id`; resposta HTTP 409 conforme contrato; `states-before.json` e `states-after.json` iguais em bytes (SHA-256 `648e82a9e90f1962ce7a47d2785c1b8b3a738ddd79a6c3c7cfde8a09c5316778`); logs fonte 7→7, avaliador 6→7 (um 409), executor 2→2; 0 efeitos novos. Captura `image(20261115-184927).png`, SHA-256 `379d4257acef5be2875696e1ce6512085bba5017c5d7e379fc73765db33c91de`. Laudo `docs/tcc2/etapa-08-auditoria-v05-conflito.md`. **V05 ainda parcial**: falta duplicação de ConditionChanged; próximo E08-D17J é preflight somente leitura para primeira transição. V06/V07 e Kubernetes pendentes.
 
+- **E08-D17J preflight aprovado pela saída Windows (15/11/2026):** três serviços V05 LIVE e STATE OK, atributo `atA=5,atB=0`, condição falsa, executor sem efeitos, rede bridge interna, Git limpo no HEAD `7e4069c0df5f93ab4313d4968e65375c72ef40b6`. Captura `image(20261115-185446).png` SHA-256 `198375f957fb03bbcae26e36ae32310e91abba0d8e18dc67eed1f215599c7c96`. **E08-D17K preparado** com executor de emissão única `atB=1` e 8 testes novos; execução real pendente.
+
 - Branch permanente: `tcc2/desenvolvimento`; preservar `master` e a referência original `JnetSilvestre/codigoPon@c2d525b5c675820806af34348e259bff32a6bc5f`.
 
 ## Etapas
