@@ -79,3 +79,9 @@
 - Git em `e2b9d6c4d4abeff4d19d8da9055d8847b848af49` limpo, compilação 0, 45 testes OK (11,039 s); runner `V03: 1`, `FAIL`, 0/10 casos; erro `atributos alterados: logic-engine` no preflight.
 - Código real `c1/state.py`: LogicEngine frio apresenta `attributes=null`, `condition=null`; RuleExecutor frio apresenta `approved=null`, enquanto AttributeSource possui valores iniciais zerados. O executor tinha expectativa errada; nenhum teste HTTP adversarial executado.
 - Corrigido apenas `c2/v03_cold.py` e acrescentado `tests/test_c2_v03_cold.py` com 5 testes sem Docker. **Próxima rodada E08-D14B-R2**: `compileall`, 50 testes esperados, execução única em pasta de evidência nova se tudo passar; preservar três contêineres V03 e rodada R1.
+
+## E08-D14B-R2 — PASS no Windows (15/11/2026)
+- Git `66dfef80d7c9bf17e4343d6087c8d51e397ae523`, compilação 0, 50 testes OK em 11,077 s, `Testes: 0`.
+- Runner V03 frio: `PASS`, 10/10 casos, `V03: 0`, pasta `resultados-locais/c2-v03-r2-20261115-140543`. Prints `image(20261115-170706).png` SHA `87ffe23584d5fe656acf6497baf4edc83ced36454827d163d005bc52e712cfa3`; `image(20261115-170715).png` SHA `a0586d2f9f7f9ee63671185c2379e0f934b639bf004838882abd58faf691fc21`.
+- Tabela PowerShell das respostas veio sem linhas: consultar `http-cases.json` diretamente e auditar os bytes do ZIP antes de registrar integridade independente. Execução real aprovada no escopo V03 frio, auditoria binária pendente.
+- Próximo E08-D15: leitura só de arquivos, validação de hashes e ZIP; **não reexecutar mensagens/fixture, nem tocar no kind**.

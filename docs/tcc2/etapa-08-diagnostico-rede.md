@@ -312,3 +312,19 @@ Códigos de saída e logs devem ser preservados e analisados antes de classifica
 - Confirmar branch limpa e HEAD, compilar, executar 50 testes e, **apenas se aprovados**, executar `python -m c2.v03_cold --output <diretório novo>`.
 - O executor reconfirma topologia e todos os estados frios antes de enviar qualquer POST; se `status=PASS`, validar `cases_completed=10`, HTTP 400/404/415/422 correspondentes e igualdade dos três estados em cada caso.
 - Se qualquer caso falhar, preservar a pasta da rodada e os contêineres, sem repetir automaticamente.
+
+## 27. E08-D14B-R2 — V03 frio aprovado pela saída real do Windows (15/11/2026)
+
+- Prints originais recebidos diretamente: `image(20261115-170706).png` (**166.231 bytes**, SHA-256 `87ffe23584d5fe656acf6497baf4edc83ced36454827d163d005bc52e712cfa3`) e `image(20261115-170715).png` (**68.559 bytes**, SHA-256 `a0586d2f9f7f9ee63671185c2379e0f934b639bf004838882abd58faf691fc21`). Os binários PNG estão na conversa, não no GitHub.
+- Git sincronizado por fast-forward para `66dfef80d7c9bf17e4343d6087c8d51e397ae523`, alterações apenas no verificador/testes/documentação, status Git final limpo. Compilação `0`. Regressão: **50/50 testes OK em 11.077 s**, `Testes: 0` (duração da suíte, não benchmark).
+- Execução `python -m c2.v03_cold`: `scenario=C2`, `criterion=V03`, `phase=cold`, **`status=PASS`**, **`cases_completed=10` de 10**, `V03: 0`, carimbo UTC `2026-11-15T17:05:43.351185+00:00`. Diretório real: `prova-conceito/resultados-locais/c2-v03-r2-20261115-140543`.
+- O runner foi inspecionado no GitHub e só incrementa `cases_completed` quando cada requisição obteve **o status HTTP esperado (400/404/415/422), corpo com erro explícito e três estados idênticos antes/depois**. O PASS observado suporta aprovação **operacional do V03 frio nos 10 casos**.
+- A seção de tabela `=== 6. RESPOSTAS HTTP ===` ficou **sem linhas na captura**, embora o relatório indique 10; isso é problema de exibição do pipeline no PowerShell ou seleção de objetos, **a ser esclarecido lendo `http-cases.json`**, e não prova de inexistência de casos.
+- O stdout incluiu hashes de `attribute-source.jsonl`, `http-cases.json`, `logic-engine.jsonl`, `manifest.json`, `rule-executor.jsonl`, `states-after.json`, `states-before.json` e `validation.json` (o manifesto de checksums não hashia a si mesmo). **Os bytes de evidências locais ainda NÃO foram examinados independentemente**; arquivar ZIP íntegro e conferir hashes é o próximo passo. Preserve os contêineres e não repita os dez POSTs sem necessidade.
+- **Escopo:** aprovado V03 em estado frio; V03 com snapshot instalado, V05, V06, cobertura adicional V07, persistência, benchmark e Kubernetes continuam pendentes. A imagem Docker do runtime `dbefcd2...` não foi reconstruída.
+
+### Próximo E08-D15 — auditoria do V03 por bytes
+
+- Ler localmente `http-cases.json` via `python -c` para imprimir as **10** entradas e conferir os códigos e `state_unchanged`, sem executar requisições HTTP.
+- Verificar hashes do `checksums.sha256`, criar ZIP da pasta `c2-v03-r2-20261115-140543`, calcular SHA-256 do ZIP, enviar à conversa para auditoria direta.
+- Não reiniciar/destruir recursos; não utilizar valores de CPU/RAM agregados do Docker Desktop como medidas de desempenho da aplicação.
