@@ -36,6 +36,8 @@ Atualizado em: 2026-11-15
 
 - **E08-D17J preflight aprovado pela saída Windows (15/11/2026):** três serviços V05 LIVE e STATE OK, atributo `atA=5,atB=0`, condição falsa, executor sem efeitos, rede bridge interna, Git limpo no HEAD `7e4069c0df5f93ab4313d4968e65375c72ef40b6`. Captura `image(20261115-185446).png` SHA-256 `198375f957fb03bbcae26e36ae32310e91abba0d8e18dc67eed1f215599c7c96`. **E08-D17K preparado** com executor de emissão única `atB=1` e 8 testes novos; execução real pendente.
 
+- **E08-D17K aprovado operacionalmente (15/11/2026):** no HEAD `ba200b85bfe24f81b15a3f1ec838480a6cc10e49`, compilação 0, **72 testes OK em 10,837 s**, HTTP 200 `atB=1`, `ConditionChanged` `v05-dedup-v1:cn1:1` aprovado, `condition_sequence=1`, um efeito `v05-dedup-v1:rl1:1`, V05 código 0 e Git limpo. Evidências locais `resultados-locais/c2-v05-condition-first-20261115-160357` e três prints SHA-256 no checkpoint. Integridade binária **ainda pendente** de ZIP/auditoria E08-D17L. Não repetir POST. Próximo: arquivamento somente leitura e posterior replay exato de ConditionChanged.
+
 - Branch permanente: `tcc2/desenvolvimento`; preservar `master` e a referência original `JnetSilvestre/codigoPon@c2d525b5c675820806af34348e259bff32a6bc5f`.
 
 ## Etapas
