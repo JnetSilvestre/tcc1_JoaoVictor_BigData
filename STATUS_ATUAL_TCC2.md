@@ -290,3 +290,10 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 - Conteúdo confirmado: commit `be6b850d599504e9ea8166f02fd87b35313e5445`, Python 3.13.9/Windows, três PIDs distintos, **5 notificações de atributo, 3 transições de condição, 2 efeitos** nos passos 3 e 7; igualdade exata entre `effects.jsonl` e `expected.jsonl`.
 - Novo relatório: `docs/tcc2/etapa-07-auditoria-zip.md`. Declarações históricas de que o ZIP não havia sido inspecionado estão **superadas a partir deste envio**. O arquivo permanece anexado à conversa e no Windows do acadêmico, não no GitHub.
 - **Etapa 07 funcionalmente concluída no escopo local C0/C1**; V11 reforçado para esta rodada, mas **parcial globalmente**. Sem novos testes da aplicação, benchmark ou execução de Kubernetes.
+
+
+## 15/11/2026 — fechamento técnico da Etapa 08 (C2/Docker)
+
+**Etapa 08 concluída para o escopo funcional Docker C2**, sem Kubernetes da aplicação nem medição de desempenho. Última execução Windows: branch `tcc2/desenvolvimento`, commit `2ea999a712032b2bf295362264e6a5a204b9986f`, 93/93 testes `unittest` OK (10,966 s, apenas duração da suíte), Git limpo; E08-D18G/H HTTP 409 esperados, ambos `PASS`, estados inalterados e zero efeitos extras. ZIP bruto `c2-v06-batch-20261115-184915.zip` auditado: 13.566 bytes, SHA-256 `24ff2fbc4aa28acfec0bad90c3677301cfadbce7efea51c9368b6e50953c1be1`, 27/27 entradas, CRC OK, 26/26 hashes internos. Laudo: `docs/tcc2/etapa-08-auditoria-v06-batch.md`; encerramento: `docs/tcc2/etapa-08-encerramento-tecnico.md`.
+
+**Não repetir POSTs nem alterar/reiniciar bancadas V05/V06.** V07 global permanece **parcial** (concorrência durante snapshot C2/C3 não comprovada), V08/V09/V10/V12 ainda não executados no escopo Kubernetes/performance, V11 global parcial. **Próxima atividade: Etapa 09, diagnóstico do cluster existente e implantação C3/Kubernetes.** Preservar ZIPs originais fora do GitHub.
