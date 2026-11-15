@@ -124,3 +124,8 @@ Provar funcionalidade C2 da fixture e auditar evidências (concluído); compleme
 - Pasta de evidências no host: `prova-conceito/resultados-locais/c2-v05-conflict-20261115-154229`, incluindo `event-original.json`, `event-conflict.json`, `conflict-response.json`, estados/logs antes/depois, `request-intent.json`, `validation.json`, `manifest.json`, `checksums.sha256`.
 - **Aceite operacional E08-D17H** baseado em saída real. O relatório de estado inalterado foi emitido pelo executor, ainda sem comparação binária externa; auditoria independente de integridade **pendente**.
 - **E08-D17I próximo:** somente empacotar arquivos e verificar hashes SHA-256; arquivo esperado 15 entradas = 14 arquivos de dados listados no manifesto + `checksums.sha256`. Não repetir o POST 409. Após upload, auditar ZIP e então prosseguir V05 condição.
+
+## 13. E08-D17I — auditoria de conflito V05 aprovada (15/11/2026)
+- ZIP de conflito validado diretamente: 7.683 bytes, SHA-256 `4aef50d86c83feceb8c007dfa959e82a5e57a9ced23df2ef827a7d39839f327b`; 15 entradas, CRC OK, 14/14 hashes internos corretos. Estado idêntico antes/depois com SHA `648e82a9e90f1962ce7a47d2785c1b8b3a738ddd79a6c3c7cfde8a09c5316778`. Logs 7→7 (fonte), 6→7 (avaliador, um 409), 2→2 (executor). Evento conflitante difere somente em `value=6` vs original 5; resposta HTTP 409 coerente.
+- Relatório técnico: `docs/tcc2/etapa-08-auditoria-v05-conflito.md`.
+- A cobertura principal de deduplicação e rejeição de conflito **de AttributeChanged** está registrada e auditada; resta `ConditionChanged` no executor, V06, revisão V07 e documentação final. Próximo E08-D17J: preflight de estado V05 após conflito, sem qualquer POST.
