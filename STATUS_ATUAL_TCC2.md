@@ -308,3 +308,14 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 - E09-I03: DNS HTTP dos tres Services comprovado, antes do snapshot /health/live=200 e /health/ready=503; unico POST snapshot run_id=c3-e09-i03-v1 retornou HTTP 200 e duplicate=false; depois, tres /health/ready=200, watermarks zero, zero efeitos. Logs confirmam fluxo source→logic→executor. E09_I03_EXIT=0.
 - V08 **parcial**: rollout, Service e snapshot validados, mas fixture integral C3 ainda pendente. V07 global parcial; V09 nao demonstrado (todos os Pods da aplicacao no mesmo no); V10 e V12 nao executados; V11 global parcial.
 - E09-I04: runner de fixture e geracao de evidencias preparado em prova-conceito/c3/runner.py (nao executado). **Proxima acao: sincronizar branch de trabalho e executar uma unica vez** python -m c3.runner --output resultados-locais/c3-e09-i04-v1 a partir de prova-conceito, preservando ZIP/SHA, sem repetir snapshot. Nao reiniciar Pods nem executar outro POST se ocorrer falha: diagnosticar primeiro.
+
+
+## 15/11/2026 — encerramento funcional da Etapa 09 (C3/Kubernetes)
+
+**Etapa 09 concluida no escopo C3 minimo** com prova real de comunicacao por Services no cluster kind e comparacao funcional exata com o oraculo. Relatorios: docs/tcc2/etapa-09-checkpoint.md e docs/tcc2/etapa-09-auditoria-c3-zip.md.
+
+- Execucao Windows na branch tcc2/desenvolvimento, commit testado 8669e8364118e30333c90fd798763c18a23fb1ea; E09-I03 snapshot unico validado, E09-I04 teste C3 executado uma unica vez: preflight PASS, 7/7 HTTP 200, validation.json 14/14 checks, E09_I04_EXIT 0.
+- ZIP bruto c3-e09-i04-v1.zip realmente recebido e auditado: 27.165 bytes, SHA-256 aad71cea5e90b9c6a334f66180f54dc5609a024b907b7c7f121f6ed4d5855b83, 28/28 entradas, CRC OK, 27/27 hashes internos, 25/25 verificacoes documentais adicionais.
+- Evidencia de 5 notificacoes de atributo, 3 transicoes de condicao e 2 efeitos exatamente nos passos 3 e 7 (C3 == C0 == oraculo == fixture manual), preservando ordenacao, multiplicidade, IDs e causalidade. Estado final atA=6, atB=1, sequencias (2,3), condition_sequence=3. 3 Pods UIDs/container IDs distintos e 0 restarts.
+- **V08 aprovado para C3 funcional minimo**, sem distribuicao multinó: TODOS os tres Pods da aplicacao alocados ao no virtual tcc2-pon-worker. Um unico computador hospeda ambos os nos kind. **V09 nao demonstrado.** V07 global parcial, V10/V12 nao executados, V11 global parcial. Sem benchmark de latencia, CPU, RAM ou throughput.
+- **Nao repetir** o snapshot ou a fixture sobre os Pods C3 atuais, nem reiniciar/alterar suas cargas. Preservar ZIP original e hashes fora do GitHub. Proximo: Etapa 10 — diagnostico dos taints do control-plane e nova bancada isolada C4 para execucao entre dois nos virtuais, sem alegar distribuicao fisica.
