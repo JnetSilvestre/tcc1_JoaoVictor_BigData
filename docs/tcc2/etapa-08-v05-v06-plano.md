@@ -65,3 +65,9 @@ Provar funcionalidade C2 da fixture e auditar evidências (concluído); compleme
 - **E08-D17B aprovado:** preflight de saúde e estado frio via HTTP real nos três contêineres. Print `image(20261115-174707).png` (93.598 bytes), SHA-256 `514ec8a34b30ec28d4afb95c65908b548ac559e124144c0e6a7b2fbfac9b3582`. Original na conversa e não versionado no GitHub. Estado de cada papel como esperado e Git limpo.
 - A subseção anterior descrevia o desenvolvimento do executor como D17B; o diagnóstico de saúde recebeu o identificador **D17B** na execução real. Para evitar colisões, o próximo incremento é **E08-D17C (snapshot funcional)**; a automação posterior da deduplicação será numerada após esse aceite.
 - **Não realizado:** qualquer snapshot ou notificação V05 e a verificação dos ACKs de deduplicação; só a infraestrutura e o estado frio foram aprovados. Não reiniciar contêineres.
+
+## 7. E08-D17C — primeiro snapshot V05 aprovado (15/11/2026)
+
+- Execução Windows recebida: `image(20261115-175306).png` (142.516 bytes), SHA-256 `3b03035b4e1fa64c24750f9de658aa06ef67b76693a5430d58d1dce91fa92e0c`, original somente na conversa.
+- 3/3 preflights frios OK; HTTP POST do snapshot no atributo fonte com resultado 200, `duplicate=false`, `run_id=v05-dedup-v1`, `snapshot_version=v05-dedup-v1:snapshot:0`. Três serviços `ready=true`, condição `false`, regra `false`, 0 efeitos, sem notificações de mudança; logs demonstram ACKs da cadeia.
+- **E08-D17C APROVADO**, mas V05 deduplicação ainda **não** ensaiada. **E08-D17D** deve testar apenas primeira mudança `atA=5` (sem ativação da condição) e guardar evento de atributo ORIGINAL para reenvio. Para verificação de payload duplicado, `emitted_at`, `request_id` e demais campos precisam permanecer idênticos; não gerar um segundo evento manual novo.
