@@ -96,3 +96,8 @@
 - ZIP `c2-v03-r2-20261115-140543.zip`, **4.489 bytes**, SHA-256 `718213c176dbb7dbf7982f9615d5f31b5955739b992edb8e1326cdac4749ab9c` auditado por bytes; 9/9 entradas/CRC válidos, 8/8 hashes internos, 10/10 HTTP status corretos, resposta com erro por caso, estados antes/depois iguais, logs compatíveis (9 rejeições com evento + 404 de rota desconhecida sem evento).
 - **Aceite:** V03 frio aprovado nos casos ensaiados; integridade independente aprovada, porém verificação por caso de estado intermediário depende do runner, já que snapshots por caso não foram persistidos.
 - Laudo: `docs/tcc2/etapa-08-auditoria-v03.md`. **Próximo E08-D17:** planejar e executar V05/V06 em sessão isolada, registrar evidências reais e auditar ZIP; não implantar no Kubernetes nesta etapa.
+
+## E08-D17 — planejamento V05/V06 conferido (15/11/2026)
+- Protocolo Etapa 05 e `c1/state.py`/`c1/protocol.py`/`c1/service.py` consultados. V05 espera ACK `duplicate=true` sem novo efeito e conflitos com HTTP 409; V06 espera rejeição explícita HTTP 409 de lacunas/out-of-order com estado preservado.
+- Novo documento `docs/tcc2/etapa-08-v05-v06-plano.md` detalha as duas bancadas separadas, testes, riscos e auditoria. **Próximo E08-D17A:** criar rede `tcc2-pon-c2-v05` e contêineres `tcc2-v05-*`, sem qualquer snapshot ou mensagem. Agir somente na branch `tcc2/desenvolvimento` e não alterar imagem, master, origem codigoPon ou kind.
+- V05 e V06 ainda não executados no host. E08-D16 permanece aprovado e auditado.

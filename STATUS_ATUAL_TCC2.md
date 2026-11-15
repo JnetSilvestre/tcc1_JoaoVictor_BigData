@@ -19,6 +19,8 @@ Atualizado em: 2026-11-15
 
 - **E08-D16 concluído e auditado diretamente (15/11/2026):** após R1 (erro PowerShell ao ler array JSON) e R2 (erro de aspas em `python -c`), R3 criou ZIP V03 com 9 arquivos e 9 hashes dos conteúdos do arquivo compactado conferidos contra origem. Original enviado: `c2-v03-r2-20261115-140543.zip`, **4.489 bytes**, SHA-256 `718213c176dbb7dbf7982f9615d5f31b5955739b992edb8e1326cdac4749ab9c`; **CRC OK, 9/9 arquivos e 8/8 hashes internos válidos**, `http-cases.json` 10/10 status esperados, estados inicial/final idênticos, 9 requisições rejeitadas reproduzidas em logs e 404 final no transcript. Laudo independente em `docs/tcc2/etapa-08-auditoria-v03.md`; ZIP original permanece na conversa e no host, não foi versionado como binário. **Aprovado V03 frio nos dez casos; ainda não V03 com snapshot, V05/V06/V07 completos, benchmarks ou Kubernetes.**
 
+- **E08-D17 (15/11/2026):** planejamento V05/V06 conferido com o protocolo Etapa 05 e contratos do código em `docs/tcc2/etapa-08-v05-v06-plano.md`. **Próximo E08-D17A:** criar bancada V05 isolada `tcc2-pon-c2-v05` com três contêineres novos da imagem imutável; testar deduplicação só após confirmar infraestrutura no Windows. V06 terá bancada própria. **Nenhuma execução V05/V06 realizada ainda, sem Kubernetes ou benchmark.**
+
 - Branch permanente: `tcc2/desenvolvimento`; preservar `master` e a referência original `JnetSilvestre/codigoPon@c2d525b5c675820806af34348e259bff32a6bc5f`.
 
 ## Etapas
