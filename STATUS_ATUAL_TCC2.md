@@ -26,6 +26,8 @@ Atualizado em: 2026-11-15
 
 - **E08-D17F aprovado pela saída real Windows (15/11/2026):** Git `cb212667616b5e94128b1337f7a12b6d499891e8`, compilação 0, **57 testes OK**, reenvio único HTTP 200 `accepted=true,duplicate=true`, V05 PASS e código 0, estados idênticos, 0 efeitos; pasta local `resultados-locais/c2-v05-duplicate-20261115-151112` com 13 arquivos de dados mais checksum. Capturas `image(20261115-181207).png` SHA `076be5e983dd8327a73b0afea7eba77725a602bc824e0a39e589d87d6c254938` e `image(20261115-181217).png` SHA `d318ab4b2ccde10908c44327ca4d7d12ec390ba9e8d526493e82f929e8cb898e`. **Próximo E08-D17G:** arquivar e auditar ZIP por bytes, sem repetir POST. V05 completo (conflito e duplicata de condição) e V06 ainda pendentes.
 
+- **E08-D17G auditado independentemente (15/11/2026):** ZIP `c2-v05-duplicate-20261115-151112.zip`, 7163 bytes, SHA-256 `532281718862cc28bd17654721b6d01d0a78d8d9cc9c7283730e8c943b9ca3cb` recalculado; 14/14 arquivos ZIP/CRC, 13/13 SHA-256 internos corretos; resposta HTTP 200 `accepted=true,duplicate=true`; estados antes/depois idênticos; logs fonte 7→7, avaliador 5→6 (um registro HTTP duplicado), executor 2→2, sem efeito novo. Captura Windows SHA-256 `fca5defd9745c52a91604034e8938be44401a645dbf0b190c0eac5c604d5fdcc`. Relatório `docs/tcc2/etapa-08-auditoria-v05-atributo.md`. **Aceite restrito a um replay idêntico de AttributeChanged; V05 completo, V06 e V07 ainda pendentes.** Próximo E08-D17H: conflito `event_id` com payload divergente (esperado HTTP 409).
+
 - Branch permanente: `tcc2/desenvolvimento`; preservar `master` e a referência original `JnetSilvestre/codigoPon@c2d525b5c675820806af34348e259bff32a6bc5f`.
 
 ## Etapas
