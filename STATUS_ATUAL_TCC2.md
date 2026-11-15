@@ -297,3 +297,14 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 **Etapa 08 concluída para o escopo funcional Docker C2**, sem Kubernetes da aplicação nem medição de desempenho. Última execução Windows: branch `tcc2/desenvolvimento`, commit `2ea999a712032b2bf295362264e6a5a204b9986f`, 93/93 testes `unittest` OK (10,966 s, apenas duração da suíte), Git limpo; E08-D18G/H HTTP 409 esperados, ambos `PASS`, estados inalterados e zero efeitos extras. ZIP bruto `c2-v06-batch-20261115-184915.zip` auditado: 13.566 bytes, SHA-256 `24ff2fbc4aa28acfec0bad90c3677301cfadbce7efea51c9368b6e50953c1be1`, 27/27 entradas, CRC OK, 26/26 hashes internos. Laudo: `docs/tcc2/etapa-08-auditoria-v06-batch.md`; encerramento: `docs/tcc2/etapa-08-encerramento-tecnico.md`.
 
 **Não repetir POSTs nem alterar/reiniciar bancadas V05/V06.** V07 global permanece **parcial** (concorrência durante snapshot C2/C3 não comprovada), V08/V09/V10/V12 ainda não executados no escopo Kubernetes/performance, V11 global parcial. **Próxima atividade: Etapa 09, diagnóstico do cluster existente e implantação C3/Kubernetes.** Preservar ZIPs originais fora do GitHub.
+
+
+## 15/11/2026 — Etapa 09 Kubernetes C3 (marco E09-I03)
+
+**Estado mais recente:** E09-D01 (diagnostico do cluster), E09-I01 (manifestos, dry-run), E09-I02 (implantacao) e E09-I03 (DNS HTTP e snapshot) **aprovados por saidas reais do Windows**. Relatorio atualizado: docs/tcc2/etapa-09-checkpoint.md.
+
+- Cluster kind tcc2-pon: control-plane e worker Ready, ambos nos virtuais Docker/WSL2 no MESMO computador. Imagem C2 original carregada sem rebuild em ambos os nos; Docker image ID sha256:b9c714f32e359e7a21df264a926a840191c3ffb6d53bb0483f5e161143d8667a.
+- 8 recursos implantados no namespace tcc2-pon; tres Deployments 1/1, tres Pods Running 1/1 sem reinicios, tres Services ClusterIP. **Todos os Pods da aplicacao no no virtual tcc2-pon-worker**.
+- E09-I03: DNS HTTP dos tres Services comprovado, antes do snapshot /health/live=200 e /health/ready=503; unico POST snapshot run_id=c3-e09-i03-v1 retornou HTTP 200 e duplicate=false; depois, tres /health/ready=200, watermarks zero, zero efeitos. Logs confirmam fluxo source→logic→executor. E09_I03_EXIT=0.
+- V08 **parcial**: rollout, Service e snapshot validados, mas fixture integral C3 ainda pendente. V07 global parcial; V09 nao demonstrado (todos os Pods da aplicacao no mesmo no); V10 e V12 nao executados; V11 global parcial.
+- E09-I04: runner de fixture e geracao de evidencias preparado em prova-conceito/c3/runner.py (nao executado). **Proxima acao: sincronizar branch de trabalho e executar uma unica vez** python -m c3.runner --output resultados-locais/c3-e09-i04-v1 a partir de prova-conceito, preservando ZIP/SHA, sem repetir snapshot. Nao reiniciar Pods nem executar outro POST se ocorrer falha: diagnosticar primeiro.
