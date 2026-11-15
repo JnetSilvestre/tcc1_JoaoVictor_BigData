@@ -208,3 +208,11 @@ Provar funcionalidade C2 da fixture e auditar evidências (concluído); compleme
 - Registro de decisão: V05 completo somente **nos casos serializados ensaiados** (atributo replay e conflito, condição transição, replay e conflito); não atribuir a V05 métricas de desempenho, cluster Kubernetes ou execução multi-host. Laudo detalhado no link acima.
 - **E08-D18A** reservado ao diagnóstico apenas de leitura da bancada futura V06; criar infraestrutura e executar eventos **somente após validação** da etapa inicial. Não modificar/reiniciar V05.
 
+
+## 23. E08-D18A — diagnóstico de infraestrutura V06 (15/11/2026): APROVADO
+
+- Fonte: captura real PowerShell `image(20261115-203614).png`, enviada nesta conversa; sem inspeção independente do daemon, apenas registro da saída exibida. Branch `tcc2/desenvolvimento`, Git limpo, HEAD Windows `1364bda7623467934dd897f016fe038dc0b75956` após `git pull --ff-only`.
+- Docker context `desktop-linux`, Linux/x86-64; imagem aprovada `tcc2-pon:c2-e08-dbefcd2cf3d2` com ID `sha256:b9c714f32e359e7a21df264a926a840191c3ffb6d53bb0483f5e161143d8667a`, revisão OCI `dbefcd2cf3d2fbf220cff8eda34d52189e08192a`.
+- Rede `tcc2-pon-c2-v06` e nomes `tcc2-v06-attribute-source`, `tcc2-v06-logic-engine`, `tcc2-v06-rule-executor`: inexistentes e disponíveis na consulta. Bancada V05: três contêineres `Running=true` (não remover/reiniciar).
+- E08-D18A executado **somente leitura**, sem POST, criação de rede, contêiner, imagem ou snapshot. Aprovado para avançar **E08-D18B: provisionar V06**, mantendo imagem existente e rede bridge internal=true separada; executar apenas um papel por contêiner, sem portas publicadas e com aliases privados. Critério D18B restrito à infraestrutura (três Running, IDs distintos, rede correta, logs listening, sem snapshot), **não** valida V06 funcional.
+- Etapas posteriores: D18C = preflight de estado frio e DNS/HTTP interno (somente GET); D18D = snapshot controlado (POST único) e então ensaios V06 de lacunas/ordem com evidências. Não executar ações adversariais antes dos aceites prévios. Kubernetes apenas Etapas 09/10.
