@@ -107,20 +107,26 @@ def assert_cold(current):
             raise ValueError(f"bancada V03 ja foi inicializada: {role}")
         if state.get("snapshot_version") is not None:
             raise ValueError(f"snapshot ja presente: {role}")
+        # O produtor conserva valores iniciais em memoria; o avaliador so
+        # materializa seus atributos apos receber /init/snapshot.
+        if role == "attribute-source" and state.get("attributes") != {"atA": 0, "atB": 0}:
+            raise ValueError("atributos iniciais divergentes: attribute-source")
+        if role == "logic-engine" and state.get("attributes") is not None:
+            raise ValueError("logic-engine frio deve apresentar attributes=null")
         if role in ("attribute-source", "logic-engine"):
-            if state.get("attributes") != {"atA": 0, "atB": 0}:
-                raise ValueError(f"atributos alterados: {role}")
             if state.get("sequences") != {"atA": 0, "atB": 0}:
                 raise ValueError(f"sequencias alteradas: {role}")
         if role == "attribute-source" and state.get("pending_request_id") is not None:
             raise ValueError("produtor com pedido pendente")
         if role == "logic-engine" and (
-            state.get("received_ids") or state.get("condition_events")
+            state.get("condition") is not None
+            or state.get("received_ids") or state.get("condition_events")
             or state.get("faulted") or state.get("condition_sequence") != 0
         ):
             raise ValueError("avaliador contem historico")
         if role == "rule-executor" and (
-            state.get("received_ids") or state.get("effects")
+            state.get("approved") is not None
+            or state.get("received_ids") or state.get("effects")
             or state.get("faulted") or state.get("condition_sequence") != 0
         ):
             raise ValueError("executor contem historico")

@@ -73,3 +73,9 @@
 - Screenshot `image(20261115-144612).png`, tamanho 100603 bytes, SHA-256 `44ceda0a52fb8ed5094fa27257bb877d23f99353637fdbfd7d4ba140264bc7c0`.
 - Git Windows em `2cf3b9c5ab862ec2f705f705be9ff4a18cf1c4ac`; rede `tcc2-pon-c2-v03` bridge interna; novos `tcc2-v03-*` Running, três IDs distintos, ausência de portas host e estados frios. A bancada principal C2 e kind não foram usados.
 - Próximo E08-D14B: `python -m c2.v03_cold --output resultados-locais/c2-v03-cold-<timestamp>`, após compileall e os 45 testes de regressão. Checa 10 respostas 4xx, estado invariável dos três serviços e logs/hashes. Ferramenta publicada, **ainda não testada no Windows**.
+
+## E08-D14B-R1 — falha de preflight sem execução adversarial (15/11/2026)
+- Prints reais: `image(20261115-165837).png` SHA-256 `185ca95442ef430207cf56c5adef6a7bc2f4378527294c4861050969afe28993`; `image(20261115-165903).png` SHA-256 `e9d673524b13fde486e6c7ea95012fb33807b9fb63fcbe30f301f5072dfb8031`.
+- Git em `e2b9d6c4d4abeff4d19d8da9055d8847b848af49` limpo, compilação 0, 45 testes OK (11,039 s); runner `V03: 1`, `FAIL`, 0/10 casos; erro `atributos alterados: logic-engine` no preflight.
+- Código real `c1/state.py`: LogicEngine frio apresenta `attributes=null`, `condition=null`; RuleExecutor frio apresenta `approved=null`, enquanto AttributeSource possui valores iniciais zerados. O executor tinha expectativa errada; nenhum teste HTTP adversarial executado.
+- Corrigido apenas `c2/v03_cold.py` e acrescentado `tests/test_c2_v03_cold.py` com 5 testes sem Docker. **Próxima rodada E08-D14B-R2**: `compileall`, 50 testes esperados, execução única em pasta de evidência nova se tudo passar; preservar três contêineres V03 e rodada R1.

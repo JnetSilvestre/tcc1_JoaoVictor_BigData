@@ -296,3 +296,19 @@ Códigos de saída e logs devem ser preservados e analisados antes de classifica
 - Para cada tentativa, coleta e compara `/state` dos três serviços **antes e depois**, exigindo ausência de mutação, status exato e erro explícito. Verifica readiness 503 antes da rodada; salva estados, respostas, manifesto, logs e hashes SHA-256 na pasta ignorada `resultados-locais/`.
 - **Não aprovado ainda:** teste real dos 4xx nos contêineres. Primeiro `compileall` e regressão de 45 testes previamente existentes no Windows; depois executar o novo executor uma única vez.
 - Posteriormente, V03 com serviços inicializados deve ser analisado em rodada própria. V05/V06/V07 permanecem pendentes.
+
+## 26. E08-D14B-R1 — erro de preflight antes dos casos adversariais (15/11/2026)
+
+- Capturas reais PowerShell fornecidas: `image(20261115-165837).png` (152.676 bytes, SHA-256 `185ca95442ef430207cf56c5adef6a7bc2f4378527294c4861050969afe28993`) e `image(20261115-165903).png` (65.038 bytes, SHA-256 `e9d673524b13fde486e6c7ea95012fb33807b9fb63fcbe30f301f5072dfb8031`). Originais recebidos na conversa, não incorporados ao GitHub.
+- Git Windows: fast-forward para `e2b9d6c4d4abeff4d19d8da9055d8847b848af49`, status final limpo; `Compilacao: 0`, `Ran 45 tests in 11.039s`, `OK`, `Testes: 0` (tempo da suíte, não benchmark).
+- Execução `python -m c2.v03_cold` em `resultados-locais/c2-v03-cold-20261115-135745`: `V03: 1`, `status=FAIL`, `phase=cold`, `cases_completed=0`, `cases_planned=10`, `error="atributos alterados: logic-engine"`.
+- A verificação abortou em `assert_cold` **antes de executar S01–S10**. Não existe evidência de qualquer mensagem adversarial enviada nessa tentativa. Foram listados hashes para 5 arquivos locais (três logs, manifesto e validação); o diretório/bytes ainda não foram auditados independentemente.
+- Causa conferida no código versionado: `LogicEngine.__init__` define `self.attributes=None` e `self.condition=None`. Seu `state()` retorna `attributes=null` e `condition=null` até a instalação do snapshot; o produtor mantém `atA=0,atB=0` e o executor mostra `approved=null`. O runner equivocadamente exigia que produtor e avaliador tivessem o mesmo mapa inicial de atributos.
+- **Correção pontual:** alterar apenas `c2/v03_cold.py` para distinguir os estados frios por papel, incluindo `condition=null` no avaliador e `approved=null` no executor, sem relaxar checagens de sequências, prontidão, histórico, faulted e IDs. Criar `tests/test_c2_v03_cold.py` com cinco testes unitários baseados diretamente em `state()` das classes reais.
+- **Limite do aceite:** correção e testes estão publicados no repositório, porém **não foram executados no Windows**; serão esperados **50 testes** (45 anteriores + 5 novos) após atualização da branch. A bancada V03 pode ser reutilizada **somente após novo preflight** (não houve mutação pelo runner na tentativa bloqueada). Não reconstruir imagem nem reiniciar contêineres para esta correção.
+
+### Próximo E08-D14B-R2
+
+- Confirmar branch limpa e HEAD, compilar, executar 50 testes e, **apenas se aprovados**, executar `python -m c2.v03_cold --output <diretório novo>`.
+- O executor reconfirma topologia e todos os estados frios antes de enviar qualquer POST; se `status=PASS`, validar `cases_completed=10`, HTTP 400/404/415/422 correspondentes e igualdade dos três estados em cada caso.
+- Se qualquer caso falhar, preservar a pasta da rodada e os contêineres, sem repetir automaticamente.
