@@ -255,3 +255,27 @@ Códigos de saída e logs devem ser preservados e analisados antes de classifica
 - Verificados CRC/ZIP, 14 arquivos, 13 hashes internos, consistência de todos os JSON/JSONL, efeitos, transições, estados, notificações e causalidade; 7 entradas, 5 atributos, 3 condições, 2 efeitos (passos 3/7). Igualdade com fixture e oráculo independentes na rodada C2.
 - Captura Docker Desktop recebida, SHA-256 `9ff6d97de22ea9693b1dc1056b46813f2bae156f4863352cfc277816280f26fe`. Sem benchmark e sem confirmação de persistência de estado após eventual reinício dos contêineres.
 - Relatório detalhado: [`etapa-08-auditoria-zip.md`](etapa-08-auditoria-zip.md). A cópia binária do ZIP permanece na conversa e na máquina do acadêmico; **não adicionada ao GitHub**.
+
+## 22. E08-D13 — estado após nova inicialização dos processos (15/11/2026)
+
+- Evidência original: `image(20261115-143451).png`, **110.952 bytes**, SHA-256 calculado diretamente: `241be744c5cfe522993163a064e236f0be86477d398e3e50d6c4a23d7a643e1e`. Original ainda na conversa, não enviado ao GitHub.
+- Git: fast-forward até `f6e087f974d1359b63606077ce538c4542d5dcc4`; branch `tcc2/desenvolvimento`, status local limpo.
+- Rede existente: `tcc2-pon-c2`, driver `bridge`, `Internal=True`. Três contêineres `Running=True`, IDs preservados (prefixos `ff926f8bb101`, `41e2c1a01485`, `2ef28e9f713c`).
+- Os serviços exibiram `StartedAt` em **15/11/2026 14:16:06–14:16:08 UTC**, embora criados anteriormente. `RestartCount=0` nos três. Esses campos **não identificam a causa da nova inicialização** e o contador não exclui reinício manual/externo.
+- `GET /state` em todos: `ready=false`, `run_id=null`, `snapshot_version=null`; atributos e sequências zerados em produtor e avaliador; `condition=null` e `condition_sequence=0` no avaliador; `approved=null`, `effects=[]`, `condition_sequence=0` no executor; `faulted=false` nos dois últimos. O estado frio retornou sem histórico da rodada `c0-minimo-v1`.
+- **Decisão:** E08-D13 aprovado como diagnóstico observacional (sem modificar estado). Isso é compatível com ausência de persistência entre inicializações, já documentada no código; **não é teste formal de recuperação F1/V10** porque não houve protocolo de falha/replay instrumentado.
+- **Preservação:** E08-D11/D12 permanecem aprovados para a rodada comprovada pelo ZIP, que não deve ser repetida com o mesmo identificador por conveniência. Captura de Docker Desktop agregada não constitui benchmark.
+
+## 23. Planejamento dos casos adversariais C2 pós-auditoria
+
+| ID do protocolo Etapa 05 | Cobertura C2 até E08-D13 | Próxima abordagem |
+|---|---|---|
+| V01/V02 | Aprovados na fixture de 7 passos, auditoria ZIP E08-D12 | Preservar referência e não repetí-la |
+| V03 | Testes unitários anteriores e contratos verificados em C1; **não executado adversarialmente em C2** | Verificar 4xx e igualdade de `/state` antes/depois, em rodada de teste separada |
+| V04 | Rastreabilidade de mensagens e contêineres distintos comprovada em E08-D11/D12 | Usar logs auditados; não confundir PID 1 com ID Docker |
+| V05 | Não testado adversarialmente na rede Docker | Reenvio controlado de `event_id`, validar duplicação sem novo efeito |
+| V06 | Não testado adversarialmente na rede Docker | Lacunas/ordem em sessão exclusiva, sem corromper rodada de referência |
+| V07 | Snapshot inicial por HTTP aprovado em E08-D10 | A disputa ACK/alteração durante snapshot não foi reproduzida em Docker |
+
+- **Próximo incremento E08-D14:** preparar sessão independente para V03 (contratos 4xx sem mutação). Antes de qualquer POST, conferir rede, imagem, novos nomes exclusivos e não tocar nos três contêineres C2 originais nem nos nós kind. Cada sessão deve ter `run_id` distinto, logs e hashes próprios.
+- **Não concluído:** todas as variações adversariais V03/V05/V06/V07, F1/V10, persistência e benchmark. Kubernetes da aplicação permanece Etapas 09–10.

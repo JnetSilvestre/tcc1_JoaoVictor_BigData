@@ -62,3 +62,9 @@
 - Auditoria sem executar a aplicação: **7** chamadas, **5** notificações de atributo, **3** notificações de condição, **2** efeitos passos **3 e 7**, logs 21/15/7; verificações de causa, ordem, ACK e estados finais exatas. `validation.json`: PASS, 11/11 verdadeiros. Equivalência limitada à fixture ensaiada.
 - Screenshot Docker Desktop de 15/11: três C2 ativos e kind ativo; não inferir benchmark dos totais de CPU/RAM. Possível reinício recente; não pressupor estado anterior persistente.
 - Laudo completo: `docs/tcc2/etapa-08-auditoria-zip.md`. **Próximo E08-D13**: preflight somente leitura e preparação de testes adversariais em rodada separada, sem repetir D11 nem avançar ao Kubernetes.
+
+## E08-D13 — estado frio observado após nova inicialização (15/11/2026)
+- Git no Windows em `f6e087f974d1359b63606077ce538c4542d5dcc4`, limpo; rede `tcc2-pon-c2` bridge e interna; mesmos IDs dos três contêineres, Running=true.
+- `StartedAt` em 15/11 às 14:16:06–14:16:08 UTC e `RestartCount=0`; sem evidência da causa. HTTP `/state` retornou `ready=false`, `run_id=null`, versão do snapshot nula, sequências 0, sem efeitos. Processo iniciado novamente com estado vazio (não prova recuperação funcional).
+- Captura original `image(20261115-143451).png`, 110952 bytes, SHA-256 `241be744c5cfe522993163a064e236f0be86477d398e3e50d6c4a23d7a643e1e`.
+- E08-D11/D12 preservados no ZIP auditado (não repetir). Próximo E08-D14: preparar nova sessão separada para V03 (HTTP 4xx sem mutação), depois V05/V06, e V07 adicional somente se instrumentado.
