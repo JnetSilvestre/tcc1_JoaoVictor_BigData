@@ -28,6 +28,8 @@ ROOT = Path(__file__).resolve().parents[1]
 CONTEXT = "kind-tcc2-pon"
 NS = "tcc2-pon"
 RUN_ID = "c3-e09-i03-v1"  # snapshot JA executado e comprovado em E09-I03
+SCENARIO = "C3"
+EXECUTION_LABEL = "E09-I04"
 ROLES = ("attribute-source", "logic-engine", "rule-executor")
 IMAGE = "tcc2-pon:c2-e08-dbefcd2cf3d2"
 IMAGE_ID = "sha256:b9c714f32e359e7a21df264a926a840191c3ffb6d53bb0483f5e161143d8667a"
@@ -219,18 +221,18 @@ def run(output):
     output.mkdir(parents=True, exist_ok=False)
     input_file = ROOT / "fixtures" / "c0_minimo.jsonl"
     expected_file = ROOT / "fixtures" / "c0_esperado.jsonl"
-    report = {"scenario": "C3", "run_id": RUN_ID, "status": "FAIL",
+    report = {"scenario": SCENARIO, "run_id": RUN_ID, "status": "FAIL",
               "started_changes": False, "checks": {}}
     manifest = {
-        "scenario": "C3", "run_id": RUN_ID, "timestamp_utc": utc_now(),
+        "scenario": SCENARIO, "run_id": RUN_ID, "timestamp_utc": utc_now(),
         "context": CONTEXT, "namespace": NS, "image_tag": IMAGE,
         "approved_image_id": IMAGE_ID, "image_revision": BUILD_SHA,
         "host_python": platform.python_version(), "host_os": platform.platform(),
         "git_sha": git_sha(), "original_input_sha256": sha256_file(input_file),
         "original_expected_sha256": sha256_file(expected_file),
-        "note": "Uma rodada funcional C3, tres Pods; sem benchmark nem medicao CPU/RAM",
+        "note": f"Uma rodada funcional {SCENARIO}, tres Pods; sem benchmark nem medicao CPU/RAM",
     }
-    print("E09-I04: preparando evidencias em", output, flush=True)
+    print(f"{EXECUTION_LABEL}: preparando evidencias em", output, flush=True)
     shutil.copyfile(input_file, output / "fixture-original.jsonl")
     shutil.copyfile(expected_file, output / "expected-original.jsonl")
     source_pod = None
@@ -281,7 +283,7 @@ def run(output):
         manifest["nodes"] = topo_start["nodes"]
         write_json(output / "manifest.json", manifest)
 
-        print("E09-I04 PRECHECK: PASS (snapshot unico, estado inicial, imagem e oraculo)", flush=True)
+        print(f"{EXECUTION_LABEL} PRECHECK: PASS (snapshot unico, estado inicial, imagem e oraculo)", flush=True)
         values = {"atA": 0, "atB": 0}
         sequences = {"atA": 0, "atB": 0}
         for row in rows:
@@ -411,7 +413,7 @@ def run(output):
             for item in sorted(output.iterdir()):
                 if item.is_file():
                     archive.write(item, arcname=item.name)
-        print("E09-I04:", report["status"], flush=True)
+        print(f"{EXECUTION_LABEL}:", report["status"], flush=True)
         if report["status"] != "PASS":
             print("ERRO:", report.get("error"), flush=True)
             print("POST iniciado:", report["started_changes"], flush=True)
@@ -433,7 +435,7 @@ def main():
     try:
         return 0 if run(args.output) else 1
     except (OSError, ValueError) as error:
-        print(f"E09-I04 BLOQUEADO antes da rodada: {error}", file=sys.stderr)
+        print(f"{EXECUTION_LABEL} BLOQUEADO antes da rodada: {error}", file=sys.stderr)
         return 2
 
 
