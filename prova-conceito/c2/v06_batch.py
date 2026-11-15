@@ -39,7 +39,7 @@ def read_states():
     result = {}
     for role, name in CONTAINERS.items():
         answer = json.loads(call("docker", "exec", name, "python", "-c", GET, "/state"))
-        if answer != {"status": 200, "body": answer.get("body")}:
+        if answer.get("status") != 200 or not isinstance(answer.get("body"), dict):
             raise ValueError("GET /state falhou: " + role)
         result[role] = answer["body"]
     return result
@@ -118,6 +118,34 @@ def preflight(folder):
             and validation.get("new_effects") == 0
             and validation.get("new_logic_mutations") == 1):
         raise ValueError("snapshot auditado nao aprovado")
+    event = read_json(folder / "event.json")
+    validate_attribute_event(event)
+    if (event["event_id"] != f"{RUN_ID}:atA:2"
+            or event["sequence"] != 2 or event["value"] != 5):
+        raise ValueError("evento original E08-D18F divergente")
+    if read_json(folder / "http-response.json") != {
+        "status": 409, "body": {"error": EXPECTED_ERROR_GAP},
+    }:
+        raise ValueError("resposta anterior E08-D18F divergente")
+    if read_json(folder / "states-before.json") != read_json(folder / "states-after.json"):
+        raise ValueError("E08-D18F alterou estados")
+    for prior_role in ROLES:
+        old_items = parse_logs(
+            (folder / f"{prior_role}-before.jsonl").read_text(encoding="utf-8"))
+        new_items = parse_logs(
+            (folder / f"{prior_role}-after.jsonl").read_text(encoding="utf-8"))
+        expected_additions = 1 if prior_role == "logic-engine" else 0
+        if (new_items[:len(old_items)] != old_items
+                or len(new_items) != len(old_items) + expected_additions):
+            raise ValueError("logs anteriores E08-D18F divergentes: " + prior_role)
+        if expected_additions:
+            last = new_items[-1]
+            if (last.get("event_type") != "mutation"
+                    or last.get("path") != "/notifications/attribute"
+                    or last.get("payload") != event
+                    or last.get("status") != 409
+                    or last.get("response") != {"error": EXPECTED_ERROR_GAP}):
+                raise ValueError("HTTP anterior E08-D18F divergente")
     prior_meta = read_json(folder / "manifest.json")
     meta = topology()
     for key in ("network",):
