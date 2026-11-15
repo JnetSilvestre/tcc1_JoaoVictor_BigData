@@ -248,3 +248,10 @@ Códigos de saída e logs devem ser preservados e analisados antes de classifica
 - Verificar no Windows a lista e hashes de cada arquivo coberto em `checksums.sha256`; comparar arquivos presentes; empacotar o diretório inteiro em um ZIP e calcular seu SHA-256.
 - Solicitar ZIP nesta conversa para auditoria dos **bytes**: recalcular hashes de todos os artefatos e verificar conteúdo/contagens/cadeias causais independentemente. Só depois registrar aprovação documental da auditoria.
 - Não repetir snapshot nem as sete requisições de alteração. Outros casos V01–V07 no Docker, logs adicionais, análise de limitações e encerramento E08 ainda precisarão ser planejados, sem prometer novos resultados.
+
+## 21. E08-D12 — auditoria por bytes aprovada (15/11/2026)
+
+- O ZIP original `c2-20261113-182248.zip` foi recebido e auditado diretamente: 7.417 bytes; SHA-256 `e90a3b1741b6b68d89ca0ea3fecb1583ab869e8cdfca0938db8bceeb8567de6e`.
+- Verificados CRC/ZIP, 14 arquivos, 13 hashes internos, consistência de todos os JSON/JSONL, efeitos, transições, estados, notificações e causalidade; 7 entradas, 5 atributos, 3 condições, 2 efeitos (passos 3/7). Igualdade com fixture e oráculo independentes na rodada C2.
+- Captura Docker Desktop recebida, SHA-256 `9ff6d97de22ea9693b1dc1056b46813f2bae156f4863352cfc277816280f26fe`. Sem benchmark e sem confirmação de persistência de estado após eventual reinício dos contêineres.
+- Relatório detalhado: [`etapa-08-auditoria-zip.md`](etapa-08-auditoria-zip.md). A cópia binária do ZIP permanece na conversa e na máquina do acadêmico; **não adicionada ao GitHub**.

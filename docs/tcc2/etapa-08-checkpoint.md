@@ -55,3 +55,10 @@
 - **Não rerodar o runner** nem reenviar passos ou snapshot na mesma rodada. Preservar os contêineres e seus logs.
 - Verificar no Windows as 13 entradas de `checksums.sha256` e empacotar a pasta de execução em ZIP. Enviar ZIP e seu SHA-256 para inspeção independente. Prints só comprovam as saídas exibidas, não substituem análise dos arquivos completos.
 - Depois decidir se é necessária rodada separada e limpa para casos Vxx adversariais, sem avançar para Kubernetes.
+
+## E08-D12 — auditoria independente aprovada (15/11/2026)
+- ZIP `c2-20261113-182248.zip`, 7.417 bytes, SHA-256 `e90a3b1741b6b68d89ca0ea3fecb1583ab869e8cdfca0938db8bceeb8567de6e` (original enviado nesta conversa; ainda não versionado no repositório).
+- Integridade: ZIP/CRC correto; **14/14 arquivos**, **13/13 hashes SHA-256 internos corretos**, sem entradas extras/duplicadas; JSONs lidos. Conteúdo igual ao da fixture/esperado versionados após normalizar CRLF→LF.
+- Auditoria sem executar a aplicação: **7** chamadas, **5** notificações de atributo, **3** notificações de condição, **2** efeitos passos **3 e 7**, logs 21/15/7; verificações de causa, ordem, ACK e estados finais exatas. `validation.json`: PASS, 11/11 verdadeiros. Equivalência limitada à fixture ensaiada.
+- Screenshot Docker Desktop de 15/11: três C2 ativos e kind ativo; não inferir benchmark dos totais de CPU/RAM. Possível reinício recente; não pressupor estado anterior persistente.
+- Laudo completo: `docs/tcc2/etapa-08-auditoria-zip.md`. **Próximo E08-D13**: preflight somente leitura e preparação de testes adversariais em rodada separada, sem repetir D11 nem avançar ao Kubernetes.

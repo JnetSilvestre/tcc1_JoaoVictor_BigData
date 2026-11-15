@@ -1,6 +1,6 @@
 # STATUS ATUAL — TCC2
 
-Atualizado em: 2026-11-13
+Atualizado em: 2026-11-15
 
 ## Leitura rápida — última situação verificada
 
@@ -11,7 +11,8 @@ Atualizado em: 2026-11-13
 - **E08-I03 concluído no Windows (E08-D08, 13/11/2026):** no commit `dbefcd2cf3d2fbf220cff8eda34d52189e08192a`, resolução do manifesto `linux/amd64` corrigido (`Registro: 0`), build (`Build: 0`), imports (`Imports: 0`) e CLI (`CLI: 0`) aprovados; imagem `tcc2-pon:c2-e08-dbefcd2cf3d2`, Python 3.13.18, UID 10001, Git limpo. Dois PNGs originais e hashes SHA-256 registrados em `docs/tcc2/etapa-08-diagnostico-rede.md`.
 - **E08-I04 e E08-D10 aprovados no Windows:** três contêineres independentes em rede interna `tcc2-pon-c2`, HTTP e snapshot inicial propagados corretamente; evidências em `docs/tcc2/etapa-08-diagnostico-rede.md`.
 - **E08-D11 aprovado na execução Windows (13/11/2026):** HEAD do código de ensaio `5eee8e7a7c931491d3668cc9472a46191de6180c`; compilação 0; 45/45 testes aprovados em 11,028 s (duração da suíte); `python -m c2.runner` retornou 0 com `validation.json` exibindo `PASS` e 11 verificações `true`. Dois efeitos nos passos 3 e 7, comparações exibidas `matches_manual`, `matches_oracle`, `matches_c0` = true. Pasta local de evidência `prova-conceito/resultados-locais/c2-20261113-182248`. Três capturas/hashes no diagnóstico. **Não verificado ainda de forma independente:** os bytes dos 13 artefatos cobertos por `checksums.sha256`.
-- **Próximo E08-D12:** auditoria do ZIP de evidências reais e validação dos hashes/conteúdos. **Não reexecutar fixture nos contêineres atuais**. Equivalência comprovada apenas para a entrada ensaiada; outras condições, benchmark de desempenho e Kubernetes permanecem fora deste aceite.
+- **E08-D12 APROVADO por auditoria independente do ZIP (15/11/2026):** `c2-20261113-182248.zip` (7.417 bytes, SHA-256 `e90a3b1741b6b68d89ca0ea3fecb1583ab869e8cdfca0938db8bceeb8567de6e`), 14/14 arquivos válidos, 13/13 SHA-256 internos conferidos, 11/11 checks do relatório verdadeiros; análise independente de 7 chamadas, 5 notificações de atributo, 3 de condição, 2 efeitos nos passos 3/7, mesmos efeitos de C0/fixture/oráculo e estados finais coerentes. Os originais foram recebidos na conversa, **ZIP não versionado** no GitHub. Detalhes em `docs/tcc2/etapa-08-auditoria-zip.md`.
+- **Próximo E08-D13:** diagnóstico não destrutivo do estado atual de Docker (captura de 15/11 mostra contêineres C2 ativos, mas inicializados recentemente); depois selecionar casos adversariais C2 pertinentes a V01–V07 em rodada separada. Sem benchmark, Kubernetes da aplicação ou distribuição física entre máquinas.
 - Branch permanente: `tcc2/desenvolvimento`; preservar `master` e a referência original `JnetSilvestre/codigoPon@c2d525b5c675820806af34348e259bff32a6bc5f`.
 
 ## Etapas
