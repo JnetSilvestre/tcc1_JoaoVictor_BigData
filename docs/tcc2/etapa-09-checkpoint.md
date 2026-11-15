@@ -107,3 +107,16 @@ Comando unico na pasta prova-conceito, depois do Git pull --ff-only:
     python -m c3.runner --output resultados-locais/c3-e09-i04-v1
 
 O diretorio resultados-locais e ignorado pelo Git. Preservar ZIP e hash fora do repositorio. Em FAIL, nao repetir POSTs nem snapshot: diagnosticar primeiro. C4/V09 depende de nova rodada isolada e estrategia de reinicializacao, sem inferir alta disponibilidade ou migracao de estado.
+
+
+## 8. E09-I04 — execucao funcional C3 e auditoria direta APROVADAS (15/11/2026)
+
+O academico executou uma unica vez o runner c3.runner apos git pull --ff-only ate 8669e8364118e30333c90fd798763c18a23fb1ea. Preflight de estado inicial e oraculo PASS; sete POSTs HTTP 200; E09-I04: PASS, E09_I04_EXIT: 0, validation.json com 14/14 checks verdadeiros.
+
+**ZIP bruto recebido e inspecionado diretamente:** c3-e09-i04-v1.zip, **27.165 bytes**, SHA-256 aad71cea5e90b9c6a334f66180f54dc5609a024b907b7c7f121f6ed4d5855b83, identico ao PowerShell e ao Get-FileHash. 28/28 entradas unicas, CRC OK, 27/27 hashes internos corretos com cobertura completa das demais entradas. Auditoria documental adicional: **25/25 verificacoes independentes** aprovadas, incluindo fixture, HTTP, IDs, estados, logs, causalidade e oraculo. **Laudo completo:** docs/tcc2/etapa-09-auditoria-c3-zip.md.
+
+**Resultados reais:** passos 1 e 4 redundantes; 5 alteracoes efetivas com 5 notificacoes identicas nos logs emissor/receptor; 3 transicoes de condicao; exatamente 2 efeitos nos passos 3 e 7; effects == manual == oraculo independente == C0 (ordem, multiplicidade e IDs de correlacao). Estado final atA=6, atB=1, watermarks atA=2/atB=3, condition_sequence=3, sem fault, sem pending. Tres Pod UIDs/container IDs distintos, restarts=0, identidades mantidas no inicio/fim.
+
+**Topologia e conclusao:** tres Pods/Services C3 na mesma VM/no virtual tcc2-pon-worker, em um unico computador fisico. **Etapa 09 concluida funcionalmente em C3 minimo e V08 aprovado nesse escopo.** V09 NAO demonstrado; C4 multino pendente. V07 continua parcial globalmente; V10/V12 nao executados; V11 parcial globalmente. Nenhum benchmark foi realizado. Os ZIPs brutos permanecem fora do GitHub; arquivar originais preservando hashes.
+
+**Proximo:** Etapa 10/C4, diagnostico read-only de taints/tolerations e recursos para planejar um novo namespace e uma nova rodada que distribua pelo menos dois papeis entre os dois nos kind, SEM reiniciar, escalar ou alterar os Pods C3 ja testados.
