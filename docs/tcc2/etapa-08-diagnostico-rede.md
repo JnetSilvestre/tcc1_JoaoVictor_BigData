@@ -328,3 +328,18 @@ Códigos de saída e logs devem ser preservados e analisados antes de classifica
 - Ler localmente `http-cases.json` via `python -c` para imprimir as **10** entradas e conferir os códigos e `state_unchanged`, sem executar requisições HTTP.
 - Verificar hashes do `checksums.sha256`, criar ZIP da pasta `c2-v03-r2-20261115-140543`, calcular SHA-256 do ZIP, enviar à conversa para auditoria direta.
 - Não reiniciar/destruir recursos; não utilizar valores de CPU/RAM agregados do Docker Desktop como medidas de desempenho da aplicação.
+
+## 28. E08-D15 — leitura independente do relatório HTTP V03 pelo PowerShell (15/11/2026)
+
+- Evidência real: captura original `image(20261115-171137).png` (71.293 bytes), SHA-256 calculado dos bytes recebidos `d098d72e6da1d1a99c490d41dd25c14f2fe016403fe98475a99af5ad1db1a62e`. A captura original permanece nesta conversa; não foi adicionada ao GitHub.
+- Comando de **somente leitura** executado no host Windows sobre `prova-conceito/resultados-locais/c2-v03-r2-20261115-140543/http-cases.json`, via `json.loads(Path(...).read_text(encoding='utf-8'))`; sem HTTP ou repetição dos casos adversariais.
+- Saída `TOTAL: 10`; registros exibidos: `S01 422/422 True; S02 422/422 True; S03 422/422 True; S04 400/400 True; S05 415/415 True; S06 422/422 True; S07 422/422 True; S08 422/422 True; S09 422/422 True; S10 404/404 True`. Todos os dez registros apresentaram `actual_status == expected_status` e `state_unchanged=True`, cobrindo produtor (S01–S07, S10), avaliador (S08) e executor (S09).
+- `Get-FileHash -Algorithm SHA256` mostrou hash **`95cd9cc95a4dd03bd83113cd6380f4897bb64fd989bc2850791190389a050113`** para `http-cases.json`. Este hash foi **observado na captura**, não recalculado a partir dos bytes JSON, que ainda não foram entregues à IA.
+- Última linha `E08-D15: LEITURA CONCLUIDA`, sem exceção; a verificação de dez casos pelo Python finalizou com êxito. O problema anterior de tabela vazia no PowerShell foi sanado por leitura direta dos registros e não representa falta de casos.
+- **Aceite E08-D15:** conferência textual dos dez casos e integridade lógica do relatório no Windows; **ainda não equivale à auditoria independente dos nove arquivos**. A rodada V03 fria está aprovada operacionalmente para 10 entradas; V03 após snapshot continua pendente.
+
+### Próximo E08-D16 — integridade e ZIP para auditoria
+
+- Conferir por `Get-FileHash` todas as oito entradas declaradas em `checksums.sha256`; verificar que há exatamente nove arquivos (oito dados + manifesto SHA-256). Não alterar arquivos da rodada, não repetir HTTP nem reiniciar contêineres.
+- Criar `resultados-locais/c2-v03-r2-20261115-140543.zip` (sem sobrescrever outro ZIP), conferir entradas e SHA-256 do ZIP, anexar o ZIP à conversa para auditoria direta dos bytes.
+- Somente após a auditoria binária registrar aceite de integridade E08-D16 e avançar para outras variações V03/V05/V06/V07 com novos cenários independentes.

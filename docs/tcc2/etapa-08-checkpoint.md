@@ -85,3 +85,8 @@
 - Runner V03 frio: `PASS`, 10/10 casos, `V03: 0`, pasta `resultados-locais/c2-v03-r2-20261115-140543`. Prints `image(20261115-170706).png` SHA `87ffe23584d5fe656acf6497baf4edc83ced36454827d163d005bc52e712cfa3`; `image(20261115-170715).png` SHA `a0586d2f9f7f9ee63671185c2379e0f934b639bf004838882abd58faf691fc21`.
 - Tabela PowerShell das respostas veio sem linhas: consultar `http-cases.json` diretamente e auditar os bytes do ZIP antes de registrar integridade independente. Execução real aprovada no escopo V03 frio, auditoria binária pendente.
 - Próximo E08-D15: leitura só de arquivos, validação de hashes e ZIP; **não reexecutar mensagens/fixture, nem tocar no kind**.
+
+## E08-D15 aprovado — leitura dos 10 registros V03 (15/11/2026)
+- Screenshot `image(20261115-171137).png`, 71293 bytes, SHA-256 `d098d72e6da1d1a99c490d41dd25c14f2fe016403fe98475a99af5ad1db1a62e`.
+- Leitura direta de `http-cases.json` no Windows: `TOTAL: 10`; S01–S10 com status observado igual ao esperado (422, 422, 422, 400, 415, 422, 422, 422, 422, 404), `state_unchanged=True` em todos. Hash de `http-cases.json` **exibido no PowerShell** `95cd9cc95a4dd03bd83113cd6380f4897bb64fd989bc2850791190389a050113`, ainda não recalculado independentemente por IA.
+- Problema de formatação da tabela anterior esclarecido, nenhum POST adicional. **Próximo E08-D16:** verificar 8 hashes internos, empacotar 9 arquivos em ZIP e enviar para auditoria binária; não rerodar V03, nem tocar em kind ou contêineres C2.
