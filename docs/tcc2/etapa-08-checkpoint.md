@@ -68,3 +68,8 @@
 - `StartedAt` em 15/11 às 14:16:06–14:16:08 UTC e `RestartCount=0`; sem evidência da causa. HTTP `/state` retornou `ready=false`, `run_id=null`, versão do snapshot nula, sequências 0, sem efeitos. Processo iniciado novamente com estado vazio (não prova recuperação funcional).
 - Captura original `image(20261115-143451).png`, 110952 bytes, SHA-256 `241be744c5cfe522993163a064e236f0be86477d398e3e50d6c4a23d7a643e1e`.
 - E08-D11/D12 preservados no ZIP auditado (não repetir). Próximo E08-D14: preparar nova sessão separada para V03 (HTTP 4xx sem mutação), depois V05/V06, e V07 adicional somente se instrumentado.
+
+## E08-D14A aprovado — bancada isolada para V03 (15/11/2026)
+- Screenshot `image(20261115-144612).png`, tamanho 100603 bytes, SHA-256 `44ceda0a52fb8ed5094fa27257bb877d23f99353637fdbfd7d4ba140264bc7c0`.
+- Git Windows em `2cf3b9c5ab862ec2f705f705be9ff4a18cf1c4ac`; rede `tcc2-pon-c2-v03` bridge interna; novos `tcc2-v03-*` Running, três IDs distintos, ausência de portas host e estados frios. A bancada principal C2 e kind não foram usados.
+- Próximo E08-D14B: `python -m c2.v03_cold --output resultados-locais/c2-v03-cold-<timestamp>`, após compileall e os 45 testes de regressão. Checa 10 respostas 4xx, estado invariável dos três serviços e logs/hashes. Ferramenta publicada, **ainda não testada no Windows**.

@@ -279,3 +279,20 @@ Códigos de saída e logs devem ser preservados e analisados antes de classifica
 
 - **Próximo incremento E08-D14:** preparar sessão independente para V03 (contratos 4xx sem mutação). Antes de qualquer POST, conferir rede, imagem, novos nomes exclusivos e não tocar nos três contêineres C2 originais nem nos nós kind. Cada sessão deve ter `run_id` distinto, logs e hashes próprios.
 - **Não concluído:** todas as variações adversariais V03/V05/V06/V07, F1/V10, persistência e benchmark. Kubernetes da aplicação permanece Etapas 09–10.
+
+## 24. E08-D14A — bancada adversarial V03 preparada no Windows (15/11/2026)
+
+- Captura original `image(20261115-144612).png` recebida nesta conversa; **100.603 bytes**, SHA-256 real `44ceda0a52fb8ed5094fa27257bb877d23f99353637fdbfd7d4ba140264bc7c0`. Original não incorporado ao repositório.
+- Git Windows sincronizado em `2cf3b9c5ab862ec2f705f705be9ff4a18cf1c4ac`, branch `tcc2/desenvolvimento`.
+- Imagem aprovada `tcc2-pon:c2-e08-dbefcd2cf3d2`, revisão OCI `dbefcd2cf3d2fbf220cff8eda34d52189e08192a`, sem rebuild.
+- Criada rede isolada `tcc2-pon-c2-v03`: `Driver=bridge`, `Internal=true`; novos contêineres `tcc2-v03-rule-executor`, `tcc2-v03-logic-engine`, `tcc2-v03-attribute-source`, todos `Running=true`, IDs distintos e sem portas publicadas. Três consultas HTTP locais de estado retornaram `ready=false`, `run_id=null`.
+- A saída exibiu `E08-D14A: AMBIENTE V03 PREPARADO`. **Aprovado somente preparo da bancada**, não V03 funcional; não houve snapshot nem mensagem adversarial enviada.
+- A rede/instâncias da rodada principal C2, o ZIP auditado e os nós kind não foram alterados por este procedimento.
+
+## 25. E08-D14B — executor de V03 em estado frio (preparado, não executado)
+
+- Arquivo novo `prova-conceito/c2/v03_cold.py`, executado **no host Windows**; a imagem Python dos contêineres não muda.
+- O executor valida Git limpo, branch, imagem OCI, IDs de contêiner únicos, rótulo `tcc2.test=V03`, rede bridge interna e estado não inicializado; em seguida aplica **10 requisições deliberadamente inválidas**, cobrindo 400, 404, 415 e 422, sem produzir snapshot válido.
+- Para cada tentativa, coleta e compara `/state` dos três serviços **antes e depois**, exigindo ausência de mutação, status exato e erro explícito. Verifica readiness 503 antes da rodada; salva estados, respostas, manifesto, logs e hashes SHA-256 na pasta ignorada `resultados-locais/`.
+- **Não aprovado ainda:** teste real dos 4xx nos contêineres. Primeiro `compileall` e regressão de 45 testes previamente existentes no Windows; depois executar o novo executor uma única vez.
+- Posteriormente, V03 com serviços inicializados deve ser analisado em rodada própria. V05/V06/V07 permanecem pendentes.
