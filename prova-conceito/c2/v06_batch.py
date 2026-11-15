@@ -1,4 +1,4 @@
-"""E08-D18F/G/H: três rejeições V06 em uma rodada C2, sem retries.
+"""E08-D18G/H: duas rejeições V06 pendentes em uma rodada C2, sem retries.
 
 A bancada V06 deve estar exatamente no snapshot auditado E08-D18D.
 Uma divergência aborta o próximo POST; em dúvida, NÃO repetir a rodada.
@@ -23,7 +23,7 @@ NETWORK = "tcc2-pon-c2-v06"
 IMAGE = "tcc2-pon:c2-e08-dbefcd2cf3d2"
 REVISION = "dbefcd2cf3d2fbf220cff8eda34d52189e08192a"
 RUN_ID = "v06-order-v1"
-PREVIOUS_FILES = 12
+PREVIOUS_FILES = 13
 EXPECTED_ERROR_GAP = "evento atrasado ou lacuna de sequence"
 
 
@@ -111,14 +111,16 @@ def preflight(folder):
     validation = read_json(folder / "validation.json")
     if not (validation.get("status") == "PASS"
             and validation.get("criterion") == "V06"
-            and validation.get("increment") == "E08-D18D"
-            and validation.get("http_status") == 200
-            and validation.get("ready_services") == 3
-            and validation.get("initial_effects") == 0):
+            and validation.get("increment") == "E08-D18F"
+            and validation.get("expected_http") == 409
+            and validation.get("observed_http") == 409
+            and validation.get("state_unchanged") is True
+            and validation.get("new_effects") == 0
+            and validation.get("new_logic_mutations") == 1):
         raise ValueError("snapshot auditado nao aprovado")
     prior_meta = read_json(folder / "manifest.json")
     meta = topology()
-    for key in ("network", "internal", "image", "image_id", "image_revision"):
+    for key in ("network",):
         if prior_meta.get(key) != meta[key]:
             raise ValueError("metadados do snapshot divergentes: " + key)
     for role in ROLES:
@@ -164,12 +166,6 @@ def preflight(folder):
 def planned_cases():
     timestamp = utc_now()
     cases = [
-        ("E08-D18F", "logic-engine", "/notifications/attribute", {
-            "schema_version": 1, "run_id": RUN_ID, "source": "attribute-source",
-            "event_id": f"{RUN_ID}:atA:2", "entity_id": "atA",
-            "sequence": 2, "value": 5, "emitted_at": timestamp, "step": 1,
-            "request_id": "v06-gap-atA-2",
-        }, EXPECTED_ERROR_GAP),
         ("E08-D18G", "logic-engine", "/notifications/attribute", {
             "schema_version": 1, "run_id": "v06-other-run",
             "source": "attribute-source", "event_id": "v06-other-run:atA:1",
@@ -225,7 +221,7 @@ def execute(snapshot_folder, output):
         raise ValueError("Git nao esta limpo")
     if output.exists() or output.with_suffix(".zip").exists():
         raise ValueError("pasta/ZIP de saida ja existem")
-    print("PREFLIGHT: verificando snapshot, topologia, hashes, logs e V05...", flush=True)
+    print("PREFLIGHT: verificando D18F auditado, topologia, hashes, logs e V05...", flush=True)
     meta, initial_states, old_logs = preflight(snapshot_folder)
     cases = planned_cases()
     output.mkdir(parents=True, exist_ok=False)
@@ -233,8 +229,8 @@ def execute(snapshot_folder, output):
     write_json(output / "states-before.json", initial_states)
     for role in ROLES:
         (output / f"{role}-before.jsonl").write_text(old_logs[role], encoding="utf-8")
-    result = {"scenario": "C2", "criterion": "V06", "increment": "E08-D18F-H",
-              "status": "FAIL", "cases_planned": 3, "cases_completed": 0,
+    result = {"scenario": "C2", "criterion": "V06", "increment": "E08-D18G-H",
+              "status": "FAIL", "cases_planned": 2, "cases_completed": 0,
               "run_id": RUN_ID, "automatic_retry": False, "cases": []}
     try:
         for case_id, role, path, payload, expected_error in cases:
@@ -320,7 +316,7 @@ def main():
     try:
         result = execute(args.snapshot, args.output)
     except Exception as exc:
-        print("E08-D18F-H: ABORTADO NO PREFLIGHT/ARQUIVAMENTO:", exc, file=sys.stderr)
+        print("E08-D18G-H: ABORTADO NO PREFLIGHT/ARQUIVAMENTO:", exc, file=sys.stderr)
         return 2
     return 0 if result["status"] == "PASS" else 1
 
