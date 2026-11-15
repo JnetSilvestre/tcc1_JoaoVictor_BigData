@@ -30,6 +30,8 @@ Atualizado em: 2026-11-15
 
 - **E08-D17H preparado, não executado:** script `prova-conceito/c2/v05_conflict.py` implementa preflight dos hashes da captura E17E e rodada D17F, estados/logs e rede, altera unicamente `value` de 5 para 6 no mesmo `event_id` e envia **uma tentativa** esperando HTTP 409 sem mutação. Testes de preparação em `tests/test_c2_v05_conflict.py` (7 testes novos) **ainda não executados no Windows**. Não reconstruir imagem, não repetir replay antigo e interromper após eventual erro para preservar logs.
 
+- **E08-D17H aprovado operacionalmente no Windows (15/11/2026):** Git HEAD `5787a095045d37d24b2b141070823676277d90f0`, compilação 0, 64/64 testes aprovados (11,012 s), ensaio V05 de `event_id` conflitante status `PASS`, tentativa única, HTTP esperado/observado 409, mensagem `event_id reutilizado com payload diferente`, `state_unchanged=true`, `new_effects=0`, `new_logic_mutations=1` (registro HTTP, sem mutação funcional), código de saída 0; Git final limpo. Evidências locais `resultados-locais/c2-v05-conflict-20261115-154229`. Screenshots: `image(20261115-184410).png` 94191 bytes SHA-256 `2b1a2ada040bede5e617cd081fe1e98bfff72be05cc2848f190df1b863066c5b`, e `image(20261115-184423).png` 76959 bytes SHA-256 `b558ed6efcfc82dc685a7417634cdc0825701330816ab2f9071d32bb7bd7e727` (hash dos originais recebidos). **Ainda não há auditoria independente dos bytes da pasta/ZIP.** Próximo E08-D17I: validar 14 SHA-256 internos e arquivar em ZIP 15 arquivos, sem reenviar requisição, aguardando upload para auditoria.
+
 - Branch permanente: `tcc2/desenvolvimento`; preservar `master` e a referência original `JnetSilvestre/codigoPon@c2d525b5c675820806af34348e259bff32a6bc5f`.
 
 ## Etapas
