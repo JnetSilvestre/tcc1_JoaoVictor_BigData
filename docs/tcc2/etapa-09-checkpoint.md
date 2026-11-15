@@ -1,6 +1,6 @@
 # TCC2 — Etapa 09 / C3 — checkpoint de implantação
 
-**Data:** 15/11/2026. **Branch:** `tcc2/desenvolvimento`. **Status:** E09-D01 aceito com base na saida textual PowerShell fornecida pelo academico; E09-I01 (manifestos) publicado, **ainda nao validado no Windows nem aplicado**. `master`, codigo de execucao e imagem Docker C2 nao foram modificados por este incremento.
+**Data:** 15/11/2026. **Branch:** `tcc2/desenvolvimento`. **Status:** E09-D01 aceito com base na saida textual PowerShell fornecida pelo academico; E09-I01 aprovado no Windows por dry-run (8 recursos, retorno 0); E09-I02 aprovado no Windows pela implantacao real (3 Deployments/Pods/Services). E09-I03 ainda pendente. `master`, codigo de execucao e imagem Docker C2 nao foram modificados por este incremento.
 
 ## 1. E09-D01 — diagnostico somente leitura: resultado real informado
 
@@ -57,3 +57,22 @@ Apenas apos apresentar a saida e confirmar **dry-run 0**, considerar E09-I01 val
 - Preservar C2 V05/V06, ZIPs e hashes; nao reconstruir imagem, nao executar `docker prune` ou `kind delete`.
 
 **Aprovacao nesta publicacao:** somente arquivo de configuracao criado; nenhuma afirmacao de que o cluster executou C3, nem de teste ou benchmark concluido.
+
+
+## 5. Evidencia posterior — E09-I01 e E09-I02 aprovados (15/11/2026)
+
+**E09-I01 (Windows):** `Test-Path` confirmou arquivo YAML; `kubectl --context kind-tcc2-pon apply --dry-run=client -f infraestrutura/kubernetes/c3/manifests.yaml` reconheceu os oito recursos (Namespace, ConfigMap, tres Deployments e tres Services), `DRY_RUN_EXIT: 0`. O primeiro erro de caminho relativo foi corrigido usando `git rev-parse --show-cdup`, evitando alteracao indevida da raiz com caracteres acentuados; foi falha de invocacao, nao sintaxe de YAML.
+
+**E09-I02 (Windows):** preflight validou imagem Docker C2 `sha256:b9c714f32e359e7a21df264a926a840191c3ffb6d53bb0483f5e161143d8667a`; `kind load docker-image` carregou a mesma imagem para `tcc2-pon-control-plane` e `tcc2-pon-worker`; `kubectl apply` criou os 8 recursos; `rollout status` terminou com sucesso para os tres Deployments; `kubectl get deploy,pods,svc -o wide` mostrou 3/3 Deployments `1/1`, tres Pods `Running 1/1` `RESTARTS=0`, tres Services `ClusterIP` porta 8080. A captura enviada foi texto do PowerShell, nao screenshot nem pacote bruto versionado.
+
+**Posicionamento observado (E09-I02):**
+
+| Papel | Nome observado do Pod | Pod IP | Node |
+|---|---|---|---|
+| attribute-source | `attribute-source-84ff976f49-z6v7b` | `10.244.1.2` | `tcc2-pon-worker` |
+| logic-engine | `logic-engine-fcc5cc476-hr2ww` | `10.244.1.4` | `tcc2-pon-worker` |
+| rule-executor | `rule-executor-fdd69799c-kz2k2` | `10.244.1.3` | `tcc2-pon-worker` |
+
+V08 **parcial:** recursos implantados e Deployments disponiveis, mas transporte HTTP e fixture ainda nao comprovados. V09 **nao demonstrado:** todos os Pods da aplicacao no mesmo no virtual worker; nao ha distribuicao desta aplicacao entre nos e, em nenhuma hipotese, entre hosts fisicos. A readiness do Kubernetes consulta `/health/live`, nao significa `/health/ready` funcional (snapshot ainda nao enviado). Sem V12/benchmark.
+
+**Proximo E09-I03:** preflight HTTP sem mutacao nos tres Services por DNS interno e inspeção do estado frio; somente se aprovados, um POST exclusivo de snapshot C3, seguido de leitura e registro dos tres estados. Nao repetir POST em caso de interrupcao; diagnosticar pelos estados/logs. Preservar C2, `master`, fonte e imagem.
