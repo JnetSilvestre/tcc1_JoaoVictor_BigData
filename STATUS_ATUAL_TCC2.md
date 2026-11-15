@@ -38,6 +38,8 @@ Atualizado em: 2026-11-15
 
 - **E08-D17K aprovado operacionalmente (15/11/2026):** no HEAD `ba200b85bfe24f81b15a3f1ec838480a6cc10e49`, compilação 0, **72 testes OK em 10,837 s**, HTTP 200 `atB=1`, `ConditionChanged` `v05-dedup-v1:cn1:1` aprovado, `condition_sequence=1`, um efeito `v05-dedup-v1:rl1:1`, V05 código 0 e Git limpo. Evidências locais `resultados-locais/c2-v05-condition-first-20261115-160357` e três prints SHA-256 no checkpoint. Integridade binária **ainda pendente** de ZIP/auditoria E08-D17L. Não repetir POST. Próximo: arquivamento somente leitura e posterior replay exato de ConditionChanged.
 
+- **E08-D17L-R2 auditado independentemente (15/11/2026):** ZIP `c2-v05-condition-first-20261115-160357.zip` 8840 bytes SHA-256 `46787fb0ac9d7ae068aa9e13ef3cf3977bfdf84017acd1f61e8868709a52b587` e captura SHA `e4c148bfe59c029e23e780151069469b3a1180ed2ba3c4f6b4b3f68340b567c8`; 15/15 entradas CRC OK, 14/14 SHA-256 internos corretos. Hash verdadeiro da condição original `04687b36e59e61a38081828100ae1c5ea64d767e7358ddf16a52b0806f7d6c54` (primeira tentativa E08-D17L falhou devido a 1 caractere transcrito errado; R1 verificou `Real=Manifesto: True` e R2 arquivou sem modificar dados). Logs fonte 7→10, avaliador 7→10, executor 2→4; cadeia `atB:1→cn1:1→rl1:1` auditada com 1 efeito. Laudo `docs/tcc2/etapa-08-auditoria-v05-condicao-inicial.md`. Próximo E08-D17M: reenvio idêntico de ConditionChanged, não repetir atB=1.
+
 - Branch permanente: `tcc2/desenvolvimento`; preservar `master` e a referência original `JnetSilvestre/codigoPon@c2d525b5c675820806af34348e259bff32a6bc5f`.
 
 ## Etapas
