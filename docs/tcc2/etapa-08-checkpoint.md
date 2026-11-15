@@ -229,3 +229,17 @@
 - `states-before.json` do replay igual byte a byte a `states-after.json` da rodada original e também a `states-after.json` do replay (SHA `2a53df80250bc2b72fd614c20b586108550d84a71f6347baaa3ca0dfb805ae0f`). Logs atuais pré-replay iguais aos finais da rodada original. Fonte e avaliador logs **10→10**, sem mudanças; executor **4→5** com exatamente um novo `mutation /notifications/condition` para payload idêntico, HTTP 200 `accepted=true,duplicate=true`, **zero efeitos novos**; permanece 1 efeito pré-existente.
 - **E08-D17M e arquivamento E08-D17N auditados e aprovados no caso ensaiado**; laudo: `docs/tcc2/etapa-08-auditoria-v05-condicao-replay.md`. 80 testes na execução Windows (11,065 s) não caracterizam benchmark.
 - Próximo E08-D17O: preflight **somente leitura** na bancada V05 para testar futuramente conflito de `ConditionChanged.event_id` (payload diferente, HTTP 409, estados inalterados). V06 em bancada nova e revisão V07 permanecem pendentes. Não repetir POST anterior e não reiniciar V05.
+
+## E08-D17O / E08-D17O-R1 — preflight V05 (15/11/2026)
+
+- Print E08-D17O exibiu falha **antes de qualquer POST**: \`ValueError: inventario anterior divergente\`, porque a lista \`EVIDENCE_FILES\` do E08-D17K (14 arquivos de dados) foi aplicada indevidamente à pasta E08-D17M (13 arquivos de dados).
+- A correção E08-D17O-R1 ajustou o inventário **sem modificar evidências ou serviços**. Print recebido \`image(20261115-194634).png\`: **13/13 hashes**, evento original íntegro, relatório E08-D17M PASS, topologia e 3/3 contêineres corretos, estados HTTP 3/3, **1 efeito**, logs fonte 10, avaliador 10 e executor 5; \`Nenhum evento HTTP POST enviado.\` Git limpo, HEAD Windows \`5d52a1043f67dfbed1e6a7ca50d658b5f9195a76\`.
+- **E08-D17O-R1 aprovado como preflight somente leitura.** Nenhum resultado de conflito HTTP 409 foi produzido até aqui.
+
+## E08-D17P — conflito de ConditionChanged preparado, PENDENTE de execução Windows
+
+- Publicados \`prova-conceito/c2/v05_condition_conflict.py\` e \`tests/test_c2_v05_condition_conflict.py\` com 8 novos casos unitários; **88 testes previstos** (80 anteriores + 8), ainda sem execução na máquina do acadêmico.
+- Preflight exige inventário E08-D17M correto (13 arquivos), SHA-256/JSON/relatório PASS, topologia e IDs/horários idênticos, estados e logs idênticos aos auditados, 1 único efeito prévio.
+- Faz uma única alteração sobre payload real \`v05-dedup-v1:cn1:1\`: **\`approved=true → false\`**; preserva \`event_id\`, \`emitted_at\`, \`sequence\`, \`run_id\` e demais campos. Envia no máximo **um POST** \`/notifications/condition\` ao \`rule-executor\`, sem retry.
+- Resultado **esperado, não observado**: HTTP 409, \`{"error":"event_id reutilizado com payload diferente"}\`, estados idênticos, logs fonte/avaliador inalterados, exatamente 1 novo registro HTTP no executor e **0 novos efeitos**. Evidências JSON/JSONL e SHA-256 preservadas; não repetir em falha ou timeout.
+- Nenhum Dockerfile, imagem, kernel PON, código original, \`master\` ou recurso Kubernetes modificado.
