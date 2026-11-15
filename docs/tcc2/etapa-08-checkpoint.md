@@ -123,3 +123,14 @@
 - Logs reais: produtor `send /notifications/attribute` e `ack` com resposta `{accepted:true,duplicate:false}`, avaliador `mutation /notifications/attribute` status 200 com payload original e ACK correspondente. Nenhum evento de condição ou efeito esperado.
 - **E08-D17D aprovado**, mas **não houve replay** e V05 deduplicação permanece pendente.
 - **Próximo E08-D17E:** capturar os logs originais e validar por leitura o evento `send` único, sem gerar novo timestamp. Guardar arquivo de payload original e seu SHA-256 para futuro replay único E08-D17F. Não reiniciar os contêineres e não alterar a imagem.
+
+## E08-D17E — evento original capturado no Windows (15/11/2026)
+
+- Print real `image(20261115-180441).png` enviado: 94724 bytes, SHA-256 recalculado `88eceb148d582b57a27f37a72113a4c2c0d1dde76ce95a7c4fa64d6d7d2e1141`. Original permanece na conversa, não no repositório.
+- Git Windows em `600fa9e636611d7e5c52c0a9a7a18590388ec5cf`, limpo ao final. O script somente leu logs `docker logs`, sem enviar qualquer POST.
+- Saída real: `EVENTO ORIGINAL: OK`, `ENVIO: 1`, `ACK: 1`, `RECEBIMENTO: 1`, `PAYLOADS IDENTICOS: True`, `EFEITOS: 0`, `HASHES: 5` e `E08-D17E: CAPTURA CONCLUIDA`.
+- Evento: `event_id=v05-dedup-v1:atA:1`, `request_id=v05-req-atA-1`, `run_id=v05-dedup-v1`, `source=attribute-source`, `entity_id=atA`, `value=5`, `sequence=1`, `step=1`, `schema_version=1`, `emitted_at=2026-11-15T17:57:08.636308+00:00` (UTC original capturado, não reproduzir com novo timestamp).
+- Evidências locais: `prova-conceito/resultados-locais/c2-v05-original-20261115-150412`: três logs, `attribute-event-original.json`, `capture-summary.json`, `checksums.sha256` (5 hashes referenciados no manifesto).
+- **E08-D17E aprovado como captura/consistência de payload**; replay idempotente ainda NÃO executado, não há resultado V05 de deduplicação.
+- **E08-D17F preparado, não executado:** `prova-conceito/c2/v05_duplicate.py`, replay único com pré-condições de estado, imagem e logs, verificação de SHA-256 do payload original, um único `POST /notifications/attribute` ao avaliador, comparação de estados e logs antes/depois, registro SHA-256 e teste local. `tests/test_c2_v05_duplicate.py` contém 7 testes unitários, ainda pendentes de validação no Windows.
+- Não reconstruir imagem, não reinicializar V05, não repetir `/attributes/change`, não tocar em V03, C2 principal nem cluster kind.
