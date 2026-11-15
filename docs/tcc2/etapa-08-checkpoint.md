@@ -114,3 +114,12 @@
 - Três estados HTTP finais: `ready=true`, `run_id=v05-dedup-v1`, versão idêntica, atributos/sequências zero na fonte e avaliador, `condition=false`, `approved=false`, nenhuma notificação, nenhum efeito, `faulted=false`. Logs dos três demonstram envio, ACK e aceitação do snapshot propagado por rede interna.
 - **E08-D17C aprovado exclusivamente para inicialização.** Deduplicação V05 pendente; nenhum evento de atributo, notificação duplicada ou conflito foi enviado nessa execução.
 - **Próximo E08-D17D:** preflight da bancada pronta, um só POST de `atA=5` com `request_id=v05-req-atA-1`; esperar sequência 1 e nenhum efeito. Capturar o payload exato em `send /notifications/attribute` para uso posterior, especialmente `emitted_at`. Não repetir automaticamente POST se falhar.
+
+## E08-D17D — primeiro AttributeChanged validado (15/11/2026)
+- Captura PowerShell `image(20261115-175816).png`, 166635 bytes, SHA-256 recalculado `a22f086a610d52e024a97fce1c8ec107036f882a403db7072b5037bf269f71c1`. O arquivo original está na conversa, não no repositório.
+- HEAD Windows `7f6294431a97a49388518e817cf153b9edfee73f`, branch `tcc2/desenvolvimento`, Git limpo. Estados antes 3/3 aprovados.
+- POST único `/attributes/change` em `tcc2-v05-attribute-source` com `run_id=v05-dedup-v1`, `request_id=v05-req-atA-1`, `entity_id=atA`, `value=5`, `step=1`: HTTP 200, `changed=true`, `duplicate_request=false`, `event_id=v05-dedup-v1:atA:1`, `sequence=1`.
+- GET `/state` depois: fonte/avaliador atributos `atA=5,atB=0`, sequências `atA=1,atB=0`; avaliador `received_ids=["v05-dedup-v1:atA:1"]`, `condition=false`, `condition_sequence=0`, `condition_events=[]`; executor `approved=false`, `received_ids=[]`, `effects=[]`. Sem falhas.
+- Logs reais: produtor `send /notifications/attribute` e `ack` com resposta `{accepted:true,duplicate:false}`, avaliador `mutation /notifications/attribute` status 200 com payload original e ACK correspondente. Nenhum evento de condição ou efeito esperado.
+- **E08-D17D aprovado**, mas **não houve replay** e V05 deduplicação permanece pendente.
+- **Próximo E08-D17E:** capturar os logs originais e validar por leitura o evento `send` único, sem gerar novo timestamp. Guardar arquivo de payload original e seu SHA-256 para futuro replay único E08-D17F. Não reiniciar os contêineres e não alterar a imagem.
