@@ -1,0 +1,268 @@
+# TCC2 / Etapa 10 / C4 — experimento multinó virtual, mesma máquina física.
+# Namespace separado de C3: não altera nem reinicia os Pods já validados.
+# Imagem exata C2: tcc2-pon:c2-e08-dbefcd2cf3d2, já carregada nos dois nós kind.
+# Um Pod stateful por papel; não escalar, não habilitar persistência ou replay.
+# attribute-source e rule-executor -> worker; logic-engine -> control-plane.
+# A toleration NoSchedule vale só para o Pod logic-engine, sem remover o taint do nó.
+# Kubernetes readiness verifica /health/live (transporte), não /health/ready (snapshot).
+# Os requests/limits são provisórios; C4 não é benchmark de desempenho.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: tcc2-pon-c4
+  labels:
+    app.kubernetes.io/part-of: tcc2-pon-c4
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tcc2-pon-c4-config
+  namespace: tcc2-pon-c4
+data:
+  ATTRIBUTE_DOWNSTREAM_HOST: logic-engine
+  LOGIC_DOWNSTREAM_HOST: rule-executor
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rule-executor
+  namespace: tcc2-pon-c4
+  labels:
+    app.kubernetes.io/name: rule-executor
+    app.kubernetes.io/part-of: tcc2-pon-c4
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rule-executor
+  template:
+    metadata:
+      labels:
+        app: rule-executor
+        app.kubernetes.io/part-of: tcc2-pon-c4
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: tcc2-pon-worker
+      containers:
+        - name: rule-executor
+          image: tcc2-pon:c2-e08-dbefcd2cf3d2
+          imagePullPolicy: Never
+          args: ["rule-executor", "--port", "8080", "--listen-host", "0.0.0.0"]
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /health/live
+              port: http
+            periodSeconds: 3
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: rule-executor
+  namespace: tcc2-pon-c4
+spec:
+  type: ClusterIP
+  selector:
+    app: rule-executor
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      protocol: TCP
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logic-engine
+  namespace: tcc2-pon-c4
+  labels:
+    app.kubernetes.io/name: logic-engine
+    app.kubernetes.io/part-of: tcc2-pon-c4
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: logic-engine
+  template:
+    metadata:
+      labels:
+        app: logic-engine
+        app.kubernetes.io/part-of: tcc2-pon-c4
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: tcc2-pon-control-plane
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
+      containers:
+        - name: logic-engine
+          image: tcc2-pon:c2-e08-dbefcd2cf3d2
+          imagePullPolicy: Never
+          args:
+            - logic-engine
+            - --port
+            - "8080"
+            - --listen-host
+            - 0.0.0.0
+            - --downstream-host
+            - $(DOWNSTREAM_HOST)
+            - --downstream-port
+            - "8080"
+          env:
+            - name: DOWNSTREAM_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: tcc2-pon-c4-config
+                  key: LOGIC_DOWNSTREAM_HOST
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /health/live
+              port: http
+            periodSeconds: 3
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: logic-engine
+  namespace: tcc2-pon-c4
+spec:
+  type: ClusterIP
+  selector:
+    app: logic-engine
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      protocol: TCP
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: attribute-source
+  namespace: tcc2-pon-c4
+  labels:
+    app.kubernetes.io/name: attribute-source
+    app.kubernetes.io/part-of: tcc2-pon-c4
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: attribute-source
+  template:
+    metadata:
+      labels:
+        app: attribute-source
+        app.kubernetes.io/part-of: tcc2-pon-c4
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: tcc2-pon-worker
+      containers:
+        - name: attribute-source
+          image: tcc2-pon:c2-e08-dbefcd2cf3d2
+          imagePullPolicy: Never
+          args:
+            - attribute-source
+            - --port
+            - "8080"
+            - --listen-host
+            - 0.0.0.0
+            - --downstream-host
+            - $(DOWNSTREAM_HOST)
+            - --downstream-port
+            - "8080"
+          env:
+            - name: DOWNSTREAM_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: tcc2-pon-c4-config
+                  key: ATTRIBUTE_DOWNSTREAM_HOST
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /health/live
+              port: http
+            periodSeconds: 3
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: attribute-source
+  namespace: tcc2-pon-c4
+spec:
+  type: ClusterIP
+  selector:
+    app: attribute-source
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      protocol: TCP
