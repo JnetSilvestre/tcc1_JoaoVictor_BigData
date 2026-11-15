@@ -319,3 +319,12 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 - Evidencia de 5 notificacoes de atributo, 3 transicoes de condicao e 2 efeitos exatamente nos passos 3 e 7 (C3 == C0 == oraculo == fixture manual), preservando ordenacao, multiplicidade, IDs e causalidade. Estado final atA=6, atB=1, sequencias (2,3), condition_sequence=3. 3 Pods UIDs/container IDs distintos e 0 restarts.
 - **V08 aprovado para C3 funcional minimo**, sem distribuicao multinó: TODOS os tres Pods da aplicacao alocados ao no virtual tcc2-pon-worker. Um unico computador hospeda ambos os nos kind. **V09 nao demonstrado.** V07 global parcial, V10/V12 nao executados, V11 global parcial. Sem benchmark de latencia, CPU, RAM ou throughput.
 - **Nao repetir** o snapshot ou a fixture sobre os Pods C3 atuais, nem reiniciar/alterar suas cargas. Preservar ZIP original e hashes fora do GitHub. Proximo: Etapa 10 — diagnostico dos taints do control-plane e nova bancada isolada C4 para execucao entre dois nos virtuais, sem alegar distribuicao fisica.
+
+
+## 15/11/2026 — Etapa 10/C4: diagnostico e configuracao preparada (sem execucao)
+
+**E10-D01 aprovado por diagnostico PowerShell:** nos kind control-plane e worker schedulable (unschedulable=false), mas control-plane com taint node-role.kubernetes.io/control-plane:NoSchedule. Worker sem taint efetivo identificado. Tres Pods C3 preservados Running 1/1, restarts=0, todos no worker; namespace tcc2-pon-c4 ausente no diagnostico.
+
+**C4 apenas preparado no GitHub:** infraestrutura/kubernetes/c4/manifests.yaml define novo namespace tcc2-pon-c4, ConfigMap, tres Deployments/Services, image C2 inalterada; rule-executor e attribute-source agendados no worker, logic-engine no control-plane por nodeSelector + toleration local (sem remover taint). Ferramentas de rodada unica e evidencia em prova-conceito/c4/runner.py, reutilizando c3.runner com RUN_ID/NS/SCENARIO separados. Protocolo: docs/tcc2/etapa-10-checkpoint.md.
+
+**Nao executado ainda:** dry-run C4, apply, rollouts, snapshot e fixture C4. V09 segue nao demonstrado ate comprovacao real de entrega de notificacoes em nos distintos. Todos os nos kind compartilham uma unica maquina fisica; nenhum benchmark, replay ou tolerancia a falhas comprovados. **Proxima acao:** sincronizar Git e executar validacao/aplicacao isolada C4 no Windows, uma unica rodada; nao tocar no C3 aprovado.
