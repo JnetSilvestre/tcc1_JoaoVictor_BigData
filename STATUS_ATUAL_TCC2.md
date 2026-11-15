@@ -42,6 +42,8 @@ Atualizado em: 2026-11-15
 
 - **E08-D17M preparado (ainda não executado):** `c2/v05_condition_replay.py` e 8 testes unitários novos para reenvio de `v05-dedup-v1:cn1:1` ao executor. Preflight exige hashes, topologia, estado/logs exatamente como fim de E08-D17K; único POST sem retry, estado imutável e nenhum efeito adicional. Esperados **80 testes** após executar regressão no Windows. Referência do evento `04687b36e59e61a38081828100ae1c5ea64d767e7358ddf16a52b0806f7d6c54`. Não executar uma segunda vez em caso de erro.
 
+- **E08-D17M aprovado operacionalmente (15/11/2026):** no HEAD `a654453c284563ec3324a1c1b3462f759e9d10ec`, compilação 0, **80/80 testes OK em 11,065 s**, replay da `ConditionChanged v05-dedup-v1:cn1:1`: HTTP 200, `accepted=true`, `duplicate=true`, `state_unchanged=true`, `new_effects=0`, `new_executor_mutations=1`, código V05=0, três contêineres V05 Up e Git limpo. Evidências locais `resultados-locais/c2-v05-condition-replay-20261115-162246`; integridade binária pendente E08-D17N (ZIP/13 hashes/CRC). Não repetir POST. Checkpoint atualizado.
+
 - Branch permanente: `tcc2/desenvolvimento`; preservar `master` e a referência original `JnetSilvestre/codigoPon@c2d525b5c675820806af34348e259bff32a6bc5f`.
 
 ## Etapas
