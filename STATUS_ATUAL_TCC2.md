@@ -339,3 +339,13 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 - ZIP bruto c4-e10-i02-v1.zip auditado diretamente: 36.370 bytes; SHA-256 8f77d981abb6977890f948168924b594398828ef3d843d7f38baf66d09acca7c; 16/16 entradas externas e 15/15 hashes, fixture.zip interno de 27.505 bytes SHA-256 21dcdc0239bb51d41e4148b8834e626c32dd5ac355f7fe4ba78a245dc3dfe2be, 28/28 entradas e 27/27 hashes corretos; ambos CRC OK. **48/48 auditorias documentais independentes aprovadas** sobre bytes reais, não 48 novas execuções.
 - **Não alegar duas máquinas físicas:** ambos os nós kind rodam no mesmo host Windows/WSL2, sem captura de pacotes, benchmark, persistência, recuperação ou escala horizontal. V07 global parcial; V10 e V12 não executados; V11 parcial global.
 - **Não repetir** snapshots/POSTs de C3 ou C4, não reiniciar/escalar seus Pods stateful e não modificar a master. Preservar ZIPs originais e hashes fora do GitHub. Próximo: Etapa 11, planejamento e instrumentação de experimentos quantitativos com novas bancadas independentes, sem inventar dados.
+
+## 15/11/2026 — Etapa 11 iniciada: diagnóstico e proposta experimental (SEM BENCHMARK)
+
+**Estado atual:** inspeção somente leitura de protocolo E05, auditorias C3/C4 e scripts C0–C4; estratégia de coleta e pendências documentadas em docs/tcc2/etapa-11-diagnostico-plano.md. Esta atualização registra planejamento, não aprovação definitiva de instrumentação, execução de carga ou qualquer série quantitativa.
+
+**Achado metodológico:** c3/runner.py usa kubectl exec com Python novo por requisição; sua duração não mede apenas o processamento da aplicação. Recomenda-se driver de carga persistente, janela cronometrada separada de bootstrap/validação/ZIP e comparação primária de C2/C3/C4 com recursos equivalentes. CPU/memória via cgroup v2 permanecem instrumentos candidatos, sujeitos a sondagem real no Windows/WSL2/kind.
+
+**Preservação:** C3 em tcc2-pon e C4 em tcc2-pon-c4 não devem sofrer novos eventos, escala, reinício ou remoção. Não foram criados namespaces, executados benchmarks ou alterados componentes funcionais. ZIPs C3/C4 originais e hashes permanecem referências funcionais, não medidas de desempenho.
+
+**Próximo passo E11-D01:** executar apenas diagnóstico PowerShell não mutante de Git, ambiente Docker, cgroups e métricas no host do acadêmico; analisar a saída; fixar parâmetros e critérios antes de gerar scripts e qualquer piloto.
