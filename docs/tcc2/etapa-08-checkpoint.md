@@ -90,3 +90,9 @@
 - Screenshot `image(20261115-171137).png`, 71293 bytes, SHA-256 `d098d72e6da1d1a99c490d41dd25c14f2fe016403fe98475a99af5ad1db1a62e`.
 - Leitura direta de `http-cases.json` no Windows: `TOTAL: 10`; S01–S10 com status observado igual ao esperado (422, 422, 422, 400, 415, 422, 422, 422, 422, 404), `state_unchanged=True` em todos. Hash de `http-cases.json` **exibido no PowerShell** `95cd9cc95a4dd03bd83113cd6380f4897bb64fd989bc2850791190389a050113`, ainda não recalculado independentemente por IA.
 - Problema de formatação da tabela anterior esclarecido, nenhum POST adicional. **Próximo E08-D16:** verificar 8 hashes internos, empacotar 9 arquivos em ZIP e enviar para auditoria binária; não rerodar V03, nem tocar em kind ou contêineres C2.
+
+## E08-D16 — auditoria V03 aprovada (15/11/2026)
+- Após duas falhas de procedimento no arquivamento (R1 array JSON no PowerShell, R2 quoting de Python `-c`), R3 gerou ZIP sem tocar nos serviços. Captura `image(20261115-172900).png`, SHA-256 `f324e12b8fe9f8ac1bc6fc639e2a6720ff68013f83b207990dd52b300ada2d86`.
+- ZIP `c2-v03-r2-20261115-140543.zip`, **4.489 bytes**, SHA-256 `718213c176dbb7dbf7982f9615d5f31b5955739b992edb8e1326cdac4749ab9c` auditado por bytes; 9/9 entradas/CRC válidos, 8/8 hashes internos, 10/10 HTTP status corretos, resposta com erro por caso, estados antes/depois iguais, logs compatíveis (9 rejeições com evento + 404 de rota desconhecida sem evento).
+- **Aceite:** V03 frio aprovado nos casos ensaiados; integridade independente aprovada, porém verificação por caso de estado intermediário depende do runner, já que snapshots por caso não foram persistidos.
+- Laudo: `docs/tcc2/etapa-08-auditoria-v03.md`. **Próximo E08-D17:** planejar e executar V05/V06 em sessão isolada, registrar evidências reais e auditar ZIP; não implantar no Kubernetes nesta etapa.

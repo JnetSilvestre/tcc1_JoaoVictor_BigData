@@ -343,3 +343,11 @@ Códigos de saída e logs devem ser preservados e analisados antes de classifica
 - Conferir por `Get-FileHash` todas as oito entradas declaradas em `checksums.sha256`; verificar que há exatamente nove arquivos (oito dados + manifesto SHA-256). Não alterar arquivos da rodada, não repetir HTTP nem reiniciar contêineres.
 - Criar `resultados-locais/c2-v03-r2-20261115-140543.zip` (sem sobrescrever outro ZIP), conferir entradas e SHA-256 do ZIP, anexar o ZIP à conversa para auditoria direta dos bytes.
 - Somente após a auditoria binária registrar aceite de integridade E08-D16 e avançar para outras variações V03/V05/V06/V07 com novos cenários independentes.
+
+## 29. E08-D16 — ZIP V03 criado após bloqueios e auditado independentemente (15/11/2026)
+
+- R1: oito hashes locais válidos, falha em leitura do array de casos pelo PowerShell, antes de gerar ZIP. R2: erro `SyntaxError: print(===` por quoting de `python -c`, também antes de gerar ZIP. São erros do procedimento, não defeitos demonstrados do núcleo PON.
+- R3: PowerShell/Compress-Archive, **9 arquivos** empacotados e comparados byte a byte por SHA-256 com os originais. Captura real enviada: `image(20261115-172900).png`, 93.370 bytes; SHA-256 `f324e12b8fe9f8ac1bc6fc639e2a6720ff68013f83b207990dd52b300ada2d86`.
+- ZIP bruto enviado: `c2-v03-r2-20261115-140543.zip`, **4.489 bytes**, SHA-256 independente `718213c176dbb7dbf7982f9615d5f31b5955739b992edb8e1326cdac4749ab9c`; `testzip()` sem CRC incorreto; 9/9 nomes corretos e únicos; **8/8 SHA-256 internos** corretos.
+- Auditoria direta: `http-cases.json` com 10 casos em ordem S01–S10, códigos correspondentes (422,422,422,400,415,422,422,422,422,404), `state_unchanged=true` em todos, relatórios e estado global antes/depois idênticos; 9 rejeições correspondentes nos logs dos serviços; caso 404 não gera log de mutação. Log de evento `mutation` é nome de tipo de requisição e não implica alteração de estado.
+- E08-D16 **aprovado** para integridade de pacote e V03 frio. Laudo completo: [etapa-08-auditoria-v03.md](etapa-08-auditoria-v03.md). ZIP original está na conversa e no Windows, não foi adicionado ao GitHub. Próximo E08-D17: novos testes V05/V06 em bancada isolada, sem repetir V03 nem tocar no kind.
