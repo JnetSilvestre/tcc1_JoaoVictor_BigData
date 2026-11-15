@@ -44,6 +44,8 @@ Atualizado em: 2026-11-15
 
 - **E08-D17M aprovado operacionalmente (15/11/2026):** no HEAD `a654453c284563ec3324a1c1b3462f759e9d10ec`, compilação 0, **80/80 testes OK em 11,065 s**, replay da `ConditionChanged v05-dedup-v1:cn1:1`: HTTP 200, `accepted=true`, `duplicate=true`, `state_unchanged=true`, `new_effects=0`, `new_executor_mutations=1`, código V05=0, três contêineres V05 Up e Git limpo. Evidências locais `resultados-locais/c2-v05-condition-replay-20261115-162246`; integridade binária pendente E08-D17N (ZIP/13 hashes/CRC). Não repetir POST. Checkpoint atualizado.
 
+- **E08-D17N auditado diretamente (15/11/2026):** ZIP `c2-v05-condition-replay-20261115-162246.zip`, 8703 bytes, SHA-256 `0378c162b45bd44b316754023577daec5b41a19583dbef68c0f0d8b6340bfb42`, 14/14 arquivos, CRC OK, 13/13 hashes internos corretos. Payload `ConditionChanged v05-dedup-v1:cn1:1` idêntico ao original; estado antes/depois igual em bytes (SHA `2a53df80250bc2b72fd614c20b586108550d84a71f6347baaa3ca0dfb805ae0f`), logs source/logic 10→10, executor 4→5 com HTTP 200 `accepted=true,duplicate=true`, zero efeitos novos, 1 efeito total. **V05/ConditionChanged replay aprovado por auditoria independente**. Laudo `docs/tcc2/etapa-08-auditoria-v05-condicao-replay.md`. V05 ainda requer conflito de `ConditionChanged`; V06/V07 e encerramento pendentes. Próximo E08-D17O: preflight somente leitura, sem POST.
+
 - Branch permanente: `tcc2/desenvolvimento`; preservar `master` e a referência original `JnetSilvestre/codigoPon@c2d525b5c675820806af34348e259bff32a6bc5f`.
 
 ## Etapas
