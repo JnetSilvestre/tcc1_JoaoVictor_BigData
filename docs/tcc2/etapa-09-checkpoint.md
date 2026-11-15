@@ -76,3 +76,34 @@ Apenas apos apresentar a saida e confirmar **dry-run 0**, considerar E09-I01 val
 V08 **parcial:** recursos implantados e Deployments disponiveis, mas transporte HTTP e fixture ainda nao comprovados. V09 **nao demonstrado:** todos os Pods da aplicacao no mesmo no virtual worker; nao ha distribuicao desta aplicacao entre nos e, em nenhuma hipotese, entre hosts fisicos. A readiness do Kubernetes consulta `/health/live`, nao significa `/health/ready` funcional (snapshot ainda nao enviado). Sem V12/benchmark.
 
 **Proximo E09-I03:** preflight HTTP sem mutacao nos tres Services por DNS interno e inspeção do estado frio; somente se aprovados, um POST exclusivo de snapshot C3, seguido de leitura e registro dos tres estados. Nao repetir POST em caso de interrupcao; diagnosticar pelos estados/logs. Preservar C2, `master`, fonte e imagem.
+
+
+## 6. E09-I03 — comunicacao interna e snapshot C3 comprovados (15/11/2026)
+
+**Fonte:** saida textual real do PowerShell enviada pelo academico. Sem ZIP bruto C3 ainda.
+
+- A partir do Pod source, chamadas por DNS dos tres Services attribute-source, logic-engine e rule-executor, porta 8080.
+- Antes do snapshot: GET /health/live HTTP 200 nos tres; GET /health/ready HTTP 503; estados frios (ready=false, run_id=null).
+- Um unico POST /init/snapshot para attribute-source, com run_id=c3-e09-i03-v1: HTTP 200, duplicate=false, ready=true e snapshot_version=c3-e09-i03-v1:snapshot:0.
+- Depois: GET /health/ready HTTP 200 nos tres, estados coerentes, atributos iniciais atA=0/atB=0, watermarks zero, 0 efeitos.
+- E09-I03: PASS e E09_I03_EXIT: 0.
+- Logs HTTP/JSON mostraram encaminhamento source -> logic -> executor, envio/ack e mutacao do snapshot, mesmo run_id, HTTP 200 (aproximadamente 2026-11-15T22:27:51Z). Os tres servicos registraram PID 1. Nenhuma alteracao incremental enviada em E09-I03.
+
+**Escopo:** comunicacao HTTP por Services internos e snapshot funcional comprovados em tres Pods, no mesmo no virtual worker de um host fisico. V07 parcialmente demonstrado (sem corrida durante snapshot). V08 ainda exige fixture e oraculo. V09 nao demonstrado (sem Pods da aplicacao em nos distintos). Nenhum benchmark executado.
+
+## 7. E09-I04 — runner funcional preparado, ainda nao executado (15/11/2026)
+
+Arquivos: prova-conceito/c3/runner.py e prova-conceito/c3/__init__.py. Nao alteram pon/, c1/, Dockerfile ou imagem.
+
+- Valida concordancia entre fixture original C0, esperado manual e oraculo independente ANTES dos POSTs C3.
+- Substitui somente run_id e identificadores deterministas derivados por c3-e09-i03-v1, correspondente ao snapshot JA inicializado; preserva os sete passos, a semente e a semantica do teste.
+- Preflight: branch e Git limpos; runtime inalterado desde o build C2; imagem por SHA e label OCI; tres Deployments, tres Pods sem reinicios e tres Services; captura UIDs, node, container IDs, estados iniciais e logs. Bloqueia execucao se detectar passos anteriores.
+- Envia os sete passos uma unica vez, pelo Service DNS attribute-source:8080, a partir do Pod source. Registra intencao ANTES de cada POST, registra resposta ao receber, sem retries automaticos.
+- Preserva topologia, estados, logs, efeitos, oraculo, C0, respostas HTTP, hashes SHA-256 e ZIP. Em caso de falha, procura capturar logs/estados sem mutar a aplicacao.
+- Verifica sete respostas, cinco notificacoes de atributo, tres transicoes de condicao, dois efeitos (passos 3 e 7), ordenacao, causalidade, equivalencia integral com o oraculo e estado final.
+- **Pendente:** executar e validar no Windows; nenhum resultado de E09-I04, hash de ZIP ou tempo de desempenho existe ainda.
+
+Comando unico na pasta prova-conceito, depois do Git pull --ff-only:
+    python -m c3.runner --output resultados-locais/c3-e09-i04-v1
+
+O diretorio resultados-locais e ignorado pelo Git. Preservar ZIP e hash fora do repositorio. Em FAIL, nao repetir POSTs nem snapshot: diagnosticar primeiro. C4/V09 depende de nova rodada isolada e estrategia de reinicializacao, sem inferir alta disponibilidade ou migracao de estado.
