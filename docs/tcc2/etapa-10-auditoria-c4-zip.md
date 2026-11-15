@@ -29,7 +29,7 @@ O fluxo lógico attribute-source (worker) -> logic-engine (control-plane) -> rul
 ## 3. Snapshot único e execução da fixture
 
 - Antes do snapshot, os três estados eram frios (ready=false, run_id=null); logs sem mutações. As chamadas DNS internas de /health/live responderam HTTP 200 e as /health/ready responderam HTTP 503.
-- Snapshot exclusivo C4 enviado uma vez (run_id c4-e10-i02-v1), HTTP 200, duplicate=false, snapshot_version=c4-e10-i02-v1:snapshot:0. Três estados funcionais prontos, água-marcas zero, condition=false, approved=false, sem efeitos; logs demonstraram exatamente um POST de inicialização em cada papel. O status FAIL em preflight.json é **o estado provisório do relatório antes do primeiro POST**, não falha do preflight: a saída real e validation-c4.json reportam PASS.
+- Snapshot exclusivo C4 enviado uma vez (run_id c4-e10-i02-v1), HTTP 200, duplicate=false, snapshot_version=c4-e10-i02-v1:snapshot:0. Três estados funcionais prontos, marcadores de sequência zero, condition=false, approved=false, sem efeitos; logs demonstraram exatamente um POST de inicialização em cada papel. O status FAIL em preflight.json é **o estado provisório do relatório antes do primeiro POST**, não falha do preflight: a saída real e validation-c4.json reportam PASS.
 - Sete passos da fixture original, apenas rebase do run_id; seed **20260501** preservada. Houve sete intenções BEFORE_POST, sete respostas HTTP 200, nenhuma duplicata de request_id.
 - Passos **1 e 4** com valor inalterado, sem AttributeChanged; **2, 3, 5, 6, 7** com mudança efetiva. Resultaram **5 notificações de atributo** recebidas pelo avaliador com payload idêntico ao enviado e em igual ordem.
 - O avaliador emitiu **3 notificações de condição**, nos passos 3 (false->true), 6 (true->false) e 7 (false->true); todas chegaram ao executor em ordem, com IDs iguais e HTTP 200.
@@ -51,7 +51,7 @@ Checagens executadas sobre bytes recebidos:
 7. Cálculo independente dos efeitos; valores e sequências finais; efeitos e readiness finais; sete respostas HTTP 200; sete intenções BEFORE_POST; cinco respostas com changed=true e nenhuma duplicata.
 8. Cinco envios e recebimentos de atributo iguais; três envios e recebimentos de condição iguais; dois logs de efeito idênticos; mutações com HTTP 200; transições nos passos 3,6,7; relações causa/atributo; logs de snapshot; diferença de nós mantida no fim; contagens por HTTP 200; IDs não duplicados; identidade de serviço dos logs; hashes dos fixtures registrados no manifesto.
 
-Todas aprovadas. A verificação é interna a esse caso de teste e não comprova comportamento sob falhas, paralelismo/concor­rência geral, recuperação, carga ou desempenho.
+Todas aprovadas. A verificação é interna a esse caso de teste e não comprova comportamento sob falhas, paralelismo/concorrência geral, recuperação, carga ou desempenho.
 
 ## 5. Matriz de aceitação e próximos passos
 
