@@ -197,3 +197,14 @@ Provar funcionalidade C2 da fixture e auditar evidências (concluído); compleme
 - Faz uma única alteração sobre payload real \`v05-dedup-v1:cn1:1\`: **\`approved=true → false\`**; preserva \`event_id\`, \`emitted_at\`, \`sequence\`, \`run_id\` e demais campos. Envia no máximo **um POST** \`/notifications/condition\` ao \`rule-executor\`, sem retry.
 - Resultado **esperado, não observado**: HTTP 409, \`{"error":"event_id reutilizado com payload diferente"}\`, estados idênticos, logs fonte/avaliador inalterados, exatamente 1 novo registro HTTP no executor e **0 novos efeitos**. Evidências JSON/JSONL e SHA-256 preservadas; não repetir em falha ou timeout.
 - Nenhum Dockerfile, imagem, kernel PON, código original, \`master\` ou recurso Kubernetes modificado.
+
+## 22. E08-D17P/Q — encerramento funcional de V05 e auditoria direta
+
+## E08-D17P/Q — conflito de ConditionChanged e auditoria independente APROVADOS (15/11/2026)
+
+- **E08-D17P e E08-D17Q aprovados em 15/11/2026 (V05 encerrado nos casos previstos):** execução Windows do conflito de `ConditionChanged` no HEAD `0b647d64b1f8a66d6b5f1cb01f3692ebfc2f7286` com compilação 0, 88/88 testes OK (11,246 s), HTTP 409, estado inalterado, zero efeitos novos, executor 5→6 registros e Git limpo. Auditoria direta do ZIP `c2-v05-condition-conflict-20261115-171101.zip`: **9.296 bytes**, SHA-256 `2c9b1dc47cb59a8d403dc8ad8c3cd9c12a967f6ac6dfe10f0f753ad0662d3640`, CRC OK, **15/15 arquivos, 14/14 hashes internos**, evento original idêntico às duas rodadas anteriores, somente `approved:true→false`, estados byte a byte iguais, logs fonte/avaliador 10→10 e executor 5→6, continuidade de IDs dos 3 contêineres, imagem e rede. Laudo `docs/tcc2/etapa-08-auditoria-v05-conflito-condicao.md`. Próximo **E08-D18A: diagnóstico V06 somente leitura**, em bancada separada. V07 e encerramento Etapa 08 ainda pendentes; sem Kubernetes, benchmark ou distribuição física.
+
+- Rastreabilidade: `conflict-response.json` HTTP 409; `event-original.json` byte-idêntico aos originais D17K/D17M; `states-before.json` e `states-after.json` byte-idênticos (SHA `2a53df80250bc2b72fd614c20b586108550d84a71f6347baaa3ca0dfb805ae0f`); todos os 3 logs pré-conflito iguais aos finais do replay; último log executor registra erro 409. Captura `image(20261115-202708).png`, 93.002 bytes, SHA-256 `00462f5ea25bf6025f0c1cf0ed6e124b58c12488ee21fdd270758ecf759bc323`.
+- Registro de decisão: V05 completo somente **nos casos serializados ensaiados** (atributo replay e conflito, condição transição, replay e conflito); não atribuir a V05 métricas de desempenho, cluster Kubernetes ou execução multi-host. Laudo detalhado no link acima.
+- **E08-D18A** reservado ao diagnóstico apenas de leitura da bancada futura V06; criar infraestrutura e executar eventos **somente após validação** da etapa inicial. Não modificar/reiniciar V05.
+
