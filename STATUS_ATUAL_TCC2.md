@@ -28,6 +28,8 @@ Atualizado em: 2026-11-15
 
 - **E08-D17G auditado independentemente (15/11/2026):** ZIP `c2-v05-duplicate-20261115-151112.zip`, 7163 bytes, SHA-256 `532281718862cc28bd17654721b6d01d0a78d8d9cc9c7283730e8c943b9ca3cb` recalculado; 14/14 arquivos ZIP/CRC, 13/13 SHA-256 internos corretos; resposta HTTP 200 `accepted=true,duplicate=true`; estados antes/depois idênticos; logs fonte 7→7, avaliador 5→6 (um registro HTTP duplicado), executor 2→2, sem efeito novo. Captura Windows SHA-256 `fca5defd9745c52a91604034e8938be44401a645dbf0b190c0eac5c604d5fdcc`. Relatório `docs/tcc2/etapa-08-auditoria-v05-atributo.md`. **Aceite restrito a um replay idêntico de AttributeChanged; V05 completo, V06 e V07 ainda pendentes.** Próximo E08-D17H: conflito `event_id` com payload divergente (esperado HTTP 409).
 
+- **E08-D17H preparado, não executado:** script `prova-conceito/c2/v05_conflict.py` implementa preflight dos hashes da captura E17E e rodada D17F, estados/logs e rede, altera unicamente `value` de 5 para 6 no mesmo `event_id` e envia **uma tentativa** esperando HTTP 409 sem mutação. Testes de preparação em `tests/test_c2_v05_conflict.py` (7 testes novos) **ainda não executados no Windows**. Não reconstruir imagem, não repetir replay antigo e interromper após eventual erro para preservar logs.
+
 - Branch permanente: `tcc2/desenvolvimento`; preservar `master` e a referência original `JnetSilvestre/codigoPon@c2d525b5c675820806af34348e259bff32a6bc5f`.
 
 ## Etapas

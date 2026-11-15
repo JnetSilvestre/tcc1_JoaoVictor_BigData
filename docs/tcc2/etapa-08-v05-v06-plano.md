@@ -107,3 +107,10 @@ Provar funcionalidade C2 da fixture e auditar evidências (concluído); compleme
 - ZIP original recebido e auditado: 7163 bytes, SHA-256 `532281718862cc28bd17654721b6d01d0a78d8d9cc9c7283730e8c943b9ca3cb`, 14/14 entradas e CRC corretos, 13/13 SHA-256 internos; estados idênticos; logs source 7→7, logic 5→6, executor 2→2, único ACK duplicado 200 sem novo efeito.
 - Laudo `docs/tcc2/etapa-08-auditoria-v05-atributo.md`. V05 deduplicação de atributo **aprovada no caso ensaiado**; conflitos de corpo (HTTP 409) e deduplicação de condição **pendentes**.
 - Próximo E08-D17H: validar reuso do mesmo `event_id` com corpo divergente, sem reinicializar V05 e sem repetir o replay, esperando 409 e invariância; depois avançar para ConditionChanged e V06.
+
+## E08-D17H — executor de conflito preparado (ainda NÃO executado)
+
+- O contrato em `c1/state.py` rejeita o mesmo `event_id` com payload diferente (`ContractError(status=409)`, `error="event_id reutilizado com payload diferente"`). `c1/protocol.py` permite `value=6` para `atA`.
+- Preparado `prova-conceito/c2/v05_conflict.py`: valida SHA-256 E17E/E17F, topologia, estado atual, logs anteriores (original e único replay), registra intenção antes do POST; altera apenas `value=5 → 6` em cópia do payload original, preservando ID e timestamp; exige HTTP 409, estado global imutável, um registro 409 novo no avaliador, nenhuma mudança nos logs de fonte/executor; salva evidências e checksums SHA-256. **Sem retry.**
+- Adicionados 7 testes locais (sem Docker): `prova-conceito/tests/test_c2_v05_conflict.py`. Pendentes compilação/regressão no Windows. A nova suíte esperada é de **64 testes** (57 prévios + 7), não resultado medido.
+- Próximo: sincronizar branch, compilar, executar regressão, executar uma vez `python -m c2.v05_conflict --capture ... --previous ... --output ...`, preservar qualquer `FAIL` sem reenvio, auditar novo ZIP antes de novos ensaios.

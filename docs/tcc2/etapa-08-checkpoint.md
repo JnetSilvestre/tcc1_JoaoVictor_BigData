@@ -152,3 +152,10 @@
 - `request-intent.json` registra 1 tentativa sem retry; resposta `HTTP 200 / accepted=true / duplicate=true`. Log source 7→7, logic 5→6 com único `mutation` duplicado 200 e payload exato, executor 2→2; `rule-executor.effects=[]`. Deduplicação do evento `v05-dedup-v1:atA:1` comprovada **no caso ensaiado**.
 - Laudo: `docs/tcc2/etapa-08-auditoria-v05-atributo.md`. ZIP e captura originais pertencem à conversa/host Windows; não foram versionados como binários.
 - **Próximo E08-D17H:** preparar teste HTTP 409 para `event_id` igual e payload divergente, guardar estados/logs e ZIP, sem repetir D17F; posteriormente deduplicação de condição, V06, V07 e documentação final. Não executar Kubernetes agora.
+
+## E08-D17H — executor de conflito preparado (ainda NÃO executado)
+
+- O contrato em `c1/state.py` rejeita o mesmo `event_id` com payload diferente (`ContractError(status=409)`, `error="event_id reutilizado com payload diferente"`). `c1/protocol.py` permite `value=6` para `atA`.
+- Preparado `prova-conceito/c2/v05_conflict.py`: valida SHA-256 E17E/E17F, topologia, estado atual, logs anteriores (original e único replay), registra intenção antes do POST; altera apenas `value=5 → 6` em cópia do payload original, preservando ID e timestamp; exige HTTP 409, estado global imutável, um registro 409 novo no avaliador, nenhuma mudança nos logs de fonte/executor; salva evidências e checksums SHA-256. **Sem retry.**
+- Adicionados 7 testes locais (sem Docker): `prova-conceito/tests/test_c2_v05_conflict.py`. Pendentes compilação/regressão no Windows. A nova suíte esperada é de **64 testes** (57 prévios + 7), não resultado medido.
+- Próximo: sincronizar branch, compilar, executar regressão, executar uma vez `python -m c2.v05_conflict --capture ... --previous ... --output ...`, preservar qualquer `FAIL` sem reenvio, auditar novo ZIP antes de novos ensaios.
