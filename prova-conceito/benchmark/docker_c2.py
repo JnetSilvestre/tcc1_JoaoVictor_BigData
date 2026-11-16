@@ -240,6 +240,9 @@ def run(args, rows, network, names):
         from benchmark import docker_engine_api as engine_api
         sampler = EngineSampler(names, args.period)
         sampler.preflight()
+        # Confirmar GET de estatisticas dos 4 papeis ANTES do snapshot
+        # para reduzir a chance de falha instrumental apos mutacao.
+        sampler.one_round()
         write_json(output / "engine-context.json", sampler.context_record())
         report["phase"] = "snapshot"
         report["started_snapshot"] = True
