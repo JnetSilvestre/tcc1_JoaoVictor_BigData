@@ -376,3 +376,13 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 **Desenho:** cliente Python em Pod separado no worker e processo único para o lote, sem um kubectl exec por evento; Summary API candidata para CPU/memoria (calibracao pendente); manifests E11 apenas gerados em arquivos, não aplicados; runner sem --execute mostra somente plano, com --execute e MUTANTE numa NOVA bancada (um snapshot e uma rodada, sem retry). Quatro gates restantes: AST/unittest real, conferencia dos YAML e hashes, C2 equivalente antes das comparacoes definitivas, piloto e auditoria dos dados.
 
 **Próximo E11-D03:** sincronizar branch, executar somente validacao sintatica/unittest, gerar fixtures/YAML com caminhos ineditos e imprimir plano sem --execute. Se houver falha, parar e corrigir codigo, preservando C3/C4. Nao rodar piloto ainda.
+
+## 15/11/2026 — E11-D03 preparação validada no Windows COM RESSALVA
+
+**Evidência textual recebida:** HEAD 00f69cd18ed02f4d65a6335e7078d15cad35dc50 e Git limpo; Push-Location falhou porque PowerShell já estava em prova-conceito, mas demais comandos continuaram. Compilação Python sem falha reportada, **6/6 unittest OK (0,052 s da suíte, NÃO benchmark)**. Três fixtures 100/1000/10000 geradas com hashes/contagens; dry-run C3/C4 9 recursos cada; PLAN_ONLY C3/100 execute:false. Sem kubectl apply real, snapshot, POST ou benchmark.
+
+**Laudo:** docs/tcc2/etapa-11-e11-d03-auditoria-preparacao.md. SHA do TXT exibido no terminal, não auditado independentemente. C3/C4 funcionais preservados.
+
+**Correções preventivas posteriores aos 6 testes, NÃO VALIDADAS NO WINDOWS:** benchmark/runner.py preserva saída/telemetria parcial e logs em falhas, compara fixture inteira com fonte canônica; tests/test_benchmark.py ganhou assert de adulteração. Núcleo PON, Docker C2 e manifests C3/C4 inalterados.
+
+**Próximo E11-D04:** sincronizar branch e executar AST/unittest do controlador atualizado em PowerShell com reconhecimento automático da pasta prova-conceito. Liberar piloto isolado apenas depois. V12 NÃO EXECUTADO.
