@@ -14,7 +14,11 @@ import time
 from benchmark.evidence import archive, check_run, hash_file, write_csv, write_json, write_jsonl
 from benchmark.fixtures import characterize, generate, rebase
 from benchmark.runner import client_program
-from c0.io import read_jsonl, validate_input
+from benchmark.measurement_profile import (
+    RESOURCES_DIAGNOSTIC, MODES, select_sampler, profile_record,
+    not_collected_quality,
+)
+ read_jsonl, validate_input
 from c0.oracle import calculate_expected_effects
 from c2.runner import HTTP_CLIENT, IMAGE_TAG, BUILD_SHA
 
@@ -204,9 +208,10 @@ def run(args, rows, network, names):
             **setup, "scenario": "C2", "run_id": args.run_id, "fixture": str(args.fixture),
             "fixture_sha256": hash_file(args.fixture), "seed": rows[0]["seed"],
             "requests": len(rows), "client": "docker exec -i python - inside client container",
-            "cpu_sampler_note": "Docker Engine API GET externa; coletor host ainda causa overhead nao calibrado",
-            "memory_sampler_note": "memory_stats.usage BRUTO, nao workingSetBytes Kubelet; sem pico de lote",
-            "scientific_status": "PILOT_ONLY; measurement_approved sempre false ate calibracao",
+            **profile_record(args.measurement_mode),
+            "cpu_sampler_note": "Engine API GET externa somente no modo resources_diagnostic",
+            "memory_sampler_note": "Docker usage bruto e diferente de workingSet Kubelet",
+            "scientific_status": "E11-M00B_PREPARED; protocolo ainda nao congelado",
             "batch_timeout_s": args.batch_timeout, "period_s": args.period})
         rebased = rebase(rows, args.run_id)
         write_jsonl(output / "inputs.jsonl", rebased)
@@ -238,12 +243,14 @@ def run(args, rows, network, names):
         # Import tardio evita ciclo docker_engine_api -> docker_c2.
         from benchmark.docker_engine_window import EngineSampler, quality_window
         from benchmark import docker_engine_api as engine_api
-        sampler = EngineSampler(names, args.period)
-        sampler.preflight()
-        # Confirmar GET de estatisticas dos 4 papeis ANTES do snapshot
-        # para reduzir a chance de falha instrumental apos mutacao.
-        sampler.one_round()
-        write_json(output / "engine-context.json", sampler.context_record())
+        sampler = select_sampler(
+            args.measurement_mode, lambda: EngineSampler(names, args.period))
+        write_json(output / "metrics-status.json", profile_record(args.measurement_mode))
+        if sampler is not None:
+            sampler.preflight()
+            # Somente em diagnostico: confirmar Engine GET antes de snapshot.
+            sampler.one_round()
+            write_json(output / "engine-context.json", sampler.context_record())
         report["phase"] = "snapshot"
         report["started_snapshot"] = True
         snapshot = http(names["attribute-source"], "/init/snapshot", {"run_id": args.run_id})
@@ -256,8 +263,9 @@ def run(args, rows, network, names):
                    for x in first.values()) or first["rule-executor"].get("effects"):
             raise ValueError("snapshot nao propagado aos tres servicos")
         report["phase"] = "batch"
-        sampler.prime()  # Base apos snapshot e antes de qualquer POST de carga.
-        sampler.start()
+        if sampler is not None:
+            sampler.prime()  # Base apos snapshot; modo diagnostico.
+            sampler.start()
         try:
             report["started_changes"] = True
             try:
@@ -276,11 +284,12 @@ def run(args, rows, network, names):
             (output / "client.stdout.jsonl").write_text(batch.stdout, encoding="utf-8")
             (output / "client.stderr.log").write_text(batch.stderr, encoding="utf-8")
         finally:
-            sampler.stop()
-            write_jsonl(output / "metrics-engine.jsonl", sampler.samples)
-            write_json(output / "metrics-errors.json", sampler.errors)
-            write_json(output / "metrics-collector-round-seconds.json", sampler.rounds)
-            write_csv(output / "metrics-engine.csv", sampler.samples, engine_api.CSV_FIELDS)
+            if sampler is not None:
+                sampler.stop()
+                write_jsonl(output / "metrics-engine.jsonl", sampler.samples)
+                write_json(output / "metrics-errors.json", sampler.errors)
+                write_json(output / "metrics-collector-round-seconds.json", sampler.rounds)
+                write_csv(output / "metrics-engine.csv", sampler.samples, engine_api.CSV_FIELDS)
         records = [json.loads(x) for x in batch.stdout.splitlines() if x.strip()]
         if batch.returncode != 0 or not records or records[-1].get("status") != "PASS":
             raise ValueError("lote com falha, nao repetir")
@@ -300,11 +309,14 @@ def run(args, rows, network, names):
             write_jsonl(output / f"{role}-logs.jsonl", all_logs[role])
         validated = check_run(rebased, records, final)
         validated["transport"] = validate_transport(rebased, all_logs, final, before, after)
-        validated["metric_quality"] = quality_window(
-            sampler.samples, sampler.ids, summary=records[-1],
-            errors=sampler.errors)
-        validated["metric_quality"]["collector_round_seconds"] = sampler.rounds
-        validated["metric_quality"]["samples"] = len(sampler.samples)
+        if sampler is not None:
+            validated["metric_quality"] = quality_window(
+                sampler.samples, sampler.ids, summary=records[-1],
+                errors=sampler.errors)
+            validated["metric_quality"]["collector_round_seconds"] = sampler.rounds
+            validated["metric_quality"]["samples"] = len(sampler.samples)
+        else:
+            validated["metric_quality"] = not_collected_quality()
         validated["status"] = ("PASS" if validated["status"] == "PASS"
                                and all(validated["transport"].values()) else "FAIL")
         report["status"] = validated["status"]
@@ -348,6 +360,9 @@ def main():
     parser.add_argument("--timeout", type=float, default=10)
     parser.add_argument("--batch-timeout", type=int, default=600)
     parser.add_argument("--period", type=float, default=1.0)
+    parser.add_argument("--measurement-mode", choices=MODES,
+                        default=RESOURCES_DIAGNOSTIC,
+                        help="timing_only: sem sonda; resources_diagnostic: modo legado")
     parser.add_argument("--execute", action="store_true")
     args = parser.parse_args()
     if not 1 <= args.timeout <= 120 or not 10 <= args.batch_timeout <= 3600 or not 0.5 <= args.period <= 20:
@@ -359,6 +374,7 @@ def main():
             "status": "PLAN_ONLY", "scenario": "C2", "network": network,
             "containers": names, "run_id": args.run_id, "size": len(rows),
             "expected": characterize(rebase(rows, args.run_id)),
+            **profile_record(args.measurement_mode),
             "execute": False}, indent=2, ensure_ascii=False))
         return 0
     return 0 if run(args, rows, network, names) else 2
