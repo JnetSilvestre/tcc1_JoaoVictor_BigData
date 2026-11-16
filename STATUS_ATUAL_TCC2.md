@@ -406,3 +406,13 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 **E11-I03 preparado:** cliente registra início/fim UTC do lote adjacentes ao cronômetro monotônico; coletor distingue contadores monotônicos de cobertura temporal adequada (mínimo provisório 10 s de lote, pelo menos 5 timestamps, bordas a até 3 s e intervalos até 4 s); runner captura baseline pré-lote, gera CSV derivados e mantém JSONL brutos. Mesmo quando cobertura satisfatória, delta CPU por amostras de borda é estimativa com incerteza, nunca CPU exata do lote. C3/C4 e núcleo PON inalterados.
 
 **Não executar piloto imediatamente:** rodar AST/unittest atualizados no Windows, conferir Git e revisar protocolo antes de nova bancada. Qualquer novo C4/C3 exige run_id e namespace inéditos; não repetir E11-P01. V12 global não aprovado.
+
+## 15/11/2026 — E11-P02 C4 real auditado e prompt Perplexity preparado
+
+**E11-D05:** HEAD affa6dfc1185c24b554235944c05fb9aeeb08ee3, sintaxe OK e 9/9 testes sintéticos OK (0,078 s, NÃO benchmark). **Piloto E11-P02:** novo namespace tcc2-pon-e11-c4-p20261115-220023; C4 com logic-engine no control-plane virtual e source/executor no worker; mesmo host físico. ZIP bruto enviado, 27.839 bytes e SHA256 d99e8b9c258ca7a0415dc2ca88d43119c47c5d4774945aacf4f011ae710a389d, CRC OK e 21/21 SHA internos. 100/100 HTTP 200, 86 mudanças, 49 notificações de condição e 25 efeitos semanticamente idênticos ao oráculo. 10/10 checks gerais e 4/4 de transporte PASS, Pods originais C3/C4 preservados.
+
+**Tempo e vazão exploratórios, NÃO V12:** 2,095875392 s/lote, 47,71 requisições/s, mediana HTTP 19,78 ms e p95 50,24 ms. CPU e memória: 20 observações, 5 por contêiner incluindo cliente, sem erro de coleta declarado, porém cpu_window_adequate=false e memory_window_adequate=false. O contador do attribute-source assumiu dois valores sob timestamp igual a 01:00:36Z; isso indica ambiguidade de resolução, NÃO regressão comprovada. Não publicar CPU-segundos do lote ou picos reais. Laudo: docs/tcc2/etapa-11-e11-p02-auditoria-c4-piloto.md.
+
+**Perplexity:** prompt de pesquisa metodológica versionado em docs/tcc2/etapa-11-pesquisa-perplexity-prompt.md. O resultado será recebido posteriormente em Markdown e BibTeX para verificação, síntese autoral e eventual LaTeX UTFPR; nenhum resultado científico ou referência externa foi acrescentado como verificado nesta atividade.
+
+**Próximo:** corrigir distinção entre timestamp duplicado e regressão de CPU, validar em testes, preparar C2 e cargas médias em bancadas inéditas; não repetir o piloto C4 nem reutilizar C3/C4 históricos. V12 permanece NÃO APROVADO.
