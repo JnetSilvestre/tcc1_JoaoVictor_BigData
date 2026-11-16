@@ -158,3 +158,11 @@ A implementação não mutante avançou no harness `benchmark/docker_c2.py` e `b
 **Gates que permanecem abertos:** compilação/unittest atualizados no Windows; validação da captura de environment em Windows real; identidade/ownership e permissão de retencão/remoção controlada só de bancadas novas, com backup externo antes de qualquer ação; quotas/pressão do host e pontos STOP; fechamento prospectivo de regras de bloco/reposições; aprovação e congelamento formal do protocolo. A uniformização somente da última passada GET não iguala o histórico de polling/probes de Kubernetes/Docker, que segue limitação experimental.
 
 **Decisão:** `IMPLEMENTED_STATICALLY_NOT_VALIDATED / BLOCKED_FOR_M01`. Esta redação **não** libera `--execute`, `docker rm`, `kubectl delete` ou qualquer experimento.
+
+## 14. Auditoria do contrato real de estado frio após 63 testes
+
+**Evidência:** transcrição do acadêmico reportou `COMPILACAO: PASS` e `63/63` testes no SHA `4ba69a3464cb6c2e0d225875ea753a6133da1a18`. **Descoberta posterior pela revisão de fonte real** `c1/state.py`: `logic.attributes`, `logic.condition` e `executor.approved` são `null` antes de snapshot, não os valores não-nulos usados pelo mock inicial. Portanto, a versão de 63 PASS não garantiria passagem do preflight integrado em bancada corretamente fria.
+
+**Correção prospectiva:** o novo `campaign_controls.py` valida explicitamente o contrato não inicializado e preserva as demais exigências; dois novos casos sintéticos (inclusive criação de `AttributeSource`, `LogicEngine` e `RuleExecutor` reais em memória, sem rede) elevam a previsão da suíte para **65**. C2/C3/C4 adotaram a mesma ordem final de leitura: GET live, GET state, logs, para cada papel, sem POST. Ver auditoria `etapa-11-e11-m00c-auditoria-63-tests-e-ajuste-estado-frio.md` (commit `5db9baafebf8bae19120a5f9911876de97801351`).
+
+**Gate imutável:** a nova revisão continua `NOT_TESTED_ON_WINDOWS` até compilação + suíte 65/65 e, separadamente, leitura real de `environment_snapshot.py` sem mutações. Não congelar E11-M00-v1 nem executar snapshot/POST/série. CPU/RAM e ciclo de vida de novas bancadas mantêm os bloqueios prévios.
