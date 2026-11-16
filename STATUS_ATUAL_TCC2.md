@@ -674,3 +674,19 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 **Decisão documental:** `docs/tcc2/etapa-11-e11-m00c-auditoria-pressao-docker-repouso.md` (commit `dd9caa0e3f0c864ebdd545bd2dc2438ee9eb9ed1`) e apêndice `## 12` no protocolo candidato (commit `e5ceece21aeeffd60eaa116e315f855d623bb5e7`). Proposta de protocolo: uma nova bancada por vez, arquivar e verificar ZIP+SHA fora da bancada, e definir mecanismo auditável de encerramento/remoção **APENAS de recursos novos M01** com allowlist e validação de identidade, mantendo históricos permanentemente preservados. **Nenhuma limpeza foi autorizada ou realizada**, nem `docker prune` ou `kubectl delete`.
 
 **Estado atual:** `E11-M00-v1-CANDIDATE/BLOCKED_FOR_M01`; pendentes ciclo de vida seguro (ou STOP por capacidade), requisitos `environment.json`, GET/preflight uniforme, verificação prospectiva de quotas/capacidade e aprovação/freeze. **Sem experimento novo, snapshot, POST, apply, restart ou alteração de histórico**.
+
+## 16/11/2026 — E11-M00C: GET uniforme, environment e auditoria ZIP PREPARADOS (SEM experimentos)
+
+**Implementação no GitHub (somente harness):** criados `prova-conceito/benchmark/campaign_controls.py` (preflight final uniforme read-only), `benchmark/environment_snapshot.py` (metadados de host em `environment.json` antes de snapshot) e `benchmark/lifecycle_audit.py` (auditoria ZIP SHA-256/CRC e revisão de nomes de bancadas novas sem comandos destrutivos), além de integração `timing_only` em `benchmark/docker_c2.py` e `benchmark/runner.py`. Código da aplicação, Dockerfile, imagens, manifests de produção e bancadas históricas NÃO alterados.
+
+**GET final uniforme proposto:** em cada cenário e papel uma chamada GET `/health/live`, uma GET `/state`, uma leitura de logs, verificação de inicialização fria e zero mutações antes de snapshot; grava `preflight-uniform.json`. Incide apenas em futuras execuções `timing_only`, não reabre pilotos. **GETs não aquecem cadeia funcional com POST**, e o histórico de readiness nativo de C2/C3/C4 ainda não é idêntico.
+
+**Ambiente:** `environment.json` deverá conter Git SHA, SO/Python, Docker context e cgroup, RAM/CPUs anunciadas, imagem aprovada, disco e RAM Windows e nós kind quando aplicável. É leitura pontual pré-snapshot e NÃO aprova quotas/CPU/RAM comparativas.
+
+**Arquivo e ciclo de vida:** `lifecycle_audit.py` deverá verificar ZIP, CRC e SHA por membro, status funcional `PASS`, IDs de campanha `m...` e presença de `environment.json`/`preflight-uniform.json`; `retirement_review_only()` devolve **`commands=[]`, `delete_authorized=false`**, nunca executa stop/delete. A política de remoção segura (apenas novos recursos com UID/ID e allowlist/backup) **não foi implementada nem autorizada**; se a capacidade impedir a campanha, STOP.
+
+**Testes:** criados `tests/test_benchmark_campaign_controls.py`, `tests/test_benchmark_environment_snapshot.py`, `tests/test_benchmark_lifecycle_audit.py` com **15 casos sintéticos planejados**, ainda **NÃO executados** no Windows. Total esperado da suíte = **63**, apenas previsão (os 48 anteriores foram executados no SHA `2d237ba8...`). Requer `compileall` e `unittest` novos para detectar regressões, incluindo possível `powershell.exe` no Windows. Nenhum teste novo relatado como PASS.
+
+**Documento detalhado:** `docs/tcc2/etapa-11-e11-m00c-preflight-ambiente-retencao-preparados.md` (commit `a3b02b640c3f49c6c4ada4f076a8367552f8cd58`), protocolo candidato M00C atualizado (commit `98be892d77fa33fb9d064fe2ad17e479d430f64f`).
+
+**Estado formal:** `E11-M00-v1-CANDIDATE/BLOCKED_FOR_M01`. Pendentes regressão sintética, verificação real read-only do baseline em Windows, ownership/backup e tratamento seguro de novas bancadas, limites de pressão/STOP, teste de quotas efetivas antes de POST, aceite e congelamento do protocolo. **NENHUM snapshot, POST, benchmark, apply, rm/prune, restart, remoção ou alteração de qualquer bancada histórica nesta atividade.**
