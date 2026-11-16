@@ -349,3 +349,12 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 **Preservação:** C3 em tcc2-pon e C4 em tcc2-pon-c4 não devem sofrer novos eventos, escala, reinício ou remoção. Não foram criados namespaces, executados benchmarks ou alterados componentes funcionais. ZIPs C3/C4 originais e hashes permanecem referências funcionais, não medidas de desempenho.
 
 **Próximo passo E11-D01:** executar apenas diagnóstico PowerShell não mutante de Git, ambiente Docker, cgroups e métricas no host do acadêmico; analisar a saída; fixar parâmetros e critérios antes de gerar scripts e qualquer piloto.
+
+
+## 15/11/2026 — E11-D01 PowerShell recebido e diagnosticado
+
+**Fonte:** saída textual do Windows fornecida pelo acadêmico, 21:02:01-03:00; arquivo TXT local não enviado para auditoria de bytes/hashes. Laudo: docs/tcc2/etapa-11-e11-d01-diagnostico-ambiente.md. **Aprovado como inventário, não como medição de desempenho**.
+
+**Constatações:** branch local tcc2/desenvolvimento limpa em f84c8384f33168219213757f9b2027216a2511e4, anterior aos commits documentais E11; Windows 10/i5-9300H 4c/8t; Docker Desktop 4.99.0, Engine 29.9.3, 8 CPUs e 8245637120 bytes, cgroups v2; imagem C2 correta; dois nós kind v1.37.0 Ready no mesmo host WSL2. C3 e C4, seis Pods Running 1/1, 0 restarts, posições esperadas, preservados. metrics.k8s.io/v1beta1 retorna NotFound, sem fonte atual comprovada de métricas CPU/RAM por Pod. Nenhum benchmark executado, nenhum Pod alterado.
+
+**Próximo E11-D02:** sincronizar a documentação por git pull --ff-only na branch de trabalho, verificar Kubelet Summary API e disponibilidade de arquivos cgroup v2 de nós kind **somente por leitura**; não executar GET/POST da aplicação nem iniciar novos contêineres. Só então fixar instrumentos, método e piloto.
