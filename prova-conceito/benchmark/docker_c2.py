@@ -4,13 +4,11 @@ O --execute e MUTANTE: snapshot e lote UNICOS. Em falha, preservar tudo;
 NAO usar docker rm, restart, compose down ou network rm automaticamente.
 """
 import argparse
-from datetime import datetime, timezone
 import json
 from pathlib import Path
 import re
 import subprocess
 import sys
-import threading
 import time
 
 from benchmark.evidence import archive, check_run, hash_file, write_csv, write_json, write_jsonl
@@ -28,22 +26,6 @@ MEM_APP = 256 * 1024 * 1024
 MEM_CLIENT = 128 * 1024 * 1024
 CPU_LIMIT = "0.5"
 SEEDS = {100: 20260501, 1000: 20260502, 10000: 20260503}
-RESOURCE_SCRIPT = """import json,pathlib,datetime
-root=pathlib.Path('/sys/fs/cgroup')
-cpu={}
-for line in (root/'cpu.stat').read_text().splitlines():
- k,_,v=line.partition(' ')
- if v.strip().isdigit(): cpu[k]=int(v)
-def read(name):
- try: return int((root/name).read_text().strip())
- except (FileNotFoundError,PermissionError,ValueError): return None
-print(json.dumps({'cpu_usage_usec':cpu.get('usage_usec'),
- 'cpu_nr_throttled':cpu.get('nr_throttled'),
- 'cpu_throttled_usec':cpu.get('throttled_usec'),
- 'memory_current_bytes':read('memory.current'),
- 'memory_peak_lifetime_bytes':read('memory.peak'),
- 'capture_utc':datetime.datetime.now(datetime.timezone.utc).isoformat()}))
-"""
 
 
 def command(*args, stdin=None, timeout=120):
@@ -189,55 +171,6 @@ def cold_check(names):
     return initial
 
 
-def cgroup_sample(names):
-    values = []
-    for role, name in names.items():
-        proc = command("docker", "exec", name, "python", "-c", RESOURCE_SCRIPT, timeout=20)
-        if proc.returncode:
-            raise RuntimeError(f"cgroup ilegivel em {role}: {proc.stderr[-200:]}")
-        data = json.loads(proc.stdout)
-        values.append({"role": role, "container": name,
-                       "retrieved_utc": datetime.now(timezone.utc).isoformat(),
-                       **data})
-    return values
-
-
-class Sampler:
-    def __init__(self, names, period):
-        self.names, self.period = names, period
-        self.samples, self.errors = [], []
-        self.done = threading.Event()
-        self.worker = threading.Thread(target=self.collect, daemon=True)
-
-    def once(self):
-        self.samples.extend(cgroup_sample(self.names))
-
-    def collect(self):
-        while not self.done.is_set():
-            try:
-                self.once()
-            except Exception as exc:
-                self.errors.append(f"{type(exc).__name__}: {exc}")
-            self.done.wait(self.period)
-
-    def start(self):
-        try:
-            self.once()
-        except Exception as exc:
-            self.errors.append(f"baseline: {exc}")
-        self.worker.start()
-
-    def stop(self):
-        self.done.set()
-        self.worker.join(timeout=35)
-        if self.worker.is_alive():
-            self.errors.append("sampler nao finalizou")
-        try:
-            self.once()
-        except Exception as exc:
-            self.errors.append(f"after: {exc}")
-
-
 def validate_transport(inputs, all_logs, final, before, after):
     source, logic, executor = (all_logs[r] for r in ROLES)
     attr_out = [x["payload"] for x in source if x.get("event_type") == "send"
@@ -271,8 +204,9 @@ def run(args, rows, network, names):
             **setup, "scenario": "C2", "run_id": args.run_id, "fixture": str(args.fixture),
             "fixture_sha256": hash_file(args.fixture), "seed": rows[0]["seed"],
             "requests": len(rows), "client": "docker exec -i python - inside client container",
-            "cpu_sampler_note": "INTRUSIVE: docker exec cria processos amostradores; apenas diagnostico",
-            "memory_sampler_note": "memory.current e memory.peak incluem atividade amostradora; nao comparar como workingSetBytes",
+            "cpu_sampler_note": "Docker Engine API GET externa; coletor host ainda causa overhead nao calibrado",
+            "memory_sampler_note": "memory_stats.usage BRUTO, nao workingSetBytes Kubelet; sem pico de lote",
+            "scientific_status": "PILOT_ONLY; measurement_approved sempre false ate calibracao",
             "batch_timeout_s": args.batch_timeout, "period_s": args.period})
         rebased = rebase(rows, args.run_id)
         write_jsonl(output / "inputs.jsonl", rebased)
@@ -300,6 +234,13 @@ def run(args, rows, network, names):
         write_json(output / "topology-start.json", before)
         cold = cold_check(names)
         write_json(output / "states-cold.json", cold)
+        # A interface externa deve estar operacional ANTES de qualquer snapshot.
+        # Import tardio evita ciclo docker_engine_api -> docker_c2.
+        from benchmark.docker_engine_window import EngineSampler, quality_window
+        from benchmark import docker_engine_api as engine_api
+        sampler = EngineSampler(names, args.period)
+        sampler.preflight()
+        write_json(output / "engine-context.json", sampler.context_record())
         report["phase"] = "snapshot"
         report["started_snapshot"] = True
         snapshot = http(names["attribute-source"], "/init/snapshot", {"run_id": args.run_id})
@@ -311,8 +252,8 @@ def run(args, rows, network, names):
         if not all(x.get("run_id") == args.run_id and x.get("ready") is True
                    for x in first.values()) or first["rule-executor"].get("effects"):
             raise ValueError("snapshot nao propagado aos tres servicos")
-        sampler = Sampler(names, args.period)
         report["phase"] = "batch"
+        sampler.prime()  # Base apos snapshot e antes de qualquer POST de carga.
         sampler.start()
         try:
             report["started_changes"] = True
@@ -333,12 +274,10 @@ def run(args, rows, network, names):
             (output / "client.stderr.log").write_text(batch.stderr, encoding="utf-8")
         finally:
             sampler.stop()
-            write_jsonl(output / "metrics-cgroup-intrusive.jsonl", sampler.samples)
+            write_jsonl(output / "metrics-engine.jsonl", sampler.samples)
             write_json(output / "metrics-errors.json", sampler.errors)
-            write_csv(output / "metrics-cgroup-intrusive.csv", sampler.samples,
-                      ("role", "container", "retrieved_utc", "capture_utc",
-                       "cpu_usage_usec", "cpu_nr_throttled", "cpu_throttled_usec",
-                       "memory_current_bytes", "memory_peak_lifetime_bytes"))
+            write_json(output / "metrics-collector-round-seconds.json", sampler.rounds)
+            write_csv(output / "metrics-engine.csv", sampler.samples, engine_api.CSV_FIELDS)
         records = [json.loads(x) for x in batch.stdout.splitlines() if x.strip()]
         if batch.returncode != 0 or not records or records[-1].get("status") != "PASS":
             raise ValueError("lote com falha, nao repetir")
@@ -358,11 +297,11 @@ def run(args, rows, network, names):
             write_jsonl(output / f"{role}-logs.jsonl", all_logs[role])
         validated = check_run(rebased, records, final)
         validated["transport"] = validate_transport(rebased, all_logs, final, before, after)
-        validated["metric_quality"] = {
-            "available": bool(sampler.samples), "measurement_approved": False,
-            "reason": "docker exec intrusivo e fronteiras temporais nao calibradas",
-            "errors": sampler.errors,
-            "samples": len(sampler.samples)}
+        validated["metric_quality"] = quality_window(
+            sampler.samples, sampler.ids, summary=records[-1],
+            errors=sampler.errors)
+        validated["metric_quality"]["collector_round_seconds"] = sampler.rounds
+        validated["metric_quality"]["samples"] = len(sampler.samples)
         validated["status"] = ("PASS" if validated["status"] == "PASS"
                                and all(validated["transport"].values()) else "FAIL")
         report["status"] = validated["status"]
