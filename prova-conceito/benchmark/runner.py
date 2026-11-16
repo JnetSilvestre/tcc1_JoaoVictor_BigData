@@ -216,16 +216,29 @@ def run(args, rows, namespace):
         monitor.start()
         try:
             report["started_changes"] = True
-            proc = call_batch(namespace, client_pod, rebased, args.timeout, args.batch_timeout)
+            try:
+                proc = call_batch(namespace, client_pod, rebased, args.timeout, args.batch_timeout)
+            except subprocess.TimeoutExpired as exc:
+                # O resultado de kubectl exec e incerto: preservar os bytes recebidos
+                # e NUNCA repetir o POST nem reiniciar o Pod para obter mais dados.
+                for filename, raw in (
+                    ("client.stdout.partial.log", exc.stdout),
+                    ("client.stderr.partial.log", exc.stderr),
+                ):
+                    if isinstance(raw, bytes):
+                        raw = raw.decode("utf-8", errors="replace")
+                    (output / filename).write_text(raw or "", encoding="utf-8")
+                raise RuntimeError("timeout do lote; estado remoto indeterminado; NAO repetir") from exc
+            (output / "client.stderr.log").write_text(proc.stderr, encoding="utf-8")
+            (output / "client.stdout.jsonl").write_text(proc.stdout, encoding="utf-8")
         finally:
+            # Guardar a telemetria mesmo quando o lote sai com erro ou timeout.
             monitor.stop()
-        (output / "client.stderr.log").write_text(proc.stderr, encoding="utf-8")
-        (output / "client.stdout.jsonl").write_text(proc.stdout, encoding="utf-8")
+            write_jsonl(output / "metrics-samples.jsonl", monitor.samples)
+            write_json(output / "metrics-errors.json", monitor.errors)
         records = [json.loads(line) for line in proc.stdout.splitlines() if line.strip()]
         if proc.returncode or not records or records[-1].get("status") != "PASS":
             raise ValueError(f"cliente falhou exit={proc.returncode}; NAO repetir")
-        write_jsonl(output / "metrics-samples.jsonl", monitor.samples)
-        write_json(output / "metrics-errors.json", monitor.errors)
         after = kube.topology()
         write_json(output / "topology-end.json", {
             "pods": after["pods"], "nodes": after["nodes"], "services": after["services"]})
@@ -252,6 +265,20 @@ def run(args, rows, namespace):
                 write_json(output / "states-recovery.json", states)
             except Exception as e:
                 report["recovery_error"] = str(e)
+            try:
+                topo = kube.topology()
+                write_json(output / "topology-recovery.json", {
+                    "pods": topo["pods"], "nodes": topo["nodes"],
+                    "services": topo["services"]})
+                for role in ROLES:
+                    try:
+                        write_jsonl(output / f"{role}-logs-recovery.jsonl",
+                                    kube.read_logs(topo["pods"][role]["name"]))
+                    except Exception as log_exc:
+                        (output / f"{role}-logs-recovery-error.txt").write_text(
+                            str(log_exc) + "\n", encoding="utf-8")
+            except Exception as topo_exc:
+                report["topology_recovery_error"] = str(topo_exc)
     finally:
         write_json(output / "validation.json", report)
         zipped = archive(output)
