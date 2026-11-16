@@ -143,3 +143,18 @@ A memória nominal máxima por bancada (três serviços × 256 MiB + cliente × 
 Esta seção **substitui apenas a proposta de retenção irrestrita das NOVAS bancadas** por uma questão aberta de ciclo de vida. A retenção dos **artefatos brutos** e preservação integral das **bancadas históricas** permanecem requisitos rígidos. A política definitiva ainda precisará de decisão pré-registrada e instrumento auditável, não há liberação operacional.
 
 **Estado:** `E11-M00-v1-CANDIDATE / BLOCKED_FOR_M01`. A série principal de 30 execuções não se inicia antes de decisão sobre capacidade/retenção, GETs uniformes, `environment.json`, quotas e congelamento.
+
+## 13. Código preparado para uniformização de GET, environment e arquivo — SEM regressão nova
+
+**Registro:** `etapa-11-e11-m00c-preflight-ambiente-retencao-preparados.md` (commit `a3b02b640c3f49c6c4ada4f076a8367552f8cd58`).
+
+A implementação não mutante avançou no harness `benchmark/docker_c2.py` e `benchmark/runner.py` **exclusivamente no perfil `timing_only`**:
+
+- `campaign_controls.py` exige a passada final idêntica nos 3 papéis: 1 GET live, 1 GET state e 1 leitura de logs por papel; valida estado frio, zero mutações, effects e ledgers antes de snapshot, grava `preflight-uniform.json`. Divergência resulta em `STOP`.
+- `environment_snapshot.py` prepara `environment.json` antes de snapshot, com Git, Docker context/cgroup/capacidade, versão do host/Python, disco, RAM Windows e nós kind (quando C3/C4); leituras externas apenas **fora de `T_batch`**. Não substitui medição da quota/period/swap real nem comprovação de capacidade.
+- `lifecycle_audit.py` verifica ZIP/CRC/SHA e propriedade de rodada futura `m...` com `validation.status=PASS`; retorna **`delete_authorized=false`**. A revisão de aposentadoria retorna só nomes esperados com **`commands=[]`**: nenhuma parada/exclusão implementada; arquivos e bancadas históricas não serão alterados.
+- Adicionados três módulos de testes sintéticos com 15 casos previstos, **NÃO executados**. A contagem anterior comprovada em Windows era 48; **63 são esperados**, ainda sem evidência. O código da aplicação/imagem não mudou.
+
+**Gates que permanecem abertos:** compilação/unittest atualizados no Windows; validação da captura de environment em Windows real; identidade/ownership e permissão de retencão/remoção controlada só de bancadas novas, com backup externo antes de qualquer ação; quotas/pressão do host e pontos STOP; fechamento prospectivo de regras de bloco/reposições; aprovação e congelamento formal do protocolo. A uniformização somente da última passada GET não iguala o histórico de polling/probes de Kubernetes/Docker, que segue limitação experimental.
+
+**Decisão:** `IMPLEMENTED_STATICALLY_NOT_VALIDATED / BLOCKED_FOR_M01`. Esta redação **não** libera `--execute`, `docker rm`, `kubectl delete` ou qualquer experimento.
