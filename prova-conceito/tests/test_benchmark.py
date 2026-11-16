@@ -184,5 +184,54 @@ class TimingAndCoverageTests(unittest.TestCase):
         q2 = quality(rows, {"source":("abc","attribute-source")}, batch=batch)
         self.assertFalse(q2["usable_cpu"])
 
+
+class CpuTimestampRoundingTests(unittest.TestCase):
+    def make_samples(self, reversed_counter=False):
+        from datetime import datetime, timedelta, timezone
+        base = datetime(2026, 11, 16, 1, 0, 0, tzinfo=timezone.utc)
+        rows = []
+        # Primeiro intervalo tem timestamp repetido mas contador crescente.
+        for i in range(16):
+            second = i if i < 7 else i-1
+            count = (0 if reversed_counter and i == 7 else i * 100000000)
+            timepoint = (base + timedelta(seconds=second)).isoformat()
+            rows.append({"pod_uid": "abc", "container": "attribute-source",
+                         "cpu_time_utc": timepoint, "cpu_usage_core_ns": count,
+                         "memory_time_utc": timepoint,
+                         "memory_working_set_bytes": 8192+i})
+        batch = {"batch_started_utc": (base+timedelta(seconds=2)).isoformat(),
+                 "batch_finished_utc": (base+timedelta(seconds=13)).isoformat(),
+                 "elapsed_ns": 11_000_000_000}
+        return rows, batch
+
+    def test_duplicate_timestamp_with_increasing_counter_is_not_regression(self):
+        rows, batch = self.make_samples()
+        metrics = quality(rows, {"source":("abc","attribute-source")}, batch=batch)
+        role = metrics["roles"]["source"]
+        self.assertTrue(role["cpu_counter_present_monotonic"])
+        self.assertFalse(role["cpu_counter_regressed"])
+        self.assertEqual(role["cpu_timestamp_ambiguous_count"], 1)
+        self.assertEqual(role["cpu_duplicate_timestamp_count"], 1)
+        self.assertTrue(metrics["cpu_window_adequate"])
+
+    def test_regression_under_duplicate_timestamp_is_rejected(self):
+        rows, batch = self.make_samples(reversed_counter=True)
+        metrics = quality(rows, {"source":("abc","attribute-source")}, batch=batch)
+        self.assertTrue(metrics["roles"]["source"]["cpu_counter_regressed"])
+        self.assertFalse(metrics["usable_cpu"])
+
+    def test_ambiguous_timestamp_on_measurement_boundary_is_not_adequate(self):
+        rows, batch = self.make_samples()
+        # Timestamp duplicado corresponde a 6 segundos, agora borda inicial.
+        from datetime import datetime, timezone
+        base = datetime(2026, 11, 16, 1, 0, 0, tzinfo=timezone.utc)
+        from datetime import timedelta
+        batch["batch_started_utc"] = (base + timedelta(seconds=6)).isoformat()
+        batch["batch_finished_utc"] = (base + timedelta(seconds=14)).isoformat()
+        batch["elapsed_ns"] = 11_000_000_000
+        metrics = quality(rows, {"source":("abc","attribute-source")}, batch=batch,
+                          min_batch_s=7.0)
+        self.assertFalse(metrics["cpu_window_adequate"])
+
 if __name__ == "__main__":
     unittest.main()
