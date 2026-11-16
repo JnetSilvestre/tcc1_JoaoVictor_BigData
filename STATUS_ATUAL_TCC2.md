@@ -550,3 +550,13 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 **Kubelet:** 76 observações JSONL (19 por papel incluindo cliente), 0 erros e clocks UTC/perf coerentes, mas fonte de CPU repetida: 3 timestamps distintos no source, 3 no logic, 2 no executor. Último timestamp de origem 03:06:41/42/30 UTC é anterior ao término do lote 03:06:43.953552, logo **sem bracketing completo**. `cpu_window_adequate=false`, `memory_window_adequate=false`, `usable_cpu=false`, `usable_memory=false` com seis alertas. Não converter métricas em custo científico. Valores working set são só amostras exploratórias.
 
 **Laudo:** `docs/tcc2/etapa-11-e11-p05-auditoria-c3-1000.md`. **Decisão:** C3 agora gasto e intocável para novos snapshots/cargas. Próximo E11-D12: preparar nova bancada C4/1000, nova namespace, sem snapshot/benchmark. E11-P06 somente após auditoria de preparo. Ainda falta calibração de recursos, E11-M01 e E11-A01.
+
+## 16/11/2026 — E11-D12 interrompido por PowerShell quoting; E11-R01 preparado
+
+**PowerShell:** HEAD `dd47bb62e6ff1d4d61667e260d4f015be374f998`, 33/33 testes PASS. Namespace C4 NOVO `tcc2-pon-e11-c4-p20261116-001328` criado com todos os recursos; 4 Pods Ready, UID informado, sem snapshot/benchmark reportados. Falha exclusivamente na chamada `python -c $checkCold` com `NameError: name 'status' is not defined`, compatível com perda de aspas na passagem de script multiline do PowerShell; estado frio **não confirmado**. **Não repetir apply; não executar snapshot/carga.**
+
+**ZIP realmente enviado:** somente `preflight.zip` ANTERIOR ao apply, 15.635 bytes SHA-256 `a48ef81ad9cd11db456387990b01e53579f2a5076e785b29f49315854568d02d`, 6/6 CRC e 5/5 hashes internos válidos. Não é o ZIP pós-apply, que não chegou a ser criado. Não confundir resultado do preflight com evidência do estado C4 após criação.
+
+**Correção preparada:** `benchmark/kube_c4_recovery.py` (testes `test_benchmark_kube_c4_recovery.py` + cinco casos) consulta SOMENTE get/logs/GET /state, compara Pods com `pods-c4.json` salvo, compara históricos com `historical-before.json`, bloqueia UID/restart/imagem/node divergentes, identifica estado frio. Gera novo ZIP sem alterar recursos Kubernetes. Não executado no Windows ainda. Registro `docs/tcc2/etapa-11-e11-d12-erro-powerShell-recuperacao.md`.
+
+**Próximo gate E11-R01:** git pull limpo, compileall, testes (esperados 38), rodar módulo com namespace/run já criados e pasta original E11-D12; enviar saída/ZIP para auditoria. Após PASS_COLD_READ_ONLY, preparar E11-P06 único. Nenhuma modificação em C2/C3 históricos.
