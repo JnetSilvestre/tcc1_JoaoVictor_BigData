@@ -15,9 +15,10 @@ import threading
 from benchmark import collector
 from benchmark.measurement_profile import (
     RESOURCES_DIAGNOSTIC, MODES, select_sampler, profile_record,
-    not_collected_quality,
+    not_collected_quality, require_new_timing_identity,
 )
 from benchmark.evidence import archive, check_run, write_json, write_jsonl, write_csv, hash_file
+from benchmark.resource_contract import verify_kube_resources
 from benchmark.fixtures import characterize, generate, rebase
 from benchmark.prepare import namespace_for
 from c0.io import read_jsonl, validate_input
@@ -91,6 +92,7 @@ def preflight(scenario, namespace):
             or stats[0].get("ready") is not True
             or pod["spec"]["containers"][0].get("image") != kube.IMAGE):
         raise ValueError("Pod cliente inesperado")
+    top["resource_contract"] = verify_kube_resources(top, pod)
     source = top["pods"]["attribute-source"]["name"]
     cold = {}
     for role in ROLES:
@@ -210,6 +212,7 @@ def run(args, rows, namespace):
             "pods": top["pods"], "nodes": top["nodes"], "services": top["services"],
             "client_pod": client_pod})
         write_json(output / "states-cold.json", cold)
+        write_json(output / "resource-contract.json", top["resource_contract"])
         report["stage"] = "snapshot"
         report["started_snapshot"] = True
         status, reply = kube.http(source_pod, "attribute-source",
@@ -344,6 +347,8 @@ def main(argv=None):
     if not 0.1 <= args.period <= 15 or not 1 <= args.timeout <= 120 or not 10 <= args.batch_timeout <= 3600:
         parser.error("time-outs/periodo invalidos")
     rows = read_jsonl(args.fixture)
+    require_new_timing_identity(args.measurement_mode, args.scenario,
+                                args.label, args.run_id)
     ns = ensure_safe(args.scenario, args.label, args.run_id, rows)
     if not args.execute:
         print(json.dumps({"status": "PLAN_ONLY", "scenario": args.scenario,
