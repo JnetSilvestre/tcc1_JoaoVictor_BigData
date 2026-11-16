@@ -446,3 +446,13 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 **Correção commit `7f4d94cd45ae29ef2bb9aed3e9510d9cfad99347`:** validar `cmd[-3] == IMAGE_TAG`, `cmd[-2] == '-c'` e verificar substring `time.sleep(86400)` em `cmd[-1]`. Alterado somente `tests/test_benchmark_docker_c2.py`, sem alteração no runtime do controlador. **Ainda não validado no Windows** após commit.
 
 **Próximo:** sincronizar branch com Git limpo, repetir suíte `test_benchmark*.py` e somente se PASS atualizar `expectedHead` do script do piloto para `7f4d94cd45ae29ef2bb9aed3e9510d9cfad99347`, rodando novamente o procedimento E11-D06/P03 uma única vez. Se qualquer verificação falhar, não criar bancada. V12 permanece pendente.
+
+## 15/11/2026 — E11-D06 PASS e E11-P03 Docker C2: piloto funcional auditado
+
+**Execução Windows:** HEAD `ad2092c085ec2379ba859b2007038a727664e9b5`; 16/16 testes E11-D06 PASS; Docker 29.9.3. Novo C2 em rede `tcc2-pon-e11-c2-p20261115-225314` com quatro contêineres exclusivos. 100/100 HTTP 200, 86 mudanças, 49 mudanças de condição, 25 efeitos iguais ao oráculo, zero divergência de resposta; 10/10 checks funcionais, 4/4 transporte, 0 reinícios.
+
+**ZIP original auditado:** 27.261 bytes, SHA-256 `8f5d3336f1fe7d3d7ce052cd0d93381d9b5bd6f0b3db0db2d664df5da2b32a01`, 22 entradas com CRC válido, 21/21 hashes internos. Tempo exploratório: 2,867092063 s, 34,88 req/s, RTT mediana 19,99 ms e p95 101,22 ms. Uma única rodada — **não permite inferir vantagem C2/C3/C4**.
+
+**Telemetria:** 16 amostras de cgroup via `docker exec` intrusivo, sem falha de coleta, porém `measurement_approved=false`; contador CPU e pico de memória não podem ser atribuídos exclusivamente ao lote nem comparados à Summary API do Kubernetes. Contadores `cpu_nr_throttled` cumulativos cresceram durante observação, com valores já positivos antes da carga. **V12 NÃO iniciada.**
+
+**Laudo:** `docs/tcc2/etapa-11-e11-p03-auditoria-c2-piloto.md`. **Próximo:** coletor C2 de recursos não intrusivo, política de calibração, piloto médio 1000 em nova bancada, sem tocar em bancadas usadas/históricas.
