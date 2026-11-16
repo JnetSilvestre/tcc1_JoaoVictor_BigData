@@ -33,22 +33,27 @@ def validate_cold(health, states, logs):
             raise ValueError(f"{role}: logs invalidos")
         if any(x.get("event_type") == "mutation" for x in entries):
             raise ValueError(f"{role}: historico de mutacao pre-snapshot")
-    for role in ("attribute-source", "logic-engine"):
-        state = states[role]
-        if state.get("attributes") != EXPECTED_ATTRIBUTES:
-            raise ValueError(f"{role}: atributos nao zerados")
-        if state.get("sequences") != EXPECTED_ATTRIBUTES:
-            raise ValueError(f"{role}: contadores nao zerados")
     source, logic, executor = (states[r] for r in ROLES)
+    # Contrato REAL c1/state.py antes do primeiro snapshot:
+    # source nasce com atributos zerados; logic ainda nao possui
+    # atributos/condicao; executor nao possui sinal de aprovacao.
+    if source.get("attributes") != EXPECTED_ATTRIBUTES:
+        raise ValueError("source: atributos nao zerados")
+    if source.get("sequences") != EXPECTED_ATTRIBUTES:
+        raise ValueError("source: contadores nao zerados")
+    if logic.get("attributes") is not None:
+        raise ValueError("logic: atributos ja inicializados")
+    if logic.get("sequences") != EXPECTED_ATTRIBUTES:
+        raise ValueError("logic: contadores nao zerados")
     if source.get("pending_request_id") is not None:
         raise ValueError("source com requisicao pendente")
-    if (logic.get("condition") is not False
+    if (logic.get("condition") is not None
             or logic.get("condition_sequence") != 0
             or not _empty(logic.get("received_ids"))
             or not _empty(logic.get("condition_events"))
             or logic.get("faulted") is not False):
         raise ValueError("logic nao esta fria")
-    if (executor.get("approved") is not False
+    if (executor.get("approved") is not None
             or executor.get("condition_sequence") != 0
             or not _empty(executor.get("received_ids"))
             or not _empty(executor.get("effects"))
