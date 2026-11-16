@@ -35,6 +35,10 @@ class FixtureTests(unittest.TestCase):
                          "tcc2-pon-e11-c3-p01")
         with self.assertRaises(ValueError):
             ensure_safe("C4", "p01", "c4-e10-i02-v1", rows)
+        corrupted = [dict(x) for x in rows]
+        corrupted[1]["value"] = 99
+        with self.assertRaises(ValueError):
+            ensure_safe("C3", "p02", "e11-c3-p02", corrupted)
 
     def test_manifests_do_not_target_original_namespaces(self):
         for scenario in ("C3", "C4"):
