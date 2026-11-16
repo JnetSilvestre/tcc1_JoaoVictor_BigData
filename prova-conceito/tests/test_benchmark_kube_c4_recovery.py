@@ -30,11 +30,11 @@ class KubeC4RecoveryTests(unittest.TestCase):
                 "attributes":{"atA":0,"atB":0},"sequences":{"atA":0,"atB":0},
                 "pending_request_id":None,"faulted":False},
             "logic-engine":{"ready":False,"run_id":None,"snapshot_version":None,
-                "attributes":{"atA":0,"atB":0},"sequences":{"atA":0,"atB":0},
-                "condition":False,"condition_sequence":0,
+                "attributes":None,"sequences":{"atA":0,"atB":0},
+                "condition":None,"condition_sequence":0,
                 "received_ids":[],"condition_events":[],"faulted":False},
             "rule-executor":{"ready":False,"run_id":None,"snapshot_version":None,
-                "approved":False,"condition_sequence":0,
+                "approved":None,"condition_sequence":0,
                 "received_ids":[],"effects":[],"faulted":False},
         }
 
