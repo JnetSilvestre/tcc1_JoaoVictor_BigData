@@ -426,3 +426,13 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 **Arquivos preparados:** docs/tcc2/etapa-11-auditoria-seletiva-perplexity.md e docs/tcc2/etapa-11-referencias-curadas-candidatas.bib. NÃO adicionar diretamente ao main.bib antes de revisão de duplicidades, integração ao estilo abntex2-alf e capítulo da metodologia. Referências técnicas já existentes sobre Docker/Kubernetes devem ser deduplicadas quando necessário.
 
 **Impacto no protocolo:** definir lote como unidade independente, distribuição por blocos, desfecho primário tempo de lote, documentação de limites/gerador/warmup real e distinção de memória e CPU; nenhum número de repetições foi validado como suficiente de maneira universal. Resultados quantitativos continuam exclusivamente os pilotos observados; V12 NÃO CONCLUÍDO.
+
+## 15/11/2026 — E11-I04: C2 experimental preparado e tratamento de timestamps CPU revisado
+
+**Código em branch tcc2/desenvolvimento:** benchmark/collector.py distingue timestamp kubelet repetido com contador crescente de regressão real; contador monotônico é aferido na ordem das coletas, timestamps colapsados para no máximo uma observação temporal representativa e margens ambíguas bloqueiam atribuição de delta à janela de carga. Também valida consistência aproximada entre duração UTC e perf_counter_ns. Foram adicionados testes unitários de timestamp duplicado, regressão, borda ambígua e relógios incoerentes (não executados no Windows ainda).
+
+**C2 piloto isolado preparado:** benchmark/docker_c2.py (PLAN_ONLY por padrão e MUTANTE somente com --execute) cria nova rede Docker bridge interna e contêineres exclusivos para source, logic, executor e cliente, usando imagem C2 funcional aprovada, teto nominal 0,5 CPU por contêiner, memória 256 MiB serviços / 128 MiB cliente; não publica portas. Cada rodada usa snapshot e lote únicos, preservando evidências e estados após falha. Arquivo tests/test_benchmark_docker_c2.py contém testes sintéticos sem acesso ao Docker. Não houve aplicação, nova rede/container ou benchmark realizados pela IA.
+
+**Ressalva científica:** leituras CPU e memória propostas para C2 via docker exec dentro dos contêineres são intrusivas, interferem nos cgroups que observam e permanecem dados diagnósticos apenas. Não comparar CPU, memória ou percentuais de C2 à Summary API de C3/C4 antes de calibrar ou substituir o coletor. Rede bridge Docker e rede kind não isolam causalmente overhead do orquestrador.
+
+**Documento:** docs/tcc2/etapa-11-e11-i04-bancada-c2.md. **Próximo E11-D06:** sincronizar Git, executar compileall/unittest para toda instrumentação e emitir plano C2 somente leitura para fixture 100 em diretório inédito; depois auditar falhas antes de liberar PILOTO C2. V12 segue pendente.
