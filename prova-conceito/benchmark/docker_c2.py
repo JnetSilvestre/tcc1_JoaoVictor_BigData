@@ -18,7 +18,7 @@ from benchmark.measurement_profile import (
     RESOURCES_DIAGNOSTIC, MODES, select_sampler, profile_record,
     not_collected_quality, require_new_timing_identity,
 )
- read_jsonl, validate_input
+from c0.io import read_jsonl, validate_input
 from c0.oracle import calculate_expected_effects
 from c2.runner import HTTP_CLIENT, IMAGE_TAG, BUILD_SHA
 
