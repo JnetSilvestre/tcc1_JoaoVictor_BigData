@@ -225,11 +225,10 @@ def run(args, rows, namespace):
                     raise ValueError(f"{role}: GET {path} HTTP inesperado {code}")
                 return payload
 
-            pre_logs = {r: kube.read_logs(top["pods"][r]["name"]) for r in ROLES}
             uniform = final_readonly_cold_check(
                 lambda role: get_status_body(role, "/health/live"),
                 lambda role: get_status_body(role, "/state"),
-                lambda role: pre_logs[role])
+                lambda role: kube.read_logs(top["pods"][role]["name"]))
             write_json(output / "preflight-uniform.json", uniform)
         report["stage"] = "snapshot"
         report["started_snapshot"] = True
