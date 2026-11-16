@@ -416,3 +416,13 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 **Perplexity:** prompt de pesquisa metodológica versionado em docs/tcc2/etapa-11-pesquisa-perplexity-prompt.md. O resultado será recebido posteriormente em Markdown e BibTeX para verificação, síntese autoral e eventual LaTeX UTFPR; nenhum resultado científico ou referência externa foi acrescentado como verificado nesta atividade.
 
 **Próximo:** corrigir distinção entre timestamp duplicado e regressão de CPU, validar em testes, preparar C2 e cargas médias em bancadas inéditas; não repetir o piloto C4 nem reutilizar C3/C4 históricos. V12 permanece NÃO APROVADO.
+
+## 15/11/2026 — Etapa 11: auditoria seletiva da pesquisa Perplexity
+
+**Recebidos:** pesquisa_metodologica_e11_perplexity.md (dossiê 586 linhas) e referencias_e11_perplexity.bib (14 entradas F01–F14). Triagem editorial e consulta externa a fontes primárias realizadas sem executar novos experimentos, modificar o núcleo funcional ou alterar o texto acadêmico aprovado.
+
+**Escolha:** quatro estudos científicos centrais (F01 metodologia reprodutível, F02 variabilidade, F03 efeito da ordem, F05 inferência/IC) + quatro documentos técnicos oficiais candidatos (F09 cgroup v2, F10 Node metrics, F11 Kubelet Summary API, F13 kind). F04/F06/F07/F08 não entram automaticamente; F12/F14 reservados a decisões concretas de Docker/recursos. Todos os artigos centrais são em inglês, idioma permitido; futura redação será autoral em português, sem tradução literal/cópia massiva.
+
+**Arquivos preparados:** docs/tcc2/etapa-11-auditoria-seletiva-perplexity.md e docs/tcc2/etapa-11-referencias-curadas-candidatas.bib. NÃO adicionar diretamente ao main.bib antes de revisão de duplicidades, integração ao estilo abntex2-alf e capítulo da metodologia. Referências técnicas já existentes sobre Docker/Kubernetes devem ser deduplicadas quando necessário.
+
+**Impacto no protocolo:** definir lote como unidade independente, distribuição por blocos, desfecho primário tempo de lote, documentação de limites/gerador/warmup real e distinção de memória e CPU; nenhum número de repetições foi validado como suficiente de maneira universal. Resultados quantitativos continuam exclusivamente os pilotos observados; V12 NÃO CONCLUÍDO.
