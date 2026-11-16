@@ -1,5 +1,4 @@
 """E11-M00C: testes puros do preflight final; sem Docker, kubectl ou POST."""
-import copy
 import unittest
 
 from benchmark.campaign_controls import ROLES, validate_cold, final_readonly_cold_check
@@ -13,13 +12,13 @@ def fixtures():
             "sequences": attrs.copy(), "pending_request_id": None,
         },
         "logic-engine": {
-            "ready": False, "run_id": None, "attributes": attrs.copy(),
-            "sequences": attrs.copy(), "condition": False,
+            "ready": False, "run_id": None, "attributes": None,
+            "sequences": attrs.copy(), "condition": None,
             "condition_sequence": 0, "received_ids": [],
             "condition_events": [], "faulted": False,
         },
         "rule-executor": {
-            "ready": False, "run_id": None, "approved": False,
+            "ready": False, "run_id": None, "approved": None,
             "condition_sequence": 0, "received_ids": [],
             "effects": [], "faulted": False,
         },
@@ -71,11 +70,26 @@ class UniformColdCheckTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate_cold(live, states, logs)
         live, states, logs = fixtures()
-        states["logic-engine"]["attributes"]["atB"] = 1
+        states["logic-engine"]["attributes"] = {"atA": 0, "atB": 1}
         with self.assertRaises(ValueError):
             validate_cold(live, states, logs)
         live, states, logs = fixtures()
         states["attribute-source"]["sequences"]["atA"] = 1
+        with self.assertRaises(ValueError):
+            validate_cold(live, states, logs)
+
+    def test_actual_uninitialized_states_are_not_falsely_rejected(self):
+        live, states, logs = fixtures()
+        self.assertIsNone(states["logic-engine"]["attributes"])
+        self.assertIsNone(states["logic-engine"]["condition"])
+        self.assertIsNone(states["rule-executor"]["approved"])
+        self.assertEqual(validate_cold(live, states, logs)["status"],
+                         "PASS_COLD_READ_ONLY")
+        states["logic-engine"]["condition"] = False
+        with self.assertRaises(ValueError):
+            validate_cold(live, states, logs)
+        live, states, logs = fixtures()
+        states["rule-executor"]["approved"] = False
         with self.assertRaises(ValueError):
             validate_cold(live, states, logs)
 
