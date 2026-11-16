@@ -13,6 +13,10 @@ import sys
 import threading
 
 from benchmark import collector
+from benchmark.measurement_profile import (
+    RESOURCES_DIAGNOSTIC, MODES, select_sampler, profile_record,
+    not_collected_quality,
+)
 from benchmark.evidence import archive, check_run, write_json, write_jsonl, write_csv, hash_file
 from benchmark.fixtures import characterize, generate, rebase
 from benchmark.prepare import namespace_for
@@ -198,7 +202,8 @@ def run(args, rows, namespace):
             "timeout_per_request_s": args.timeout,
             "batch_timeout_s": args.batch_timeout,
             "sample_period_s": args.period,
-            "scientific_status": "PILOT_ONLY; metricas ainda nao calibradas",
+            **profile_record(args.measurement_mode),
+            "scientific_status": "E11-M00B_PREPARED; protocolo ainda nao congelado",
         })
         top, client_pod, source_pod, cold = preflight(args.scenario, namespace)
         write_json(output / "topology-start.json", {
@@ -221,9 +226,12 @@ def run(args, rows, namespace):
         if initial["rule-executor"].get("effects"):
             raise ValueError("efeitos antes de iniciar carga")
         report["stage"] = "batch"
-        monitor = Sampler(namespace, args.period)
-        monitor.prime()
-        monitor.start()
+        monitor = select_sampler(
+            args.measurement_mode, lambda: Sampler(namespace, args.period))
+        write_json(output / "metrics-status.json", profile_record(args.measurement_mode))
+        if monitor is not None:
+            monitor.prime()
+            monitor.start()
         try:
             report["started_changes"] = True
             try:
@@ -242,16 +250,17 @@ def run(args, rows, namespace):
             (output / "client.stderr.log").write_text(proc.stderr, encoding="utf-8")
             (output / "client.stdout.jsonl").write_text(proc.stdout, encoding="utf-8")
         finally:
-            # Guardar a telemetria mesmo quando o lote sai com erro ou timeout.
-            monitor.stop()
-            write_jsonl(output / "metrics-samples.jsonl", monitor.samples)
-            write_csv(output / "metrics-samples.csv", monitor.samples,
-                      ("retrieved_utc", "collector_seconds", "node", "namespace",
-                       "pod", "pod_uid", "container", "cpu_time_utc",
-                       "cpu_usage_core_ns", "memory_time_utc",
-                       "memory_working_set_bytes", "network_rx_bytes_pod",
-                       "network_tx_bytes_pod", "network_interfaces"))
-            write_json(output / "metrics-errors.json", monitor.errors)
+            if monitor is not None:
+                # Telemetria somente no modo diagnostico.
+                monitor.stop()
+                write_jsonl(output / "metrics-samples.jsonl", monitor.samples)
+                write_csv(output / "metrics-samples.csv", monitor.samples,
+                          ("retrieved_utc", "collector_seconds", "node", "namespace",
+                           "pod", "pod_uid", "container", "cpu_time_utc",
+                           "cpu_usage_core_ns", "memory_time_utc",
+                           "memory_working_set_bytes", "network_rx_bytes_pod",
+                           "network_tx_bytes_pod", "network_interfaces"))
+                write_json(output / "metrics-errors.json", monitor.errors)
         records = [json.loads(line) for line in proc.stdout.splitlines() if line.strip()]
         if proc.returncode or not records or records[-1].get("status") != "PASS":
             raise ValueError(f"cliente falhou exit={proc.returncode}; NAO repetir")
@@ -273,9 +282,12 @@ def run(args, rows, namespace):
             write_jsonl(output / f"{role}-logs.jsonl", logs[role])
         validated = check_run(rebased, records, final)
         validated["transport"] = transport_checks(top, rebased, logs, final)
-        validated["metric_quality"] = collector.quality(
-            monitor.samples, {r: (top["pods"][r]["uid"], r) for r in ROLES},
-            batch=records[-1], collection_errors=monitor.errors)
+        if monitor is not None:
+            validated["metric_quality"] = collector.quality(
+                monitor.samples, {r: (top["pods"][r]["uid"], r) for r in ROLES},
+                batch=records[-1], collection_errors=monitor.errors)
+        else:
+            validated["metric_quality"] = not_collected_quality()
         validated["status"] = ("PASS" if validated["status"] == "PASS"
                                and all(validated["transport"].values()) else "FAIL")
         report["validation"] = validated
@@ -324,6 +336,9 @@ def main(argv=None):
     parser.add_argument("--timeout", type=float, default=10)
     parser.add_argument("--batch-timeout", type=int, default=600)
     parser.add_argument("--period", type=float, default=1)
+    parser.add_argument("--measurement-mode", choices=MODES,
+                        default=RESOURCES_DIAGNOSTIC,
+                        help="timing_only: sem sonda; resources_diagnostic: modo legado")
     parser.add_argument("--execute", action="store_true")
     args = parser.parse_args(argv)
     if not 0.1 <= args.period <= 15 or not 1 <= args.timeout <= 120 or not 10 <= args.batch_timeout <= 3600:
@@ -335,6 +350,7 @@ def main(argv=None):
                           "namespace": ns, "run_id": args.run_id,
                           "rows": len(rows), "fixture": str(args.fixture),
                           "expected": characterize(rebase(rows, args.run_id)),
+                          **profile_record(args.measurement_mode),
                           "execute": False}, indent=2, ensure_ascii=False))
         return 0
     return 0 if run(args, rows, ns) else 2
