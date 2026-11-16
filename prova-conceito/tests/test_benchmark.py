@@ -228,9 +228,17 @@ class CpuTimestampRoundingTests(unittest.TestCase):
         from datetime import timedelta
         batch["batch_started_utc"] = (base + timedelta(seconds=6)).isoformat()
         batch["batch_finished_utc"] = (base + timedelta(seconds=14)).isoformat()
-        batch["elapsed_ns"] = 11_000_000_000
+        batch["elapsed_ns"] = 8_000_000_000
         metrics = quality(rows, {"source":("abc","attribute-source")}, batch=batch,
                           min_batch_s=7.0)
+        self.assertFalse(metrics["cpu_window_adequate"])
+
+
+    def test_utc_and_monotonic_duration_disagreement_fails(self):
+        rows, batch = self.make_samples()
+        batch["elapsed_ns"] = 17_000_000_000
+        metrics = quality(rows, {"source":("abc","attribute-source")}, batch=batch)
+        self.assertFalse(metrics["clock_coherent"])
         self.assertFalse(metrics["cpu_window_adequate"])
 
 if __name__ == "__main__":
