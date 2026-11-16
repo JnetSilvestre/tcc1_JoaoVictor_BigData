@@ -126,3 +126,20 @@ A memória nominal máxima por bancada (três serviços × 256 MiB + cliente × 
 **Controle revisado proposto:** executar só **uma bancada de cenário por vez**, arquivar lote e metadados antes de avançar para a próxima; não reiniciar/remover históricos para liberar memória. Registrar RAM livre Windows e memória livre do daemon/WSL (quando disponível) antes e depois dos blocos, sem sondagem periódica durante `T_batch`. Qualquer política para liberar ambientes **somente novos** ainda depende de allowlist e auditoria.
 
 **Estado formal permanece:** `E11-M00-v1-CANDIDATE / BLOCKED_FOR_M01`, à espera de gate de pressão/capacidade, GETs, `environment.json`, aceitação/freeze e execução sem mutar históricos. Nada no inventário equivale à autorização de `--execute`.
+
+## 12. Gate de pressão do host e política de ciclo de vida da campanha
+
+**Fonte:** `etapa-11-e11-m00c-auditoria-pressao-docker-repouso.md` (commit `dd9caa0e3f0c864ebdd545bd2dc2438ee9eb9ed1`), baseada em transcrição de `docker stats --no-stream`, `docker system df` e consulta de RAM Windows fornecida pelo acadêmico.
+
+**Evidência:** Windows reportou **2,42 GiB de RAM livre** (15,84 GiB totais medidos anteriormente), 22 contêineres em execução; nós kind reportaram 870,2 MiB e 930,4 MiB de memória e CPU instantânea 14,30% e 7,37%, sem inferência de pressão sustentada. Docker system df reportou imagens 3,859 GB, volumes 2,564 GB, build cache 3,027 GB e 23 contêineres (22 ativos), mas esse é inventário, não orçamento comprovado para os ZIPs futuros. **Não usar `docker system prune`, exclusões de volumes ou limpeza automática**.
+
+**Novo risco decisório:** a política anterior de preservar todas as bancadas novas indefinidamente criaria *acúmulo* de contêineres/Pods e perturbação entre blocos. **Candidato revisado**:
+- uma bancada/um cenário de cada vez, sem reutilização de estado e preservando todos os recursos `p...`, legados e namespaces `tcc2-pon`/`tcc2-pon-c4`;
+- a cada rodada, arquivar em local independente do recurso novo, verificar JSONL, checksums e ZIP antes de prosseguir; registrar qualquer execução parcial, falha e IDs;
+- avaliar um mecanismo de **desativação/remoção controlada de recursos exclusivamente NOVOS M01**, só depois de arquivamento, dupla checagem positiva de IDs completos e allowlist, prova de que não alcança históricos, revisão de testes sintéticos e autorização explícita no protocolo antes do primeiro `--execute`;
+- nenhum `docker rm`, `kubectl delete`, `kind delete` ou stop foi autorizado pela presente revisão. Caso o mecanismo não seja considerado seguro, interromper a campanha por capacidade em vez de manter 30 bancadas simultâneas;
+- prospectivamente definir gatilhos observáveis de pressão e `STOP` (OOM/restart, RAM do host/WSL2 insuficiente, swap/throttling adverso conforme limiares aprovados, falha de integridade, falta de espaço). **Ainda sem limiares numéricos cientificamente justificados**; não inventar aprovação de capacidade a partir de `docker stats` instantâneo.
+
+Esta seção **substitui apenas a proposta de retenção irrestrita das NOVAS bancadas** por uma questão aberta de ciclo de vida. A retenção dos **artefatos brutos** e preservação integral das **bancadas históricas** permanecem requisitos rígidos. A política definitiva ainda precisará de decisão pré-registrada e instrumento auditável, não há liberação operacional.
+
+**Estado:** `E11-M00-v1-CANDIDATE / BLOCKED_FOR_M01`. A série principal de 30 execuções não se inicia antes de decisão sobre capacidade/retenção, GETs uniformes, `environment.json`, quotas e congelamento.
