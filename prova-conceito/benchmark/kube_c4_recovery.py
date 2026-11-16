@@ -93,23 +93,26 @@ def check_cold_complete(states):
             raise ValueError(f"{role}: snapshot ou inicializacao ja detectado")
         if state.get("faulted"):
             raise ValueError(f"{role}: estado faulted")
-    for role in ("attribute-source", "logic-engine"):
-        if (states[role].get("attributes") != {"atA": 0, "atB": 0}
-                or states[role].get("sequences") != {"atA": 0, "atB": 0}):
-            raise ValueError(f"{role}: atributos/sequencias nao frios")
     source, logic, executor = (states[r] for r in ROLES)
-    if source.get("pending_request_id") is not None:
-        raise ValueError("source: pedido pendente")
-    if (logic.get("condition") is not False
+    # Contrato real de c1/state.py: o source tem atributos 0, mas
+    # logic.attributes e logic.condition sao None ANTES do snapshot.
+    if (source.get("attributes") != {"atA": 0, "atB": 0}
+            or source.get("sequences") != {"atA": 0, "atB": 0}
+            or source.get("pending_request_id") is not None):
+        raise ValueError("source: nao esta frio")
+    if (logic.get("attributes") is not None
+            or logic.get("sequences") != {"atA": 0, "atB": 0}
+            or logic.get("condition") is not None
             or logic.get("condition_sequence") != 0
             or logic.get("received_ids")
             or logic.get("condition_events")):
-        raise ValueError("logic-engine: historico de notificacoes presente")
-    if (executor.get("approved") is not False
+        raise ValueError("logic-engine: nao esta frio")
+    # O executor.signal so existe APOS o snapshot; approved=None e esperado.
+    if (executor.get("approved") is not None
             or executor.get("condition_sequence") != 0
             or executor.get("received_ids")
             or executor.get("effects")):
-        raise ValueError("rule-executor: historico de efeitos presente")
+        raise ValueError("rule-executor: nao esta frio")
     return True
 
 
