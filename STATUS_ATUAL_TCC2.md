@@ -456,3 +456,13 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 **Telemetria:** 16 amostras de cgroup via `docker exec` intrusivo, sem falha de coleta, porém `measurement_approved=false`; contador CPU e pico de memória não podem ser atribuídos exclusivamente ao lote nem comparados à Summary API do Kubernetes. Contadores `cpu_nr_throttled` cumulativos cresceram durante observação, com valores já positivos antes da carga. **V12 NÃO iniciada.**
 
 **Laudo:** `docs/tcc2/etapa-11-e11-p03-auditoria-c2-piloto.md`. **Próximo:** coletor C2 de recursos não intrusivo, política de calibração, piloto médio 1000 em nova bancada, sem tocar em bancadas usadas/históricas.
+
+## 15/11/2026 — E11-I05: sonda não intrusiva Docker Engine API preparada; E11-D07 pendente
+
+**Motivação:** piloto C2/100 funcional E11-P03 aprovado, mas a telemetria de recursos via `docker exec` injeta processos nos mesmos cgroups, não permitindo atribuição limpa de CPU/memória do lote nem comparação direta com Summary API do Kubernetes. C3/C4 também ainda necessitam calibração temporal. V12 NÃO executada.
+
+**Novo código:** `prova-conceito/benchmark/docker_engine_api.py`: sonda por requisições **somente GET** da Docker Engine API (`/containers/{id}/stats?stream=false&one-shot=true`) através de **named pipe Windows local**, sem executar processos dentro dos contêineres e sem TCP/SSH. Por padrão `PLAN_ONLY`; `--probe` consulta os 4 contêineres do piloto C2 antigo já gasto, com validação de nomes, IDs, imagem, label e restartCount. Gera JSONL/CSV, relatório e ZIP/SHA-256. `tests/test_benchmark_docker_engine_api.py` adiciona testes unitários de HTTP/1.1 chunked/Content-Length, sem Docker real. **Compatibilidade do named pipe e operação efetiva ainda não verificadas no Windows**.
+
+**Limites:** `cpu_stats.cpu_usage.total_usage` é cumulativo em ns; `memory_stats.usage` é uso bruto, não `workingSetBytes`, e `usage - inactive_file` é valor derivado similar à CLI no cgroup v2, não pico/RSS. A coleta via daemon ainda perturba o host e exige ensaio de overhead. PASS_READ_ONLY significa campos disponíveis/monotônicos em repouso; jamais aprovação de métrica durante carga.
+
+**Próximo gate E11-D07:** após Git limpo e `git pull --ff-only`, rodar `compileall` e `unittest discover -p test_benchmark*.py`, executar PLAN_ONLY e somente então `--probe` **de leitura** no C2 já usado `p20261115-225314`, preservando recursos e enviando novo ZIP/saída. Não executar snapshot nem novos pilotos até auditoria. Fontes técnicas: Docker Engine API e Docker Desktop FAQ.
