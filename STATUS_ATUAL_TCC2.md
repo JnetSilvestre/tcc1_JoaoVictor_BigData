@@ -436,3 +436,13 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 **Ressalva científica:** leituras CPU e memória propostas para C2 via docker exec dentro dos contêineres são intrusivas, interferem nos cgroups que observam e permanecem dados diagnósticos apenas. Não comparar CPU, memória ou percentuais de C2 à Summary API de C3/C4 antes de calibrar ou substituir o coletor. Rede bridge Docker e rede kind não isolam causalmente overhead do orquestrador.
 
 **Documento:** docs/tcc2/etapa-11-e11-i04-bancada-c2.md. **Próximo E11-D06:** sincronizar Git, executar compileall/unittest para toda instrumentação e emitir plano C2 somente leitura para fixture 100 em diretório inédito; depois auditar falhas antes de liberar PILOTO C2. V12 segue pendente.
+
+## 15/11/2026 — E11-D06: falha de asserção no teste Docker C2 (piloto não iniciado)
+
+**Evidência PowerShell:** commit local `248f7b9425b5bfd089bc68885e852eb025e9909a`; `compileall` prosseguiu sem erro; **15 de 16** testes sintéticos passaram. A única falha foi `test_client_uses_same_image_but_different_entrypoint` porque `assertIn('time.sleep(86400)', cmd)` buscava item exato na lista de argumentos, mas o último item real era `'import time; time.sleep(86400)'`. Não há demonstração de erro na criação do cliente; trata-se de asserção escrita incorretamente.
+
+**Segurança:** script de E11-D06/P03 interrompeu após erro de unittest e ANTES de `python -m benchmark.fixtures`, Docker network create, criação de contêineres, snapshot ou POST. Portanto piloto C2 NÃO executado; C3/C4 preservados.
+
+**Correção commit `7f4d94cd45ae29ef2bb9aed3e9510d9cfad99347`:** validar `cmd[-3] == IMAGE_TAG`, `cmd[-2] == '-c'` e verificar substring `time.sleep(86400)` em `cmd[-1]`. Alterado somente `tests/test_benchmark_docker_c2.py`, sem alteração no runtime do controlador. **Ainda não validado no Windows** após commit.
+
+**Próximo:** sincronizar branch com Git limpo, repetir suíte `test_benchmark*.py` e somente se PASS atualizar `expectedHead` do script do piloto para `7f4d94cd45ae29ef2bb9aed3e9510d9cfad99347`, rodando novamente o procedimento E11-D06/P03 uma única vez. Se qualquer verificação falhar, não criar bancada. V12 permanece pendente.
