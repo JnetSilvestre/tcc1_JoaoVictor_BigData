@@ -104,3 +104,13 @@ Se qualquer comando falhar, guardar a mensagem exata; **não corrigir automatica
 **Gates que permanecem pendentes antes de congelar:** (i) consulta read-only de namespace/rede já existentes e confirmação de inexistência para IDs novos; (ii) image ID do runtime, recursos `allocatable` por nó, disponibilidade efetiva do host/disco, quotas e swap; (iii) critério final de GETs/estabilização comum aos cenários, `environment.json` e política de preservação; (iv) aceitação formal prospectiva das regras de falha/reposição; (v) protocolo versionado `E11-M00-v1` com SHA dos scripts e status deliberado. **O método `--execute` continua BLOQUEADO.**
 
 **Decisão mantida:** `BLOCKED_FOR_M01`. Não confundir três `PLAN_ONLY` PASS com três novos experimentos.
+
+## 10. Atualização — identidade da imagem, nomes livres e allocatable kind
+
+**Nova auditoria:** `etapa-11-e11-m00c-auditoria-imagem-identidades-readonly.md` (commit `02c64c46f004fef010020363143deb12bae99d89`). Captura PowerShell do acadêmico sobre HEAD `5365ee4f13ffe76608f27b6e8edbaa6a501f6adf`.
+
+**Confirmado:** imagem Docker aprovada de ID `sha256:b9c714f32e359e7a21df264a926a840191c3ffb6d53bb0483f5e161143d8667a`; rede e contêineres planejados C2 ausentes, namespaces planejados C3/C4 ausentes no instante da consulta; nodes kind `control-plane` e `worker` reportam cada um `8` CPU `allocatable` e `8052380Ki` RAM `allocatable`. Estes valores **não são aditivos**, pois ambos nodes compartilham host Docker/WSL2, e não comprovam CPU/RAM livres para executar simultaneamente.
+
+**Não consta na evidência:** resultado dos comandos Windows de RAM física e disco livre (embora estejam na tela como comandos digitados), limite efetivo/quotas e pressão do host, integridade completa das rotinas pré-POST uniformes/ambiente, aceite de reposições e congelamento do protocolo. A verificação estática e read-only aprova somente os controles observados. **Permanece `E11-M00-v1-CANDIDATE / BLOCKED_FOR_M01`.**
+
+**Condição operacional:** todas as identidades `m01-b01` verificadas devem ser rechecadas imediatamente antes de criá-las no futuro; não apagar recursos se nomes aparecerem, escolher novos após registrar. Não executar `--execute` nesta fase.
