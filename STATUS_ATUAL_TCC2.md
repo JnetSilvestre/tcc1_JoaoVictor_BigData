@@ -484,3 +484,5 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 **Documentação:** docs/tcc2/etapa-11-e11-i06-monitor-c2.md. **Próximo E11-D08:** sincronizar Git com branch limpa, verificar commit, executar Python compileall/unittest e emitir PLAN_ONLY em C2/1000 com fixture nova e sem `--execute`. Enviar saída para revisão antes de QUALQUER novo piloto mutante.
 
 **Planejamento confirmado pelo documento original docs/tcc2/etapa-11-diagnostico-plano.md:** a Etapa 11 inclui E11-M01 (séries quantitativas controladas) e E11-A01 (auditoria dos ZIPs e completude) além da instrumentação e pilotos. Etapa 12 dedica-se à análise dos resultados. Ainda restam validação temporal/overhead, pilotos médios C2/C3/C4, protocolo congelado, séries estatísticas e auditoria final; sem prazo/porcentagem garantidos.
+
+**Fortalecimento de segurança E11-I06:** a primeira leitura efetiva da Docker Engine API foi movida para ANTES do snapshot; falha de acesso à telemetria nesse ponto impede a primeira mutação. Continua necessária uma baseline posterior ao snapshot para delimitação do lote. Não há nova execução Windows comprovada.
