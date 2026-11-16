@@ -524,3 +524,11 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 **Resumo de Kubelet em repouso:** cinco contêineres históricos worker e um control-plane com CPU e memória válidas; em duas leituras espaçadas ~2,2 s, **0/5 e 0/1** com timestamps CPU novos e nenhum aumento de contadores (memória também com timestamps iguais). No worker idade das fontes CPU ~0,8 a 12,1 s; no control-plane **14,9 a 17,2 s**. Nenhuma regressão, mas **sampling_approved=false**, status `PASS_READ_ONLY_WITH_TIMESTAMP_WARNING`. Estes dados NÃO demonstram falha sob carga nem autorizam usar CPU/memória como métricas quantitativas confiáveis.
 
 **Laudo:** `docs/tcc2/etapa-11-e11-d09-auditoria-kubernetes-readonly.md`. **Próximo:** E11-D10 de leitura com intervalo 10s e label/output novos para estimar atualização em repouso. Depois decidir se pilotos C3/C4 1000 avançam com foco na validade funcional/latência e CPU secundária exploratória, ou se exigem refinamento de instrumentação. Não aplicar manifests agora. V12 pendente.
+
+## 15/11/2026 — E11-D10 aprovado: timestamps CPU avançam parcialmente com 10 s
+
+**ZIP real auditado:** `probe(1).zip` 15.672 bytes, SHA-256 `dd5f29c050a985219d4d2a2bebb88d4004afa639fdf409fe0825bbbed4866d5a`, 6/6 CRC, 5/5 hashes internos. Git execução `3f8e80d6c44cdc8a3a4ffbde4e48a75ae27cf828`; `PASS_READ_ONLY`, sem apply/snapshot/benchmark. Ambos os nós kind Ready, históricos presentes, novos namespaces C3/C4 planejados ainda AUSENTES.
+
+**Kubelet Summary em repouso, duas consultas separadas ~10,3 s:** worker 3/5 timestamps CPU novos, 2/5 ainda iguais; control-plane 1/1 novo, sem regressões. Worker com duas fontes na última captura **12,187 s e 17,187 s** antigas; control-plane ~7,289 s. Aumentar o intervalo de 2 para 10 s resolve parcialmente alerta de E11-D09, mas **não** estabelece atualizações uniformes durante carga nem aprovação de CPU/memória; `sampling_approved=false` permanece. Nenhum evento de aplicação introduzido.
+
+**Laudo:** `docs/tcc2/etapa-11-e11-d10-auditoria-frescor-kubelet.md`. **Próximo E11-D11:** preparar C3/1000 somente em namespace NOVO, verificar imagem/nós/estado frio e cliente, sem snapshot/POST. Após auditoria, E11-P05 único; C4 somente depois. Preservar C3/C4 históricos e C2 pilotos. E11-M01 / A01 pendentes.
