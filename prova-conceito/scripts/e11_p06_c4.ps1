@@ -98,9 +98,9 @@ try {
         "e11-benchmark-client" = "tcc2-pon-worker"
     }
     foreach ($role in $nodesByRole.Keys) {
-        $matches = @( $pods | Where-Object { $_.metadata.labels.app -eq $role } )
-        if ($matches.Count -ne 1) { throw "Pod ausente/duplicado: $role" }
-        $podInfo = $matches[0]
+        $foundPods = @( $pods | Where-Object { $_.metadata.labels.app -eq $role } )
+        if ($foundPods.Count -ne 1) { throw "Pod ausente/duplicado: $role" }
+        $podInfo = $foundPods[0]
         $previous = $recovery.pods.PSObject.Properties[$role].Value
         $statuses = @($podInfo.status.containerStatuses)
         if ($null -eq $previous -or
