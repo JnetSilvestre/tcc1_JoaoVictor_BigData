@@ -16,7 +16,7 @@ from benchmark.fixtures import characterize, generate, rebase
 from benchmark.runner import client_program
 from benchmark.measurement_profile import (
     RESOURCES_DIAGNOSTIC, MODES, select_sampler, profile_record,
-    not_collected_quality,
+    not_collected_quality, require_new_timing_identity,
 )
  read_jsonl, validate_input
 from c0.oracle import calculate_expected_effects
@@ -369,6 +369,7 @@ def main():
         parser.error("time-outs ou periodo invalidos")
     rows = read_jsonl(args.fixture)
     network, names = validate_fixture(args.label, args.run_id, rows)
+    require_new_timing_identity(args.measurement_mode, "C2", args.label, args.run_id)
     if not args.execute:
         print(json.dumps({
             "status": "PLAN_ONLY", "scenario": "C2", "network": network,
