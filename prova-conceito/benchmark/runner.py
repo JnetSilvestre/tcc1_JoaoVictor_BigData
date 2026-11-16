@@ -14,7 +14,7 @@ import threading
 
 from benchmark import collector
 from benchmark.evidence import archive, check_run, write_json, write_jsonl, hash_file
-from benchmark.fixtures import characterize, rebase
+from benchmark.fixtures import characterize, generate, rebase
 from benchmark.prepare import namespace_for
 from c0.io import read_jsonl, validate_input
 from c0.oracle import calculate_expected_effects
@@ -44,10 +44,12 @@ def ensure_safe(scenario, label, run_id, rows):
     namespace = namespace_for(scenario, label)
     if not re.fullmatch(r"e11-[a-z0-9-]{4,48}", run_id):
         raise ValueError("run_id precisa iniciar e11- e ser exclusivo")
-    if (len(rows) not in SEEDS or validate_input(rows)[1] != SEEDS[len(rows)]
-            or not all(row["run_id"] == f"e11-canonical-{len(rows)}-{SEEDS[len(rows)]}"
-                       for row in rows)):
-        raise ValueError("fixture fora da matriz E11")
+    if len(rows) not in SEEDS:
+        raise ValueError("tamanho da fixture fora da matriz E11")
+    n, seed = len(rows), SEEDS[len(rows)]
+    canonical_id = f"e11-canonical-{n}-{seed}"
+    if validate_input(rows) != (canonical_id, seed) or rows != generate(n, seed, canonical_id):
+        raise ValueError("fixture nao corresponde byte-semanticamente a geracao canonica E11")
     return namespace
 
 
