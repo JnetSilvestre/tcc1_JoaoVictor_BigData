@@ -14,8 +14,10 @@ import time
 from benchmark.evidence import archive, check_run, hash_file, write_csv, write_json, write_jsonl
 from benchmark.fixtures import characterize, generate, rebase
 from benchmark.runner import client_program
+from benchmark.campaign_controls import final_readonly_cold_check
+from benchmark.environment_snapshot import capture_environment
 from benchmark.measurement_profile import (
-    RESOURCES_DIAGNOSTIC, MODES, select_sampler, profile_record,
+    TIMING_ONLY, RESOURCES_DIAGNOSTIC, MODES, select_sampler, profile_record,
     not_collected_quality, require_new_timing_identity,
 )
 from c0.io import read_jsonl, validate_input
@@ -204,6 +206,9 @@ def run(args, rows, network, names):
     created = False
     try:
         setup = preflight(network, names)
+        if args.measurement_mode == TIMING_ONLY:
+            write_json(output / "environment.json",
+                       capture_environment("C2", args.run_id))
         write_json(output / "manifest.json", {
             **setup, "scenario": "C2", "run_id": args.run_id, "fixture": str(args.fixture),
             "fixture_sha256": hash_file(args.fixture), "seed": rows[0]["seed"],
@@ -239,6 +244,14 @@ def run(args, rows, network, names):
         write_json(output / "topology-start.json", before)
         cold = cold_check(names)
         write_json(output / "states-cold.json", cold)
+        if args.measurement_mode == TIMING_ONLY:
+            # Mesma leitura final em C2/C3/C4: 3 GET live + 3 GET state.
+            pre_logs = logs(names)
+            uniform = final_readonly_cold_check(
+                lambda role: http(names[role], "/health/live"),
+                lambda role: http(names[role], "/state"),
+                lambda role: pre_logs[role])
+            write_json(output / "preflight-uniform.json", uniform)
         # A interface externa deve estar operacional ANTES de qualquer snapshot.
         # Import tardio evita ciclo docker_engine_api -> docker_c2.
         from benchmark.docker_engine_window import EngineSampler, quality_window
