@@ -13,8 +13,10 @@ import sys
 import threading
 
 from benchmark import collector
+from benchmark.campaign_controls import final_readonly_cold_check
+from benchmark.environment_snapshot import capture_environment
 from benchmark.measurement_profile import (
-    RESOURCES_DIAGNOSTIC, MODES, select_sampler, profile_record,
+    TIMING_ONLY, RESOURCES_DIAGNOSTIC, MODES, select_sampler, profile_record,
     not_collected_quality, require_new_timing_identity,
 )
 from benchmark.evidence import archive, check_run, write_json, write_jsonl, write_csv, hash_file
@@ -213,6 +215,22 @@ def run(args, rows, namespace):
             "client_pod": client_pod})
         write_json(output / "states-cold.json", cold)
         write_json(output / "resource-contract.json", top["resource_contract"])
+        if args.measurement_mode == TIMING_ONLY:
+            write_json(output / "environment.json",
+                       capture_environment(args.scenario, args.run_id))
+
+            def get_status_body(role, path):
+                code, payload = kube.http(source_pod, role, path)
+                if code != 200:
+                    raise ValueError(f"{role}: GET {path} HTTP inesperado {code}")
+                return payload
+
+            pre_logs = {r: kube.read_logs(top["pods"][r]["name"]) for r in ROLES}
+            uniform = final_readonly_cold_check(
+                lambda role: get_status_body(role, "/health/live"),
+                lambda role: get_status_body(role, "/state"),
+                lambda role: pre_logs[role])
+            write_json(output / "preflight-uniform.json", uniform)
         report["stage"] = "snapshot"
         report["started_snapshot"] = True
         status, reply = kube.http(source_pod, "attribute-source",
