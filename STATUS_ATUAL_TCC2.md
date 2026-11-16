@@ -514,3 +514,13 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 **Testes:** `tests/test_benchmark_kube_preflight.py` cinco novos casos sintéticos: isolamento, validade de imagem, descoberta de namespaces, readiness, campos Kubelet e timestamps repetidos/regressivos. Não executados no Windows ainda; número esperado de testes totais 33, dependente da prova. Documento `docs/tcc2/etapa-11-e11-d09-diagnostico-kubernetes.md`.
 
 **Próximo E11-D09:** Git pull limpo + compileall e unittest + `python -m benchmark.kube_preflight --label <novo> --fixture <fixture1000> --output <nova-pasta> --probe`. Revisar saída e ZIP antes de autorizar piloto C3/C4. Não aplicar manifests ou cargas nesta etapa; todas as bancadas históricas preservadas.
+
+## 15/11/2026 — E11-D09 auditado: Summary API legível, sem avanço CPU entre consultas
+
+**Evidência Windows + ZIP real:** 33/33 testes Python PASS; Git HEAD `70714f545a1dc4dc2b192a2833a446f2ef8b5462`, fixture/oráculo 1000 canônicos. `probe.zip` 15.632 bytes SHA-256 recalculado `3d348be564c20282473d120147a1d86f0347f8d7a47d2a5bb312b9c56e471636`, CRC 6/6, hashes internos 5/5. Nenhum apply, snapshot, benchmark.
+
+**Planejamento:** C3 e C4 manifestos YAML inéditos isolados, 3 serviços + cliente em cada, namespaces candidatos `tcc2-pon-e11-c3-p20261115-234409` e `tcc2-pon-e11-c4-p20261115-234409` ausentes do cluster. Ambos nós kind Ready, namespaces históricos preservados, Docker image ID conferido.
+
+**Resumo de Kubelet em repouso:** cinco contêineres históricos worker e um control-plane com CPU e memória válidas; em duas leituras espaçadas ~2,2 s, **0/5 e 0/1** com timestamps CPU novos e nenhum aumento de contadores (memória também com timestamps iguais). No worker idade das fontes CPU ~0,8 a 12,1 s; no control-plane **14,9 a 17,2 s**. Nenhuma regressão, mas **sampling_approved=false**, status `PASS_READ_ONLY_WITH_TIMESTAMP_WARNING`. Estes dados NÃO demonstram falha sob carga nem autorizam usar CPU/memória como métricas quantitativas confiáveis.
+
+**Laudo:** `docs/tcc2/etapa-11-e11-d09-auditoria-kubernetes-readonly.md`. **Próximo:** E11-D10 de leitura com intervalo 10s e label/output novos para estimar atualização em repouso. Depois decidir se pilotos C3/C4 1000 avançam com foco na validade funcional/latência e CPU secundária exploratória, ou se exigem refinamento de instrumentação. Não aplicar manifests agora. V12 pendente.
