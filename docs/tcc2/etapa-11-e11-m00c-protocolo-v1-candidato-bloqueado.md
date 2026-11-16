@@ -114,3 +114,15 @@ Se qualquer comando falhar, guardar a mensagem exata; **não corrigir automatica
 **Não consta na evidência:** resultado dos comandos Windows de RAM física e disco livre (embora estejam na tela como comandos digitados), limite efetivo/quotas e pressão do host, integridade completa das rotinas pré-POST uniformes/ambiente, aceite de reposições e congelamento do protocolo. A verificação estática e read-only aprova somente os controles observados. **Permanece `E11-M00-v1-CANDIDATE / BLOCKED_FOR_M01`.**
 
 **Condição operacional:** todas as identidades `m01-b01` verificadas devem ser rechecadas imediatamente antes de criá-las no futuro; não apagar recursos se nomes aparecerem, escolher novos após registrar. Não executar `--execute` nesta fase.
+
+## 11. Inventário Windows: disponibilidade pontual de RAM e disco
+
+**Fonte:** transcrição textual do acadêmico; laudo `docs/tcc2/etapa-11-e11-m00c-auditoria-capacidade-windows.md` (commit `47b8ec22f08f6bd93d558810318e3cc5315eed46`).
+
+Os comandos `Get-CimInstance` reportaram **RAM host total de 15,84 GiB e disponível de 2,73 GiB (~17,2%)**; `Get-CimInstance Win32_LogicalDisk` reportou **disco C total de 930,59 GiB e livre de 65,03 GiB (~7,0%)**. São dados pontuais, arredondados e obtidos **fora** de janela experimental; não constituem evidência de desempenho, quota efetiva ou capacidade garantida.
+
+A memória nominal máxima por bancada (três serviços × 256 MiB + cliente × 128 MiB) é **896 MiB de limites configurados**, não consumo observado. Essa soma não contempla overhead WSL2/Docker/kind e bancadas históricas. A disponibilidade reportada de RAM não justifica classificar o host como automaticamente apto nem inapto; **a pressão de memória é um risco material** e deve ser monitorada por pré-voo somente leitura, com STOP em sintomas de instabilidade/restart/OOM/swap relevante segundo critérios a congelar antes da campanha. O disco livre requer previsão de tamanho e política de retenção para 30 ZIPs (e eventuais 6 tentativas complementares).
+
+**Controle revisado proposto:** executar só **uma bancada de cenário por vez**, arquivar lote e metadados antes de avançar para a próxima; não reiniciar/remover históricos para liberar memória. Registrar RAM livre Windows e memória livre do daemon/WSL (quando disponível) antes e depois dos blocos, sem sondagem periódica durante `T_batch`. Qualquer política para liberar ambientes **somente novos** ainda depende de allowlist e auditoria.
+
+**Estado formal permanece:** `E11-M00-v1-CANDIDATE / BLOCKED_FOR_M01`, à espera de gate de pressão/capacidade, GETs, `environment.json`, aceitação/freeze e execução sem mutar históricos. Nada no inventário equivale à autorização de `--execute`.
