@@ -504,3 +504,13 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 **Duração exploratória:** 20,210461674 s; 49,48 req/s; RTT mediana 19,11 ms; p95 nearest-rank 50,72 ms; apenas um lote. Telemetria Docker Engine API externa: **96 amostras** (24/papel), `cpu_window_adequate=true`, `cpu_counters_available=true`, `issues=[]`. CPU-s de bracketing: source 9,846899, logic 5,813650, executor 0,309241, client 0,838785 — **não exatos ou estatisticamente válidos como custo por lote**. Source: +175 períodos de throttling no bracket, 0,472 core médio com teto nominal 0,5 CPU; ponto de atenção para desenho experimental. Cada ronda de monitor demorou ~0,68 s com intervalo-alvo 1 s (efeito observador não calibrado). `measurement_approved=false`, `memory_comparable_to_kubelet=false`. CPU/memória como métrica secundária DEFINITIVA seguem bloqueadas.
 
 **Laudo:** `docs/tcc2/etapa-11-e11-p04-auditoria-c2-1000.md`. Próximo: pré-verificações e pilotos C3/C4/1000 em novos namespaces, controle de instrumentação/ordem, plano congelado E11-M01 e auditoria E11-A01. NÃO reusar C2 piloto ou namespaces históricos. V12 não iniciada.
+
+## 15/11/2026 — E11-D09: diagnóstico Kubernetes C3/C4/1000 preparado, não executado
+
+**Ponto de partida:** E11-P04 C2/1000 PASS funcional, CPU temporalmente adequada mas ainda NÃO aprovada cientificamente (`measurement_approved=false`). C3/C4 1000 e E11-M01 não executados.
+
+**Implementação:** `prova-conceito/benchmark/kube_preflight.py` prepara manifests locais novos para C3/C4 usando fixture canônica 1000, hashes, oráculo, namespace isolado e imagem C2 aprovada. Sem `--probe` é somente PLAN_ONLY. Com `--probe`, usa apenas `kubectl get` de nodes/namespaces/Kubelet Summary API para ambos os nós e `docker image inspect`, sem apply/create/exec/delete/snapshot/POST. Exige contexto kind-tcc2-pon, Ready, namespaces antigos presentes e futuros ausentes. Reporta timestamps Kubelet observados em dois instantes como disponibilidade e NÃO como medição sob carga. Produz YAML NOT-APPLIED, JSON, SHA-256 e ZIP.
+
+**Testes:** `tests/test_benchmark_kube_preflight.py` cinco novos casos sintéticos: isolamento, validade de imagem, descoberta de namespaces, readiness, campos Kubelet e timestamps repetidos/regressivos. Não executados no Windows ainda; número esperado de testes totais 33, dependente da prova. Documento `docs/tcc2/etapa-11-e11-d09-diagnostico-kubernetes.md`.
+
+**Próximo E11-D09:** Git pull limpo + compileall e unittest + `python -m benchmark.kube_preflight --label <novo> --fixture <fixture1000> --output <nova-pasta> --probe`. Revisar saída e ZIP antes de autorizar piloto C3/C4. Não aplicar manifests ou cargas nesta etapa; todas as bancadas históricas preservadas.
