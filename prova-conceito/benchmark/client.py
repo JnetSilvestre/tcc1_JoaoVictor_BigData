@@ -21,6 +21,7 @@ def execute(rows, base_url, timeout):
         raise ValueError("URL deve apontar somente ao host/porta")
     connection = http.client.HTTPConnection(target.hostname, target.port or 80, timeout=timeout)
     records = []
+    batch_started_utc = datetime.now(timezone.utc).isoformat()
     begin = time.perf_counter_ns()
     failure = None
     try:
@@ -53,13 +54,17 @@ def execute(rows, base_url, timeout):
         failure = f"{type(exc).__name__}: {exc}"
     finally:
         elapsed = time.perf_counter_ns() - begin
+        batch_finished_utc = datetime.now(timezone.utc).isoformat()
         connection.close()
     summary = {"type": "summary", "status": "PASS" if failure is None
                and len(records) == len(rows) else "FAIL",
                "error": failure, "requests_target": len(rows),
                "requests_sent": len(records), "elapsed_ns": elapsed,
                "clock": "time.perf_counter_ns",
-               "end_utc": datetime.now(timezone.utc).isoformat()}
+               "batch_started_utc": batch_started_utc,
+               "batch_finished_utc": batch_finished_utc,
+               "time_alignment_note": "UTC marks approximate boundaries only; no cross-clock latency",
+               "end_utc": batch_finished_utc}
     return records, summary
 
 

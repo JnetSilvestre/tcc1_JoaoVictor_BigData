@@ -2,6 +2,7 @@
 from datetime import datetime, timezone
 import hashlib
 import json
+import csv
 from pathlib import Path
 from zipfile import ZipFile, ZIP_DEFLATED
 
@@ -16,6 +17,14 @@ def write_jsonl(path, data):
     with Path(path).open("w", encoding="utf-8", newline="\n") as stream:
         for row in data:
             stream.write(json.dumps(row, ensure_ascii=False, separators=(",", ":")) + "\n")
+
+
+def write_csv(path, rows, columns):
+    """Representação derivada; JSONL continua sendo o dado bruto canônico."""
+    with Path(path).open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.DictWriter(stream, fieldnames=columns, extrasaction="ignore")
+        writer.writeheader()
+        writer.writerows(rows)
 
 
 def hash_file(path):

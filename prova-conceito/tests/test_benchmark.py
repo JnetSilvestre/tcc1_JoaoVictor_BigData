@@ -112,5 +112,77 @@ class ValidationTests(unittest.TestCase):
         self.assertEqual(check_run(rows, results, states)["status"], "FAIL")
 
 
+
+class TimingAndCoverageTests(unittest.TestCase):
+    def test_client_records_batch_boundaries_without_network_real(self):
+        from benchmark.client import execute
+
+        class FakeResponse:
+            status = 200
+            def read(self):
+                return b'{"changed":false,"sequence":0,"event_id":null,"duplicate_request":false}'
+
+        class FakeConnection:
+            def __init__(self, *args, **kwargs):
+                self.calls = 0
+            def request(self, *args, **kwargs):
+                self.calls += 1
+            def getresponse(self):
+                return FakeResponse()
+            def close(self):
+                pass
+
+        from unittest.mock import patch
+        rows = [{"run_id": "e11-unit", "request_id": "r1", "entity_id": "atA", "value": 0, "step": 1}]
+        with patch("benchmark.client.http.client.HTTPConnection", FakeConnection):
+            results, summary = execute(rows, "http://127.0.0.1:8080", 1)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(summary["status"], "PASS")
+        self.assertGreaterEqual(summary["elapsed_ns"], 0)
+        self.assertTrue(summary["batch_started_utc"].endswith("+00:00"))
+        self.assertTrue(summary["batch_finished_utc"].endswith("+00:00"))
+        self.assertLessEqual(summary["batch_started_utc"], summary["batch_finished_utc"])
+
+    def test_short_batch_has_monotonic_cpu_but_is_not_adequate(self):
+        from datetime import datetime, timedelta, timezone
+        from benchmark.collector import quality
+        start = datetime(2026, 11, 16, 0, 0, 1, tzinfo=timezone.utc)
+        points = []
+        for i in range(4):
+            t = (start + timedelta(seconds=i)).isoformat()
+            points.append({"pod_uid":"abc", "container":"attribute-source",
+                           "cpu_time_utc":t, "cpu_usage_core_ns": 100+i*100,
+                           "memory_time_utc":t, "memory_working_set_bytes": 4096})
+        summary = {"batch_started_utc": (start+timedelta(seconds=1)).isoformat(),
+                   "batch_finished_utc": (start+timedelta(seconds=3)).isoformat(),
+                   "elapsed_ns": 2_000_000_000}
+        report = quality(points, {"source":("abc","attribute-source")}, batch=summary)
+        self.assertTrue(report["cpu_counter_present_monotonic"])
+        self.assertFalse(report["cpu_window_adequate"])
+        self.assertFalse(report["memory_window_adequate"])
+        self.assertFalse(report["usable_cpu"])
+
+    def test_long_sampled_batch_meets_coverage_gate_but_not_exact_cpu(self):
+        from datetime import datetime, timedelta, timezone
+        from benchmark.collector import quality
+        base = datetime(2026, 11, 16, 0, 0, 0, tzinfo=timezone.utc)
+        rows = []
+        for i in range(16):
+            timestamp = (base+timedelta(seconds=i)).isoformat()
+            rows.append({"pod_uid": "abc", "container": "attribute-source",
+                         "cpu_time_utc":timestamp, "cpu_usage_core_ns":i*100000000,
+                         "memory_time_utc":timestamp, "memory_working_set_bytes":10000+i})
+        batch = {"batch_started_utc":(base+timedelta(seconds=2)).isoformat(),
+                 "batch_finished_utc":(base+timedelta(seconds=13)).isoformat(),
+                 "elapsed_ns": 11_000_000_000}
+        q = quality(rows, {"source":("abc","attribute-source")}, batch=batch)
+        self.assertTrue(q["cpu_window_adequate"])
+        self.assertTrue(q["memory_window_adequate"])
+        self.assertIsNotNone(q["roles"]["source"]["cpu_delta_bracketing_s"])
+        # Regressao do contador deve invalidar mesmo que o lote seja longo.
+        rows[8]["cpu_usage_core_ns"] = 0
+        q2 = quality(rows, {"source":("abc","attribute-source")}, batch=batch)
+        self.assertFalse(q2["usable_cpu"])
+
 if __name__ == "__main__":
     unittest.main()

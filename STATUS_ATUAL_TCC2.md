@@ -398,3 +398,11 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 **Laudo completo:** `docs/tcc2/etapa-11-e11-p01-auditoria-c3-piloto.md`. **Decisão:** piloto funcional e arquivo de evidências APROVADOS; métrica CPU/memória AINDA NÃO CALIBRADA; séries estatísticas e V12 NÃO EXECUTADAS. **Não repetir snapshot/fixture nesta bancada**, não escalar, reiniciar ou remover Pods históricos C3/C4.
 
 **Próximos:** endurecer teste de qualidade da amostragem/janela e registrar timestamps explícitos do cliente; planejar C4 piloto separado (mesma fixture), validar C2 comparável e realizar piloto de carga média antes de liberar baterias definitivas. Pesquisa Perplexity para metodologia de benchmark e confiabilidade da Summary API, com referências verificáveis.
+
+## 15/11/2026 — E11-I03 instrumentação refinada (código preparado, testes Windows pendentes)
+
+**Base empírica:** E11-P01 piloto C3/100 aprovado funcionalmente, mas janela de CPU (~3 s) não alinhada com lote (~2,244 s), por isso métricas de CPU/memória ainda não aceitas cientificamente. Laudo: docs/tcc2/etapa-11-e11-p01-auditoria-c3-piloto.md.
+
+**E11-I03 preparado:** cliente registra início/fim UTC do lote adjacentes ao cronômetro monotônico; coletor distingue contadores monotônicos de cobertura temporal adequada (mínimo provisório 10 s de lote, pelo menos 5 timestamps, bordas a até 3 s e intervalos até 4 s); runner captura baseline pré-lote, gera CSV derivados e mantém JSONL brutos. Mesmo quando cobertura satisfatória, delta CPU por amostras de borda é estimativa com incerteza, nunca CPU exata do lote. C3/C4 e núcleo PON inalterados.
+
+**Não executar piloto imediatamente:** rodar AST/unittest atualizados no Windows, conferir Git e revisar protocolo antes de nova bancada. Qualquer novo C4/C3 exige run_id e namespace inéditos; não repetir E11-P01. V12 global não aprovado.

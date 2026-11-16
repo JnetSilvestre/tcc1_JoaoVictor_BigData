@@ -13,7 +13,7 @@ import sys
 import threading
 
 from benchmark import collector
-from benchmark.evidence import archive, check_run, write_json, write_jsonl, hash_file
+from benchmark.evidence import archive, check_run, write_json, write_jsonl, write_csv, hash_file
 from benchmark.fixtures import characterize, generate, rebase
 from benchmark.prepare import namespace_for
 from c0.io import read_jsonl, validate_input
@@ -133,6 +133,13 @@ class Sampler:
                 self.errors.append(str(exc))
             self.done.wait(self.period)
 
+    def prime(self):
+        """Coleta linha de base ainda antes de iniciar o cliente de carga."""
+        try:
+            self.samples.extend(collector.capture(CONTEXT, self.namespace, NODES))
+        except Exception as exc:
+            self.errors.append(f"baseline: {exc}")
+
     def start(self):
         self.worker.start()
 
@@ -215,6 +222,7 @@ def run(args, rows, namespace):
             raise ValueError("efeitos antes de iniciar carga")
         report["stage"] = "batch"
         monitor = Sampler(namespace, args.period)
+        monitor.prime()
         monitor.start()
         try:
             report["started_changes"] = True
@@ -237,10 +245,23 @@ def run(args, rows, namespace):
             # Guardar a telemetria mesmo quando o lote sai com erro ou timeout.
             monitor.stop()
             write_jsonl(output / "metrics-samples.jsonl", monitor.samples)
+            write_csv(output / "metrics-samples.csv", monitor.samples,
+                      ("retrieved_utc", "collector_seconds", "node", "namespace",
+                       "pod", "pod_uid", "container", "cpu_time_utc",
+                       "cpu_usage_core_ns", "memory_time_utc",
+                       "memory_working_set_bytes", "network_rx_bytes_pod",
+                       "network_tx_bytes_pod", "network_interfaces"))
             write_json(output / "metrics-errors.json", monitor.errors)
         records = [json.loads(line) for line in proc.stdout.splitlines() if line.strip()]
         if proc.returncode or not records or records[-1].get("status") != "PASS":
             raise ValueError(f"cliente falhou exit={proc.returncode}; NAO repetir")
+        write_json(output / "batch-summary.json", records[-1])
+        write_csv(output / "requests.csv", [
+            {"step": x.get("step"), "duration_ns": x.get("duration_ns"),
+             "status": x.get("status"),
+             "changed": (x.get("response") or {}).get("changed")}
+            for x in records[:-1]],
+            ("step", "duration_ns", "status", "changed"))
         after = kube.topology()
         write_json(output / "topology-end.json", {
             "pods": after["pods"], "nodes": after["nodes"], "services": after["services"]})
@@ -253,8 +274,8 @@ def run(args, rows, namespace):
         validated = check_run(rebased, records, final)
         validated["transport"] = transport_checks(top, rebased, logs, final)
         validated["metric_quality"] = collector.quality(
-            monitor.samples, {r: (top["pods"][r]["uid"], r) for r in ROLES})
-        validated["metric_quality"]["errors"] = monitor.errors
+            monitor.samples, {r: (top["pods"][r]["uid"], r) for r in ROLES},
+            batch=records[-1], collection_errors=monitor.errors)
         validated["status"] = ("PASS" if validated["status"] == "PASS"
                                and all(validated["transport"].values()) else "FAIL")
         report["validation"] = validated
