@@ -366,3 +366,13 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 **Métricas:** `/api/v1/nodes/{node}/proxy/stats/summary` disponível em ambos os nós kind; seis contêineres C3/C4 vistos (5 worker, 1 control-plane), campos cumulativos CPU e workingSetBytes presentes com timestamp. `NETWORK=False` inconclusivo por consulta ao campo incorreto `network.interface.rxBytes` (verificar campos `network.rxBytes` / `network.interfaces` no coletor novo). Cgroups v2: `cpu.stat`, `memory.current`, `memory.peak` legíveis nas raízes dos nós kind, sem demonstrar ainda atribuição a contêineres individuais. **Nenhum benchmark executado; instrumentos ainda precisam ser calibrados**. C3/C4 preservados.
 
 **Laudo:** `docs/tcc2/etapa-11-e11-d02-auditoria-instrumentacao.md`. **Próximo:** E11-I01/I02, implementar ferramenta de coleta persistente e verificações quantitativas em novas bancadas; não repetir sondagem por aparência vermelha do PowerShell.
+
+## 15/11/2026 — E11-I01/I02: instrumentos experimentais PREPARADOS, ainda SEM validacao no Windows
+
+**Commits de preparacao:** 2f517229e55992390502495aff17a6793f05346d (biblioteca instrumental), 34b40d419afc37fa97d3efc03c5892d9454a0047 (runner C3/C4 piloto), 2b1e8de13c95e4898f39c79778ea7e2de80dd0e2 (testes sintéticos), 8d0415f51cb2d97e3b607d5bba022172bd324c9d (documentacao). Consulte docs/tcc2/etapa-11-e11-i01-i02-preparacao.md.
+
+**Arquivos novos:** prova-conceito/benchmark/{fixtures,client,collector,evidence,prepare,runner}.py e tests/test_benchmark.py. O núcleo funcional pon/ e c1/, imagem C2, namespaces e manifestos aprovados C3/C4 permanecem inalterados. Nenhuma execução na máquina do acadêmico desses scripts ainda foi observada; nenhum benchmark, PILOTO, criação de Pod/namespace ou medição científica deve ser declarado.
+
+**Desenho:** cliente Python em Pod separado no worker e processo único para o lote, sem um kubectl exec por evento; Summary API candidata para CPU/memoria (calibracao pendente); manifests E11 apenas gerados em arquivos, não aplicados; runner sem --execute mostra somente plano, com --execute e MUTANTE numa NOVA bancada (um snapshot e uma rodada, sem retry). Quatro gates restantes: AST/unittest real, conferencia dos YAML e hashes, C2 equivalente antes das comparacoes definitivas, piloto e auditoria dos dados.
+
+**Próximo E11-D03:** sincronizar branch, executar somente validacao sintatica/unittest, gerar fixtures/YAML com caminhos ineditos e imprimir plano sem --execute. Se houver falha, parar e corrigir codigo, preservando C3/C4. Nao rodar piloto ainda.
