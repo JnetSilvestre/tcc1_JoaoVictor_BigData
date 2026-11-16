@@ -560,3 +560,11 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 **Correção preparada:** `benchmark/kube_c4_recovery.py` (testes `test_benchmark_kube_c4_recovery.py` + cinco casos) consulta SOMENTE get/logs/GET /state, compara Pods com `pods-c4.json` salvo, compara históricos com `historical-before.json`, bloqueia UID/restart/imagem/node divergentes, identifica estado frio. Gera novo ZIP sem alterar recursos Kubernetes. Não executado no Windows ainda. Registro `docs/tcc2/etapa-11-e11-d12-erro-powerShell-recuperacao.md`.
 
 **Próximo gate E11-R01:** git pull limpo, compileall, testes (esperados 38), rodar módulo com namespace/run já criados e pasta original E11-D12; enviar saída/ZIP para auditoria. Após PASS_COLD_READ_ONLY, preparar E11-P06 único. Nenhuma modificação em C2/C3 históricos.
+
+## 16/11/2026 — E11-R01 auditado: C4/1000 em estado frio e com identidades intactas
+
+**ZIP real recovery.zip auditado:** 10.840 bytes, SHA-256 recalculado 96cd8d47a3b4b64972a69d776077afd1e7e4b8156877a9f81e460a8cc3a18c62, 8/8 CRC válidos, 7/7 hashes internos. Execução HEAD 10c29585ef8846a402b302cc577d7538ee548ec0, 38/38 testes PASS.
+
+**C4 namespace tcc2-pon-e11-c4-p20261116-001328:** 4/4 Pods Running/Ready no desenho virtual correto (logic no control-plane, os outros + cliente no worker), UIDs e containerIDs iguais aos da criação E11-D12, zero restart. Nenhuma mudança nos UIDs históricos C3/C4 originais e piloto C3. states-cold.json comprova ready=false e run_id=null nos três serviços, source atA/atB=0, logic attributes/condition=null, executor approved=null, sem ledgers/effects/fault. Sem snapshot, sem carga e sem apply na recuperação.
+
+**Laudo:** docs/tcc2/etapa-11-e11-r01-auditoria-recuperacao-c4.md. Decisão: E11-R01 PASS_COLD_READ_ONLY, bancada liberável para UM piloto C4/1000 E11-P06 com preflight frio obrigatório antes de snapshot e guarda de IDs. A etapa de execução e resultados C4 ainda NÃO aconteceram. CPU/memória Kubelet continuarão exploratórias até qualidade temporal e calibração. E11-M01/A01 ainda pendentes.
