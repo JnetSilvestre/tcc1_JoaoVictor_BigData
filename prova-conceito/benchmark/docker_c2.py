@@ -70,7 +70,7 @@ def identities(label):
 
 def validate_fixture(label, run_id, rows):
     network, names = identities(label)
-    if not re.fullmatch(r"e11-c2-[a-z0-9-]{4,48}", run_id):
+    if not re.fullmatch(r"e11-c2-[a-z0-9-]{3,48}", run_id):
         raise ValueError("run_id deve ser novo, e11-c2-...")
     if len(rows) not in SEEDS:
         raise ValueError("tamanho nao aprovado")
