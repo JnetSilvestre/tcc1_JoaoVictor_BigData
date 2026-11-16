@@ -592,3 +592,13 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 **Gates pendentes do E11-M00:** validar política de interrupção e substituições, confirmacão de limites comparáveis e condições do host, modo sem sampler em C2/C3/C4, decisão sobre instrumentação secundária, revisão com orientador se pertinente e congelamento versionado `E11-M00-v1` com `READY_FOR_M01` ou `BLOCKED`. **E11-M01, E11-A01 e V12 ainda NÃO executados/aprovados.**
 
 **Integridade operacional:** somente documentação versionada; nenhum benchmark, snapshot, POST, apply, criação, limpeza ou modificação das bancadas históricas. As redes/contêineres/namespaces dos pilotos C2/C3/C4 e demais históricos permanecem protegidos.
+
+## 16/11/2026 — E11-M00A: matriz e estimandos definidos (SEM experimentos)
+
+**Documento versionado:** `docs/tcc2/etapa-11-e11-m00a-matriz-quantitativa.md`, commit `320cfd94f85518a66b9a65451e9c5b9c073351e1`. A E11-M00A foi **definida documentalmente**, sem congelar E11-M00 completo nem autorizar E11-M01.
+
+**Matriz:** contraste C2 Docker, C3 kind em um nó virtual e C4 kind em dois nós virtuais no **mesmo host físico**; fixture determinística `N=1000`, seed `20260502`, hash canônico aprovado `26121e3a8747c94fd8e690e4ca04762cf469e040ac31cdd7bd4c6aba14f90551`, oráculo 250 efeitos; dez rodadas novas/frias por cenário, total de 30, em dez blocos pré-especificados e aproximadamente contrabalanceados. Pilotos E11-P04/05/06 NÃO são réplicas definitivas. Não atribuir diferenças ao Kubernetes isoladamente.
+
+**Desfecho:** `T_batch` com `perf_counter_ns` no cliente único Python, incluindo serialização e laço de envio/recebimento (protocolo HTTP/1.0, sem garantia de TCP keep-alive), e vazão derivada. Unidade experimental = rodada/bancada, não 1.000 RTTs independentes. Contrastes temporais pareados por bloco, relatório descritivo e sem inferência confirmatória antecipada. Carga de 10.000 fora da campanha principal, condicionada a avaliação separada.
+
+**Pendentes para E11-M00B/C:** política de aquecimento realmente reprodutível, limites/quotas equivalentes e pressão do host, instrumentação primária sem efeito observador não calibrado, CPU/memória comparativas BLOQUEADAS, guardas de identidade e histórico, política de interrupções/substituições, congelamento da versão E11-M00-v1. E11-M01/A01 e V12 permanecem não executados. **Nenhum benchmark, snapshot, POST, `kubectl apply`, alteração/exclusão de bancadas históricas ou medição nova foi executado nesta atividade.**
