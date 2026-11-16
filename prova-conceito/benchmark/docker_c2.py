@@ -246,11 +246,14 @@ def run(args, rows, network, names):
         write_json(output / "states-cold.json", cold)
         if args.measurement_mode == TIMING_ONLY:
             # Mesma leitura final em C2/C3/C4: 3 GET live + 3 GET state.
-            pre_logs = logs(names)
             uniform = final_readonly_cold_check(
                 lambda role: http(names[role], "/health/live"),
                 lambda role: http(names[role], "/state"),
-                lambda role: pre_logs[role])
+                lambda role: [
+                    json.loads(line)
+                    for line in checked("docker", "logs", names[role]).splitlines()
+                    if line.strip()
+                ])
             write_json(output / "preflight-uniform.json", uniform)
         # A interface externa deve estar operacional ANTES de qualquer snapshot.
         # Import tardio evita ciclo docker_engine_api -> docker_c2.
