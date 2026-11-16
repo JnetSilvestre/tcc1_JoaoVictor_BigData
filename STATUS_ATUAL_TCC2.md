@@ -386,3 +386,15 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 **Correções preventivas posteriores aos 6 testes, NÃO VALIDADAS NO WINDOWS:** benchmark/runner.py preserva saída/telemetria parcial e logs em falhas, compara fixture inteira com fonte canônica; tests/test_benchmark.py ganhou assert de adulteração. Núcleo PON, Docker C2 e manifests C3/C4 inalterados.
 
 **Próximo E11-D04:** sincronizar branch e executar AST/unittest do controlador atualizado em PowerShell com reconhecimento automático da pasta prova-conceito. Liberar piloto isolado apenas depois. V12 NÃO EXECUTADO.
+
+## 15/11/2026 — E11-P01 C3 piloto real e auditoria independente do RAR/ZIP
+
+**Execução no Windows:** commit `b8b8a354e3207cc6eb04d7c61eff3913a6dec7f2`; nova bancada `tcc2-pon-e11-c3-p20261115-213740`; três serviços e cliente no worker virtual, Pods da aplicação com identidade e restartCount=0 estáveis. Snapshot único HTTP 200 `duplicate=false`, 3/3 serviços prontos. **100/100 HTTP 200, 86 alterações efetivas, 49 transições, 25 efeitos** iguais ao oráculo/esperado na ordem exata. Relatório `validation.json` PASS, **10/10 checks funcionais e 4/4 de transporte**. Pods C3 original e C4 original observados Running 1/1, 0 restarts, não foram reutilizados.
+
+**Artefato enviado e realmente examinado:** `e11-p01-20261115-213740.rar`, 50.181 bytes, SHA-256 `8b8549faac1bb486dfec626fc64566937923dcb015d45bdd6276551c49d364df`; 28 entradas, das quais 24 arquivos com CRC válido. `run.zip` interno, 24.842 bytes, SHA-256 `ffa845a8ba7d88ac4fa27fd057d7b03f3f07509c01203d5f6b99a3c80e2ae064`, 19/19 entradas, CRC OK e 18/18 SHA-256 internos corretos. Equivalência JSON dos efeitos é semântica, NÃO identidade de bytes em arquivos JSONL (diferenças de ordem das chaves). Originais binários externos ao GitHub.
+
+**Tempos OBSERVADOS APENAS NO PILOTO, não científicos definitivos:** lote 2,243528105 s, 44,57 req/s, latência mediana 21,08 ms e p95 51,02 ms, concorrência=1. 16 amostras Kubelet Summary API (4 por serviço + 4 cliente), sem erro; contador CPU monotônico presente, working-set amostrado. Entretanto janela de 3 segundos da coleta não está precisamente alinhada com lote de 2,244 s, de modo que **cpu_delta e working-set amostrado NÃO autorizam cálculo exato de CPU-segundos do lote nem pico real de memória**. `usable_cpu=true` no validador é apenas um teste de presença/monotonicidade, insuficiente para aprovar instrumentação quantitativa V12.
+
+**Laudo completo:** `docs/tcc2/etapa-11-e11-p01-auditoria-c3-piloto.md`. **Decisão:** piloto funcional e arquivo de evidências APROVADOS; métrica CPU/memória AINDA NÃO CALIBRADA; séries estatísticas e V12 NÃO EXECUTADAS. **Não repetir snapshot/fixture nesta bancada**, não escalar, reiniciar ou remover Pods históricos C3/C4.
+
+**Próximos:** endurecer teste de qualidade da amostragem/janela e registrar timestamps explícitos do cliente; planejar C4 piloto separado (mesma fixture), validar C2 comparável e realizar piloto de carga média antes de liberar baterias definitivas. Pesquisa Perplexity para metodologia de benchmark e confiabilidade da Summary API, com referências verificáveis.
