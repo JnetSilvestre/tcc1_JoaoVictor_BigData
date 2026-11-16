@@ -358,3 +358,11 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 **Constatações:** branch local tcc2/desenvolvimento limpa em f84c8384f33168219213757f9b2027216a2511e4, anterior aos commits documentais E11; Windows 10/i5-9300H 4c/8t; Docker Desktop 4.99.0, Engine 29.9.3, 8 CPUs e 8245637120 bytes, cgroups v2; imagem C2 correta; dois nós kind v1.37.0 Ready no mesmo host WSL2. C3 e C4, seis Pods Running 1/1, 0 restarts, posições esperadas, preservados. metrics.k8s.io/v1beta1 retorna NotFound, sem fonte atual comprovada de métricas CPU/RAM por Pod. Nenhum benchmark executado, nenhum Pod alterado.
 
 **Próximo E11-D02:** sincronizar a documentação por git pull --ff-only na branch de trabalho, verificar Kubelet Summary API e disponibilidade de arquivos cgroup v2 de nós kind **somente por leitura**; não executar GET/POST da aplicação nem iniciar novos contêineres. Só então fixar instrumentos, método e piloto.
+
+## 15/11/2026 — E11-D02: Kubelet Summary API acessível
+
+**Diagnóstico PowerShell por captura:** pull `--ff-only` realizado via Fast-forward, HEAD local `72957299fe9dbffb66c9f99681a54c5787459919` e Git limpo; mensagem vermelha `git : From...` é stderr informativo tratado pelo PowerShell como `NativeCommandError`, não falha do pull.
+
+**Métricas:** `/api/v1/nodes/{node}/proxy/stats/summary` disponível em ambos os nós kind; seis contêineres C3/C4 vistos (5 worker, 1 control-plane), campos cumulativos CPU e workingSetBytes presentes com timestamp. `NETWORK=False` inconclusivo por consulta ao campo incorreto `network.interface.rxBytes` (verificar campos `network.rxBytes` / `network.interfaces` no coletor novo). Cgroups v2: `cpu.stat`, `memory.current`, `memory.peak` legíveis nas raízes dos nós kind, sem demonstrar ainda atribuição a contêineres individuais. **Nenhum benchmark executado; instrumentos ainda precisam ser calibrados**. C3/C4 preservados.
+
+**Laudo:** `docs/tcc2/etapa-11-e11-d02-auditoria-instrumentacao.md`. **Próximo:** E11-I01/I02, implementar ferramenta de coleta persistente e verificações quantitativas em novas bancadas; não repetir sondagem por aparência vermelha do PowerShell.
