@@ -80,9 +80,16 @@ def quality(samples, expected, batch=None, collection_errors=None,
     elapsed_s = elapsed_ns / 1e9 if type(elapsed_ns) is int and elapsed_ns >= 0 else None
     valid_window = (started is not None and finished is not None
                     and started < finished and elapsed_s is not None)
-    long_enough = bool(valid_window and elapsed_s >= min_batch_s)
+    # Evitar aceitar dados de lote com UTC e contador monotônico contraditórios.
+    utc_elapsed = (finished - started).total_seconds() if valid_window else None
+    clock_discrepancy_s = abs(utc_elapsed - elapsed_s) if valid_window else None
+    clock_coherent = (valid_window and clock_discrepancy_s
+                      <= max(0.25, 0.05 * elapsed_s))
+    long_enough = bool(clock_coherent and elapsed_s >= min_batch_s)
     if not valid_window:
         issues.append("batch: marcadores UTC/tempo monotônico ausentes ou inválidos")
+    elif not clock_coherent:
+        issues.append("batch: divergencia entre duracao UTC e monotônica")
     elif not long_enough:
         issues.append(f"batch: duração {elapsed_s:.3f}s inferior ao mínimo experimental {min_batch_s:.3f}s")
     per_role = {}
@@ -191,6 +198,9 @@ def quality(samples, expected, batch=None, collection_errors=None,
         "usable_cpu": cpu_window_ok,  # conservador, legado
         "usable_memory": memory_window_ok,
         "batch_elapsed_s": elapsed_s,
+        "utc_elapsed_s": utc_elapsed,
+        "utc_vs_monotonic_discrepancy_s": clock_discrepancy_s,
+        "clock_coherent": bool(clock_coherent),
         "minimum_batch_s_for_quality_gate": min_batch_s,
         "edge_slack_s": edge_slack_s,
         "max_sample_gap_s": max_gap_s,
