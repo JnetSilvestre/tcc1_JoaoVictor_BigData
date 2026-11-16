@@ -50,7 +50,9 @@ class DockerPilotSafetyTests(unittest.TestCase):
         self.assertEqual(cmd[cmd.index("--entrypoint")+1], "python")
         self.assertEqual(cmd[cmd.index("--memory")+1], str(MEM_CLIENT))
         self.assertIn(IMAGE_TAG, cmd)
-        self.assertIn("time.sleep(86400)", cmd)
+        self.assertEqual(cmd[-3], IMAGE_TAG)
+        self.assertEqual(cmd[-2], "-c")
+        self.assertIn("time.sleep(86400)", cmd[-1])
 
 
 if __name__ == "__main__":
