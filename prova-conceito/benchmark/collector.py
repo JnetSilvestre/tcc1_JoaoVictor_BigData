@@ -89,26 +89,40 @@ def quality(samples, expected, batch=None, collection_errors=None,
     for role, (uid, container) in expected.items():
         entries = [r for r in samples if r.get("pod_uid") == uid
                    and r.get("container") == container]
+        # A origem do kubelet pode arredondar timestamps a segundos inteiros:
+        # a mesma hora pode aparecer com contador CRESCENTE, sem regressao.
+        # A monotonicidade e aferida na ordem de captura, nao por valores
+        # reordenados por timestamps de baixa resolucao.
         cpu_rows = []
-        for row in entries:
+        for idx, row in enumerate(entries):
             stamp = parse_utc(row.get("cpu_time_utc"))
             count = row.get("cpu_usage_core_ns")
             if stamp and type(count) is int and count >= 0:
-                cpu_rows.append((stamp, count))
-        cpu_rows.sort(key=lambda pair: pair[0])
-        distinct = {}
-        ambiguous_duplicate = False
-        for t, value in cpu_rows:
-            if t in distinct and distinct[t] != value:
-                ambiguous_duplicate = True
-            distinct[t] = value
-        sequence = sorted(distinct.items())
-        monotonic = (len(sequence) >= 2 and not ambiguous_duplicate and
-                     all(sequence[i][1] <= sequence[i + 1][1]
-                         for i in range(len(sequence)-1)))
+                cpu_rows.append((stamp, count, idx))
+        counter_regression = any(
+            cpu_rows[i+1][1] < cpu_rows[i][1]
+            for i in range(len(cpu_rows)-1))
+        timestamp_regression = any(
+            cpu_rows[i+1][0] < cpu_rows[i][0]
+            for i in range(len(cpu_rows)-1))
+        values_by_stamp = {}
+        for stamp, counter, _ in cpu_rows:
+            values_by_stamp.setdefault(stamp, []).append(counter)
+        # Apenas o ULTIMO valor da mesma marcacao vira representante.
+        # Se a duplicata coincidir com borda, o delta nao e aprovado.
+        ambiguous_times = {stamp for stamp, values in values_by_stamp.items()
+                           if len(set(values)) > 1}
+        sequence = sorted((stamp, values[-1])
+                          for stamp, values in values_by_stamp.items())
+        monotonic = (len(sequence) >= 2 and not counter_regression
+                     and not timestamp_regression)
         role_result = {
             "observations": len(entries),
             "unique_cpu_timestamps": len(sequence),
+            "cpu_duplicate_timestamp_count": sum(len(v)-1 for v in values_by_stamp.values()),
+            "cpu_timestamp_ambiguous_count": len(ambiguous_times),
+            "cpu_counter_regressed": bool(counter_regression),
+            "cpu_timestamp_regressed": bool(timestamp_regression),
             "cpu_counter_present_monotonic": bool(monotonic),
             "cpu_window_adequate": False,
             "memory_window_adequate": False,
@@ -127,7 +141,9 @@ def quality(samples, expected, batch=None, collection_errors=None,
         if memory_rows:
             role_result["memory_max_sampled_mib"] = max(v for _,v in memory_rows) / (1024**2)
         if not monotonic:
-            issues.append(f"{role}: CPU ausente, regressivo ou timestamps inconsistentes")
+            issues.append(f"{role}: CPU ausente, regressivo ou timestamp decrescente")
+        if ambiguous_times:
+            issues.append(f"{role}: {len(ambiguous_times)} timestamps CPU duplicados com contadores diferentes; resolucao temporal insuficiente nesses instantes")
         if not memory_rows:
             issues.append(f"{role}: working set ausente")
         if monotonic and long_enough and not errors:
@@ -141,6 +157,8 @@ def quality(samples, expected, batch=None, collection_errors=None,
                 left_margin = (started-left[0]).total_seconds()
                 right_margin = (right[0]-finished).total_seconds()
                 if (left_margin <= edge_slack_s and right_margin <= edge_slack_s
+                        and left[0] not in ambiguous_times
+                        and right[0] not in ambiguous_times
                         and len(bracket) >= min_distinct_samples and gap <= max_gap_s):
                     role_result["cpu_window_adequate"] = True
                     role_result["cpu_delta_bracketing_s"] = (right[1]-left[1]) / 1e9
