@@ -8,6 +8,20 @@ RESOURCES_DIAGNOSTIC = "resources_diagnostic"
 MODES = (TIMING_ONLY, RESOURCES_DIAGNOSTIC)
 
 
+def require_new_timing_identity(mode, scenario, label, run_id):
+    """Timing_only e exclusivo de futura bancada M01 com ID distinto dos pilotos P."""
+    import re
+
+    if mode not in MODES or scenario not in ("C2", "C3", "C4"):
+        raise ValueError("modo/cenario invalido")
+    if mode == TIMING_ONLY:
+        if not re.fullmatch(r"m[a-z0-9][a-z0-9-]{1,20}", label):
+            raise ValueError("timing_only exige label inedito com prefixo m")
+        if run_id != f"e11-{scenario.lower()}-{label}":
+            raise ValueError("timing_only exige run_id exclusivo ligado ao cenario/label")
+    return True
+
+
 def select_sampler(mode, factory):
     """Factory deve ser invocada APENAS em modo diagnostico."""
     if mode == TIMING_ONLY:
