@@ -2,6 +2,7 @@
 import unittest
 
 from benchmark.campaign_controls import ROLES, validate_cold, final_readonly_cold_check
+from c1.state import AttributeSource, LogicEngine, RuleExecutor
 
 
 def fixtures():
@@ -92,6 +93,20 @@ class UniformColdCheckTests(unittest.TestCase):
         states["rule-executor"]["approved"] = False
         with self.assertRaises(ValueError):
             validate_cold(live, states, logs)
+
+    def test_contract_using_real_c1_state_classes_no_network(self):
+        source = AttributeSource(lambda _x: None, lambda _x: None)
+        logic = LogicEngine(lambda _x: None, lambda _x: None)
+        executor = RuleExecutor()
+        states = {
+            "attribute-source": source.state(),
+            "logic-engine": logic.state(),
+            "rule-executor": executor.state(),
+        }
+        live = {r: {"live": True} for r in ROLES}
+        logs = {r: [] for r in ROLES}
+        self.assertEqual(
+            validate_cold(live, states, logs)["status"], "PASS_COLD_READ_ONLY")
 
     def test_reject_ledger_effects_pending_and_logs(self):
         for role, key, value in (
