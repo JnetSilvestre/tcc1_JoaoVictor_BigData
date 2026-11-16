@@ -4,6 +4,7 @@ import unittest
 from benchmark.measurement_profile import (
     MODES, RESOURCES_DIAGNOSTIC, TIMING_ONLY,
     not_collected_quality, profile_record, select_sampler,
+    require_new_timing_identity,
 )
 
 
@@ -19,6 +20,20 @@ class MeasurementProfileTests(unittest.TestCase):
         sentinel = object()
         self.assertIs(select_sampler(RESOURCES_DIAGNOSTIC, lambda: sentinel), sentinel)
         self.assertTrue(profile_record(RESOURCES_DIAGNOSTIC)["resource_sampling_during_batch"])
+
+    def test_timing_only_requires_m01_isolated_identifiers(self):
+        self.assertTrue(require_new_timing_identity(
+            TIMING_ONLY, "C2", "m01-b01", "e11-c2-m01-b01"))
+        self.assertTrue(require_new_timing_identity(
+            TIMING_ONLY, "C4", "m01-b01", "e11-c4-m01-b01"))
+        with self.assertRaises(ValueError):
+            require_new_timing_identity(
+                TIMING_ONLY, "C3", "p20261115-235728", "e11-c3-p20261115-235728")
+        with self.assertRaises(ValueError):
+            require_new_timing_identity(
+                TIMING_ONLY, "C3", "m01-b01", "e11-c3-m01-b02")
+        self.assertTrue(require_new_timing_identity(
+            RESOURCES_DIAGNOSTIC, "C3", "p-legacy", "e11-c3-p-legacy"))
 
     def test_unknown_mode_is_fail_closed(self):
         self.assertEqual(len(MODES), 2)
