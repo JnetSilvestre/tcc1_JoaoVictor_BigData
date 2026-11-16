@@ -94,3 +94,13 @@ kubectl --context kind-tcc2-pon get nodes -o wide
 Se qualquer comando falhar, guardar a mensagem exata; **não corrigir automaticamente por restart, apply, load, criação ou exclusão**. Fixture/PLAN_ONLY C2/C3/C4 poderão ser preparados sem acesso aos cenários antigos, como passo separado.
 
 **Não foram executados novos benchmarks, snapshots, POSTs, `kubectl apply`, ações Docker/cluster mutantes ou exclusões neste registro.**
+
+## 9. Atualização da matriz de gates: PLAN_ONLY e inventário recebidos
+
+**Fonte:** `etapa-11-e11-m00c-auditoria-plan-only-inventario.md`, versão textual de PowerShell fornecida pelo acadêmico após `git pull --ff-only` para `707d456f83dadbcea088924ed60e33dc8f3720a6`.
+
+**Gates agora comprovados por transcrição:** SHA-256 da fixture e do oráculo, três `PLAN_ONLY` C2/C3/C4 com `timing_only` e `execute=false`, labels válidas `m01-b01`, Docker `desktop-linux` com cgroup v2, CPU 8, RAM anunciada 8245637120 bytes, WSL2, dois nós kind `Ready` e Kubernetes v1.37.0. Esses dados são **preflight planejado e inventário**, não experimentação ou validação de quotas físicas.
+
+**Gates que permanecem pendentes antes de congelar:** (i) consulta read-only de namespace/rede já existentes e confirmação de inexistência para IDs novos; (ii) image ID do runtime, recursos `allocatable` por nó, disponibilidade efetiva do host/disco, quotas e swap; (iii) critério final de GETs/estabilização comum aos cenários, `environment.json` e política de preservação; (iv) aceitação formal prospectiva das regras de falha/reposição; (v) protocolo versionado `E11-M00-v1` com SHA dos scripts e status deliberado. **O método `--execute` continua BLOQUEADO.**
+
+**Decisão mantida:** `BLOCKED_FOR_M01`. Não confundir três `PLAN_ONLY` PASS com três novos experimentos.
