@@ -486,3 +486,13 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 **Planejamento confirmado pelo documento original docs/tcc2/etapa-11-diagnostico-plano.md:** a Etapa 11 inclui E11-M01 (séries quantitativas controladas) e E11-A01 (auditoria dos ZIPs e completude) além da instrumentação e pilotos. Etapa 12 dedica-se à análise dos resultados. Ainda restam validação temporal/overhead, pilotos médios C2/C3/C4, protocolo congelado, séries estatísticas e auditoria final; sem prazo/porcentagem garantidos.
 
 **Fortalecimento de segurança E11-I06:** a primeira leitura efetiva da Docker Engine API foi movida para ANTES do snapshot; falha de acesso à telemetria nesse ponto impede a primeira mutação. Continua necessária uma baseline posterior ao snapshot para delimitação do lote. Não há nova execução Windows comprovada.
+
+## 15/11/2026 — E11-D08: validação sintética aprovada e C2/1000 liberado como piloto diagnóstico
+
+**Evidência da execução PowerShell:** branch `tcc2/desenvolvimento`, HEAD `9d9e2998de46df2aa7ff5c0dfe73f59dba1309f5`; Python `compileall` PASS; **28/28** testes `unittest` PASS em **0,098 s** (duração da suíte, não do benchmark). `PLAN_ONLY` em C2 gerou plano para nova rede `tcc2-pon-e11-c2-p20261115-232603`, sem Docker run, snapshot ou POST. Nenhum benchmark foi realizado nesta validação.
+
+**Fixture canônica 1000:** seed `20260502`, `run_id=e11-canonical-1000-20260502`; SHA-256 `inputs.jsonl` = `26121e3a8747c94fd8e690e4ca04762cf469e040ac31cdd7bd4c6aba14f90551`, `expected.jsonl` = `430e61ca65d582f0441eb49649d9577905d0f8fa9e1d5ff04bc01eb53eda7b1c`. Composição: 1000 tentativas, 874 alterações, 126 no-ops, 500 transições de condição e 250 efeitos. Estado final esperado: `atA=10`, `atB=0`. Arquivo local: `prova-conceito/resultados-locais/e11-d08-20261115-232603/fixtures/s1000/inputs.jsonl`. O plano não é evidência de execução funcional da carga.
+
+**Decisão:** liberar **somente um piloto diagnóstico E11-P04 C2/1000 em bancada NOVA**, com nova identificação `e11-c2-p...`, rede e contêineres inéditos e instrumento Docker Engine API (E11-I06) por GET externo. Gate no PowerShell: Git limpo/commit esperado, 28 testes, fixture SHA correto, PLAN_ONLY, Docker disponível e nomes nunca usados; somente então `--execute`. Em falha após esse ponto, preservar ZIP/rede/contêineres, **não repetir**. A nova coleta NÃO torna `measurement_approved` verdadeiro automaticamente.
+
+**Pendências posteriores:** auditoria ZIP real E11-P04 e qualidade temporal de CPU; pilotos 1000 C3/C4 em novos namespaces; overhead, política de memória e aquecimento; congelamento do protocolo E11-M01; séries independentes controladas e auditoria E11-A01. V12 continua pendente.
