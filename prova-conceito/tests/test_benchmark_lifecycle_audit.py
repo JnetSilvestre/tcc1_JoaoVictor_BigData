@@ -26,6 +26,14 @@ def make_archive(path, scenario="C2", run_id="e11-c2-m01-b01",
         "scenario": scenario, "run_id": run_id,
     }).encode()
     rows["preflight-uniform.json"] = b'{"status":"PASS_COLD_READ_ONLY"}'
+    rows["capacity-gate.json"] = json.dumps({
+        "status": "CAPACITY_SAFETY_GATE_PASS_NOT_PERFORMANCE_APPROVAL"}).encode()
+    rows["effective-quotas.json"] = json.dumps({
+        "status": "EFFECTIVE_LIMITS_ALL_FOUR_PASS",
+        "scenario": scenario,
+        "roles": {role: {"status": "EFFECTIVE_CGROUP_LIMITS_PASS_NOT_USAGE_COMPARISON"}
+                  for role in ("attribute-source", "logic-engine", "rule-executor", "client")},
+    }).encode()
     if missing is not None:
         del rows[missing]
     sha_lines = "".join(f"{sha256_bytes(payload)}  {name}\n"
@@ -68,6 +76,14 @@ class LifecycleAuditTests(unittest.TestCase):
             make_archive(zip_path, fail=True)
             with self.assertRaises(ValueError):
                 audit_archive(zip_path, "C2", "m01-b01", "e11-c2-m01-b01")
+
+    def test_missing_capacity_and_effective_quota_gates_block(self):
+        for missing in ("capacity-gate.json", "effective-quotas.json"):
+            with self.subTest(missing=missing), TemporaryDirectory() as temp:
+                zip_path = Path(temp) / "incomplete.zip"
+                make_archive(zip_path, missing=missing)
+                with self.assertRaises(ValueError):
+                    audit_archive(zip_path, "C2", "m01-b01", "e11-c2-m01-b01")
 
     def test_wrong_identity_historical_label_rejected(self):
         with TemporaryDirectory() as temp:
