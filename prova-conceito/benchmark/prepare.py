@@ -34,6 +34,19 @@ def render(scenario, label):
             or f"  name: {old_ns}\n" in text
             or f"tcc2-pon-{scenario.lower()}-config" in text):
         raise ValueError("manifesto ainda referencia namespace/config original")
+    # Positivacao de ownership SOMENTE na definicao do namespace M01 novo.
+    # Nao altera os manifestos historicos nem o codigo dos servicos.
+    if label.startswith("m"):
+        before = f"kind: Namespace\\nmetadata:\\n  name: {ns}\\n  labels:\\n"
+        after = (before + f"    tcc2.e11/campaign: m01\\n"
+                 + f"    tcc2.e11/run-id: e11-{scenario.lower()}-{label}\\n")
+        # Converter escapes de template em quebras reais apenas nesta rotina.
+        before = before.replace("\\n", "\n")
+        after = after.replace("\\n", "\n")
+        if text.count(before) != 1:
+            raise ValueError("Namespace M01 sem cabecalho unico para ownership")
+        text = text.replace(before, after)
+
     # Um Pod de cliente sem o codigo da aplicacao mutado: mesma imagem, comando diferente.
     client = f"""
 ---
