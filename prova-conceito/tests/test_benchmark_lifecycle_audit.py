@@ -6,7 +6,8 @@ import unittest
 from zipfile import ZIP_DEFLATED, ZipFile
 
 from benchmark.lifecycle_audit import (
-    MANDATORY, audit_archive, retirement_review_only, sha256_bytes,
+    MANDATORY, audit_archive, retirement_review_only,
+    review_retirement_packet, sha256_bytes,
 )
 
 
@@ -110,6 +111,62 @@ class LifecycleAuditTests(unittest.TestCase):
                 make_archive(zip_path, missing=missing)
                 with self.assertRaises(ValueError):
                     audit_archive(zip_path, "C2", "m01-b01", "e11-c2-m01-b01")
+
+    def test_retirement_packet_requires_backup_on_other_volume(self):
+        with TemporaryDirectory() as temp:
+            zip_path = Path(temp) / "sample.zip"
+            make_archive(zip_path)
+            audit = audit_archive(zip_path, "C2", "m01-b01", "e11-c2-m01-b01")
+            owner = {
+                "status": "NEW_BENCH_OWNERSHIP_READONLY_PASS",
+                "scenario": "C2", "run_id": "e11-c2-m01-b01",
+                "network": {"name": "tcc2-pon-e11-c2-m01-b01", "id": "f" * 64},
+                "containers": {r: {"id": str(i)} for i, r in enumerate(
+                    ("attribute-source", "logic-engine", "rule-executor", "client"))},
+                "delete_authorized": False, "commands": [],
+            }
+            backup = {
+                "status": "BACKUP_BYTES_VERIFIED_NO_CLEANUP_AUTHORIZATION",
+                "zip_sha256": audit["zip_sha256"], "different_filesystem_volume": True,
+                "delete_authorized": False, "commands": [],
+            }
+            review = review_retirement_packet(
+                "C2", "m01-b01", "e11-c2-m01-b01", audit, owner, backup)
+            self.assertEqual(review["status"], "REVIEW_ONLY_EVIDENCE_CONSOLIDATED")
+            self.assertFalse(review["delete_authorized"])
+            self.assertEqual(review["commands"], [])
+            backup["different_filesystem_volume"] = False
+            with self.assertRaises(ValueError):
+                review_retirement_packet(
+                    "C2", "m01-b01", "e11-c2-m01-b01", audit, owner, backup)
+
+    def test_retirement_packet_wrong_run_id_or_sha_blocked(self):
+        with TemporaryDirectory() as temp:
+            zip_path = Path(temp) / "sample.zip"
+            make_archive(zip_path)
+            audit = audit_archive(zip_path, "C2", "m01-b01", "e11-c2-m01-b01")
+            owner = {
+                "status": "NEW_BENCH_OWNERSHIP_READONLY_PASS",
+                "scenario": "C2", "run_id": "e11-c2-m01-b01",
+                "network": {"name": "tcc2-pon-e11-c2-m01-b01", "id": "f" * 64},
+                "containers": {r: {"id": str(i)} for i, r in enumerate(
+                    ("attribute-source", "logic-engine", "rule-executor", "client"))},
+                "delete_authorized": False, "commands": [],
+            }
+            backup = {
+                "status": "BACKUP_BYTES_VERIFIED_NO_CLEANUP_AUTHORIZATION",
+                "zip_sha256": "deadbeef",
+                "different_filesystem_volume": True,
+                "delete_authorized": False, "commands": [],
+            }
+            with self.assertRaises(ValueError):
+                review_retirement_packet(
+                    "C2", "m01-b01", "e11-c2-m01-b01", audit, owner, backup)
+            backup["zip_sha256"] = audit["zip_sha256"]
+            owner["run_id"] = "e11-c2-m01-b02"
+            with self.assertRaises(ValueError):
+                review_retirement_packet(
+                    "C2", "m01-b01", "e11-c2-m01-b01", audit, owner, backup)
 
     def test_wrong_identity_historical_label_rejected(self):
         with TemporaryDirectory() as temp:
