@@ -38,6 +38,27 @@ def make_archive(path, scenario="C2", run_id="e11-c2-m01-b01",
         "status": "ONE_NEW_CAMPAIGN_BENCH_ONLY",
         "scenario": scenario, "historic_resources_mutated": False,
     }).encode()
+    if scenario == "C2":
+        ownership_fields = {
+            "network": {"name": "tcc2-pon-e11-c2-m01-b01", "id": "f" * 64},
+            "containers": {role: {"id": format(i + 1, "064x")}
+                           for i, role in enumerate((
+                               "attribute-source", "logic-engine",
+                               "rule-executor", "client"))},
+        }
+    else:
+        ownership_fields = {
+            "namespace": {"name": "tcc2-pon-e11-c4-m01-b01", "uid": "new-uid"},
+            "pods": {role: {"uid": str(i + 1)}
+                     for i, role in enumerate((
+                         "attribute-source", "logic-engine",
+                         "rule-executor", "client"))},
+        }
+    rows["ownership-start.json"] = json.dumps({
+        "status": "NEW_BENCH_OWNERSHIP_READONLY_PASS",
+        "scenario": scenario, "run_id": run_id,
+        "delete_authorized": False, "commands": [], **ownership_fields,
+    }).encode()
     if missing is not None:
         del rows[missing]
     sha_lines = "".join(f"{sha256_bytes(payload)}  {name}\n"
@@ -82,7 +103,8 @@ class LifecycleAuditTests(unittest.TestCase):
                 audit_archive(zip_path, "C2", "m01-b01", "e11-c2-m01-b01")
 
     def test_missing_capacity_and_effective_quota_gates_block(self):
-        for missing in ("capacity-gate.json", "effective-quotas.json", "campaign-exclusivity.json"):
+        for missing in ("capacity-gate.json", "effective-quotas.json",
+                        "campaign-exclusivity.json", "ownership-start.json"):
             with self.subTest(missing=missing), TemporaryDirectory() as temp:
                 zip_path = Path(temp) / "incomplete.zip"
                 make_archive(zip_path, missing=missing)
