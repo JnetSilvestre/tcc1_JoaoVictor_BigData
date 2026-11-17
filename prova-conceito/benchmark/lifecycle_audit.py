@@ -14,6 +14,7 @@ MANDATORY = frozenset({
     "manifest.json", "validation.json", "inputs.jsonl", "expected.jsonl",
     "states-cold.json", "preflight-uniform.json", "environment.json",
     "snapshot-response.json", "metrics-status.json", "checksums.sha256",
+    "capacity-gate.json", "effective-quotas.json",
 })
 
 
@@ -65,6 +66,19 @@ def audit_archive(zip_path, scenario, label, run_id):
         cold = json.loads(archive.read("preflight-uniform.json"))
         if cold.get("status") != "PASS_COLD_READ_ONLY":
             raise ValueError("preflight frio uniforme ausente/invalido")
+        capacity = json.loads(archive.read("capacity-gate.json"))
+        if capacity.get("status") != "CAPACITY_SAFETY_GATE_PASS_NOT_PERFORMANCE_APPROVAL":
+            raise ValueError("gate de RAM/disco nao aprovado")
+        effective = json.loads(archive.read("effective-quotas.json"))
+        if effective.get("status") != "EFFECTIVE_LIMITS_ALL_FOUR_PASS":
+            raise ValueError("cgroup real nao aprovado")
+        if effective.get("scenario") != scenario or set(effective.get("roles", {})) != {
+                "attribute-source", "logic-engine", "rule-executor", "client"}:
+            raise ValueError("identidade/quantidade de papeis do cgroup divergente")
+        if any(x.get("status") != "EFFECTIVE_CGROUP_LIMITS_PASS_NOT_USAGE_COMPARISON"
+               for x in effective["roles"].values()):
+            raise ValueError("cgroup de papel divergente")
+
 
     return {
         "status": "ZIP_INTEGRITY_VERIFIED_NOT_DELETION_AUTHORIZATION",
