@@ -15,6 +15,7 @@ MANDATORY = frozenset({
     "states-cold.json", "preflight-uniform.json", "environment.json",
     "snapshot-response.json", "metrics-status.json", "checksums.sha256",
     "capacity-gate.json", "effective-quotas.json",
+    "campaign-exclusivity.json",
 })
 
 
@@ -78,6 +79,11 @@ def audit_archive(zip_path, scenario, label, run_id):
         if any(x.get("status") != "EFFECTIVE_CGROUP_LIMITS_PASS_NOT_USAGE_COMPARISON"
                for x in effective["roles"].values()):
             raise ValueError("cgroup de papel divergente")
+        exclusivity = json.loads(archive.read("campaign-exclusivity.json"))
+        if (exclusivity.get("status") != "ONE_NEW_CAMPAIGN_BENCH_ONLY"
+                or exclusivity.get("scenario") != scenario
+                or exclusivity.get("historic_resources_mutated") is not False):
+            raise ValueError("exclusividade de bancada nao comprovada")
 
 
     return {
