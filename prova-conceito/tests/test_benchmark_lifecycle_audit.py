@@ -34,6 +34,10 @@ def make_archive(path, scenario="C2", run_id="e11-c2-m01-b01",
         "roles": {role: {"status": "EFFECTIVE_CGROUP_LIMITS_PASS_NOT_USAGE_COMPARISON"}
                   for role in ("attribute-source", "logic-engine", "rule-executor", "client")},
     }).encode()
+    rows["campaign-exclusivity.json"] = json.dumps({
+        "status": "ONE_NEW_CAMPAIGN_BENCH_ONLY",
+        "scenario": scenario, "historic_resources_mutated": False,
+    }).encode()
     if missing is not None:
         del rows[missing]
     sha_lines = "".join(f"{sha256_bytes(payload)}  {name}\n"
@@ -78,7 +82,7 @@ class LifecycleAuditTests(unittest.TestCase):
                 audit_archive(zip_path, "C2", "m01-b01", "e11-c2-m01-b01")
 
     def test_missing_capacity_and_effective_quota_gates_block(self):
-        for missing in ("capacity-gate.json", "effective-quotas.json"):
+        for missing in ("capacity-gate.json", "effective-quotas.json", "campaign-exclusivity.json"):
             with self.subTest(missing=missing), TemporaryDirectory() as temp:
                 zip_path = Path(temp) / "incomplete.zip"
                 make_archive(zip_path, missing=missing)
