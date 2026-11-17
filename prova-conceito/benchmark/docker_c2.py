@@ -18,6 +18,7 @@ from benchmark.campaign_controls import final_readonly_cold_check
 from benchmark.environment_snapshot import capture_environment
 from benchmark.runtime_gate import assess_capacity, capture_effective_quotas
 from benchmark.campaign_exclusivity import check_exclusivity_readonly
+from benchmark.ownership import capture_docker_ownership
 from benchmark.measurement_profile import (
     TIMING_ONLY, RESOURCES_DIAGNOSTIC, MODES, select_sampler, profile_record,
     not_collected_quality, require_new_timing_identity,
@@ -71,12 +72,21 @@ def validate_fixture(label, run_id, rows):
     return network, names
 
 
+def ownership_label_args(network):
+    """Apenas futuras bancadas m...; pilotos legados conservam seus parametros."""
+    tail = network.removeprefix("tcc2-pon-e11-c2-")
+    if network.startswith("tcc2-pon-e11-c2-m") and re.fullmatch(r"m[a-z0-9-]+", tail):
+        return ["--label", "tcc2.e11/campaign=m01",
+                "--label", f"tcc2.e11/run-id=e11-c2-{tail}"]
+    return []
+
+
 def build_service_command(role, name, network):
     cmd = ["docker", "run", "-d", "--name", name,
            "--network", network, "--network-alias", role,
            "--cpus", CPU_LIMIT, "--memory", str(MEM_APP),
            "--memory-swap", str(MEM_APP),
-           "--label", "tcc2.e11=pilot", IMAGE_TAG,
+           "--label", "tcc2.e11=pilot", *ownership_label_args(network), IMAGE_TAG,
            role, "--port", "8080", "--listen-host", "0.0.0.0"]
     if role in NEXT_ROLE:
         cmd += ["--downstream-host", NEXT_ROLE[role], "--downstream-port", "8080"]
@@ -88,7 +98,7 @@ def build_client_command(name, network):
             "--network", network, "--network-alias", "e11-benchmark-client",
             "--cpus", CPU_LIMIT, "--memory", str(MEM_CLIENT),
             "--memory-swap", str(MEM_CLIENT),
-            "--label", "tcc2.e11=pilot",
+            "--label", "tcc2.e11=pilot", *ownership_label_args(network),
             "--entrypoint", "python", IMAGE_TAG,
             "-c", "import time; time.sleep(86400)"]
 
@@ -230,7 +240,8 @@ def run(args, rows, network, names):
         write_jsonl(output / "expected.jsonl", calculate_expected_effects(rebased))
         report["phase"] = "creation"
         checked("docker", "network", "create", "--driver", "bridge",
-                "--internal", "--label", "tcc2.e11=pilot", network)
+                "--internal", "--label", "tcc2.e11=pilot",
+                *ownership_label_args(network), network)
         created = True
         # Executar dependencias antes da fonte; nenhuma porta publicada.
         for role in ("rule-executor", "logic-engine", "attribute-source"):
@@ -249,6 +260,10 @@ def run(args, rows, network, names):
             raise ValueError("readiness nao confirmado")
         before = topology(network, names)
         write_json(output / "topology-start.json", before)
+        if args.measurement_mode == TIMING_ONLY:
+            ownership = capture_docker_ownership(
+                args.label, args.run_id, lambda *argv: checked(*argv))
+            write_json(output / "ownership-start.json", ownership)
         cold = cold_check(names)
         write_json(output / "states-cold.json", cold)
         if args.measurement_mode == TIMING_ONLY:
