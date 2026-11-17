@@ -23,6 +23,12 @@ def sample(memory):
 
 
 class RuntimeGateTests(unittest.TestCase):
+    def test_embedded_cgroup_reader_syntax_is_valid_and_readonly(self):
+        compile(CGROUP_READER, "<cgroup-readonly>", "exec")
+        self.assertIn("read_text", CGROUP_READER)
+        for forbidden in ("write_text", "unlink", "rmtree", "os.system", "subprocess"):
+            self.assertNotIn(forbidden, CGROUP_READER)
+
     def test_host_above_threshold_passes_as_safety_not_approval(self):
         gate = assess_capacity(env())
         self.assertEqual(gate["status"],
