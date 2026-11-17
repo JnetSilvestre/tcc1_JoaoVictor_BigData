@@ -84,6 +84,9 @@ def validate_cgroup_v2(sample, role):
     used = sample.get("memory_current")
     if not isinstance(used, str) or not used.isdigit() or int(used) > required:
         raise ValueError(f"{role}: memory.current invalido")
+    swap = sample.get("memory_swap_max")
+    if swap != "0":
+        raise ValueError(f"{role}: limite de swap nao nulo ou ausente; comparabilidade bloqueada")
     events = _event_counts(sample.get("memory_events"))
     if events.get("oom", 0) or events.get("oom_kill", 0):
         raise ValueError(f"{role}: OOM previo no cgroup de bancada nova")
