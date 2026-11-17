@@ -98,3 +98,15 @@ Blobs de referência inspecionados:
 **Gates agora fechados:** compilação e unittest Windows para o SHA indicado. **Permanecem abertos:** disponibilidade efetiva de RAM Windows `>= 3 GiB` (último valor observado ~2,01 GiB), comprovação de `cpu.max`/`memory.max`/`memory.swap.max` nos quatro contêineres/Pods de uma **bancada nova e autorizada**, política de backup e encerramento restrita ao novo recurso com IDs/UID imutáveis e allowlist positiva, análise de resultados de falha e autorização de execução; evitar acumular 30 bancadas novas. Qualquer alteração de código após o SHA acima exige nova regressão da versão modificada.
 
 **Estado atualizado:** `DESIGN_FROZEN / SYNTHETIC_REGRESSION_PASS / OPERATIONAL_READINESS_BLOCKED`. **E11-M01 NÃO AUTORIZADO**. Não transformar a aprovação de testes mock em certificação de quota física nem tocar em históricos.
+
+## 8. Implementação M00D: propriedade positiva e cópia de evidências
+
+**Complemento de controle operacional, sem alteração da matriz nem dos estimandos:** documentado em `docs/tcc2/etapa-11-e11-m00d-ciclo-vida-ownership-backup-reviewonly.md` (commit `fb8eaad935a083b9c11259ed8fd72bd2e66eb54a`).
+
+Futuras bancadas novas `m...` recebem labels positivas `tcc2.e11/campaign=m01` e `tcc2.e11/run-id=e11-cX-m01-bNN`: em C2 nos containers e rede, em C3/C4 somente no objeto Namespace gerado. As imagens e o código funcional não são editados; pilotos `p...` e manifestos históricos ficam inalterados. Após criação e **antes de snapshot/POST**, ler o ID de rede e IDs de contêineres, ou UID do Namespace e UIDs/containerIDs de Pods, com consulta somente leitura e registrar `ownership-start.json` no ZIP.
+
+`backup_integrity.py` compara ZIP principal/cópia externa sem escrevê-los, testa CRC, SHA de todos membros e byte-a-byte, e marca volume distinto quando comprovável. Volumes diferentes **não garantem dispositivos físicos independentes**. A cópia em si será atividade operacional futura controlada, não realizada nesta revisão.
+
+`lifecycle_audit.py` exige `ownership-start.json` e disponibiliza `review_retirement_packet` para reunir ZIP PASS, ownership de bancada nova e backup em volume distinto. **Independentemente dos gates, retorna `commands=[]`, `delete_authorized=false`**. Não foi criada ferramenta de `stop`, `rm`, `delete` ou `prune` para bancadas novas. Encerramento/remoção futura continua dependente de testes sacrificiais e aprovação explícita, não é ação implícita deste pré-registro.
+
+**Verificações não concluídas:** 8 novos testes de ownership, 5 de backup e 2 de revisão conjunta elevarão a suíte prevista de 81 para **96** (previsão, sem execução). Confirmar sintaxe, hashes e testes da **nova** revisão; preservar evidência do último PASS 81/81 somente no SHA `e6e83ff...`. A capacidade RAM Windows `>= 3 GiB` não foi comprovada nesta etapa, nem as quotas efetivas da primeira bancada real. **`E11-M01` permanece `BLOCKED`.**
