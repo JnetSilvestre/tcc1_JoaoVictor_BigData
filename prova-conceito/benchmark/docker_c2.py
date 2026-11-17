@@ -16,6 +16,7 @@ from benchmark.fixtures import characterize, generate, rebase
 from benchmark.runner import client_program
 from benchmark.campaign_controls import final_readonly_cold_check
 from benchmark.environment_snapshot import capture_environment
+from benchmark.runtime_gate import assess_capacity, capture_effective_quotas
 from benchmark.measurement_profile import (
     TIMING_ONLY, RESOURCES_DIAGNOSTIC, MODES, select_sampler, profile_record,
     not_collected_quality, require_new_timing_identity,
@@ -207,8 +208,10 @@ def run(args, rows, network, names):
     try:
         setup = preflight(network, names)
         if args.measurement_mode == TIMING_ONLY:
-            write_json(output / "environment.json",
-                       capture_environment("C2", args.run_id))
+            environment = capture_environment("C2", args.run_id)
+            write_json(output / "environment.json", environment)
+            capacity_gate = assess_capacity(environment)
+            write_json(output / "capacity-gate.json", capacity_gate)
         write_json(output / "manifest.json", {
             **setup, "scenario": "C2", "run_id": args.run_id, "fixture": str(args.fixture),
             "fixture_sha256": hash_file(args.fixture), "seed": rows[0]["seed"],
@@ -255,6 +258,9 @@ def run(args, rows, network, names):
                     if line.strip()
                 ])
             write_json(output / "preflight-uniform.json", uniform)
+            quotas = capture_effective_quotas(
+                "C2", names=names, query=lambda *argv: checked(*argv))
+            write_json(output / "effective-quotas.json", quotas)
         # A interface externa deve estar operacional ANTES de qualquer snapshot.
         # Import tardio evita ciclo docker_engine_api -> docker_c2.
         from benchmark.docker_engine_window import EngineSampler, quality_window
