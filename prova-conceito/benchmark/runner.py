@@ -17,6 +17,7 @@ from benchmark.campaign_controls import final_readonly_cold_check
 from benchmark.environment_snapshot import capture_environment
 from benchmark.runtime_gate import assess_capacity, capture_effective_quotas
 from benchmark.campaign_exclusivity import check_exclusivity_readonly
+from benchmark.ownership import capture_kind_ownership
 from benchmark.measurement_profile import (
     TIMING_ONLY, RESOURCES_DIAGNOSTIC, MODES, select_sampler, profile_record,
     not_collected_quality, require_new_timing_identity,
@@ -218,6 +219,10 @@ def run(args, rows, namespace):
         write_json(output / "states-cold.json", cold)
         write_json(output / "resource-contract.json", top["resource_contract"])
         if args.measurement_mode == TIMING_ONLY:
+            ownership = capture_kind_ownership(
+                args.scenario, args.label, args.run_id,
+                lambda *argv: kube.command(*argv))
+            write_json(output / "ownership-start.json", ownership)
             exclusive = check_exclusivity_readonly(
                 args.scenario, namespace, lambda *argv: kube.command(*argv))
             write_json(output / "campaign-exclusivity.json", exclusive)
