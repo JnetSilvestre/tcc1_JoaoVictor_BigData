@@ -15,7 +15,7 @@ MANDATORY = frozenset({
     "states-cold.json", "preflight-uniform.json", "environment.json",
     "snapshot-response.json", "metrics-status.json", "checksums.sha256",
     "capacity-gate.json", "effective-quotas.json",
-    "campaign-exclusivity.json",
+    "campaign-exclusivity.json", "ownership-start.json",
 })
 
 
@@ -84,6 +84,25 @@ def audit_archive(zip_path, scenario, label, run_id):
                 or exclusivity.get("scenario") != scenario
                 or exclusivity.get("historic_resources_mutated") is not False):
             raise ValueError("exclusividade de bancada nao comprovada")
+        ownership = json.loads(archive.read("ownership-start.json"))
+        if (ownership.get("status") != "NEW_BENCH_OWNERSHIP_READONLY_PASS"
+                or ownership.get("scenario") != scenario
+                or ownership.get("run_id") != run_id
+                or ownership.get("delete_authorized") is not False
+                or ownership.get("commands") != []):
+            raise ValueError("ownership nao verificado")
+        if scenario == "C2":
+            if (ownership.get("network", {}).get("name") !=
+                    f"tcc2-pon-e11-c2-{label}" or
+                    set(ownership.get("containers", {})) != {
+                        "attribute-source", "logic-engine", "rule-executor", "client"}):
+                raise ValueError("IDs de propriedade C2 ausentes")
+        else:
+            if (ownership.get("namespace", {}).get("name") !=
+                    f"tcc2-pon-e11-{scenario.lower()}-{label}" or
+                    set(ownership.get("pods", {})) != {
+                        "attribute-source", "logic-engine", "rule-executor", "client"}):
+                raise ValueError("UIDs de propriedade kind ausentes")
 
 
     return {
