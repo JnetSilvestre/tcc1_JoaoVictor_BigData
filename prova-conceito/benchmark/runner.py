@@ -15,6 +15,7 @@ import threading
 from benchmark import collector
 from benchmark.campaign_controls import final_readonly_cold_check
 from benchmark.environment_snapshot import capture_environment
+from benchmark.runtime_gate import assess_capacity, capture_effective_quotas
 from benchmark.measurement_profile import (
     TIMING_ONLY, RESOURCES_DIAGNOSTIC, MODES, select_sampler, profile_record,
     not_collected_quality, require_new_timing_identity,
@@ -216,8 +217,10 @@ def run(args, rows, namespace):
         write_json(output / "states-cold.json", cold)
         write_json(output / "resource-contract.json", top["resource_contract"])
         if args.measurement_mode == TIMING_ONLY:
-            write_json(output / "environment.json",
-                       capture_environment(args.scenario, args.run_id))
+            environment = capture_environment(args.scenario, args.run_id)
+            write_json(output / "environment.json", environment)
+            capacity_gate = assess_capacity(environment)
+            write_json(output / "capacity-gate.json", capacity_gate)
 
             def get_status_body(role, path):
                 code, payload = kube.http(source_pod, role, path)
@@ -230,6 +233,12 @@ def run(args, rows, namespace):
                 lambda role: get_status_body(role, "/state"),
                 lambda role: kube.read_logs(top["pods"][role]["name"]))
             write_json(output / "preflight-uniform.json", uniform)
+            pods_by_role = {role: top["pods"][role]["name"] for role in ROLES}
+            pods_by_role["client"] = client_pod
+            quotas = capture_effective_quotas(
+                args.scenario, namespace=namespace, pods=pods_by_role,
+                query=lambda *argv: kube.command(*argv))
+            write_json(output / "effective-quotas.json", quotas)
         report["stage"] = "snapshot"
         report["started_snapshot"] = True
         status, reply = kube.http(source_pod, "attribute-source",
