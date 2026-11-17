@@ -117,6 +117,66 @@ def audit_archive(zip_path, scenario, label, run_id):
     }
 
 
+def review_retirement_packet(scenario, label, run_id, audit, ownership, backup):
+    """Consolida prova de propriedade/ZIP/backup, SEM comandos de exclusao.
+
+    Esta revisao NUNCA e uma decisao operacional de parar/excluir.
+    """
+    base = retirement_review_only(scenario, label, run_id, audit)
+    if not isinstance(ownership, dict) or (
+            ownership.get("status") != "NEW_BENCH_OWNERSHIP_READONLY_PASS"
+            or ownership.get("scenario") != scenario
+            or ownership.get("run_id") != run_id
+            or ownership.get("delete_authorized") is not False
+            or ownership.get("commands") != []):
+        raise ValueError("ownership de bancada NOVA nao comprovado")
+    if not isinstance(backup, dict) or (
+            backup.get("status") != "BACKUP_BYTES_VERIFIED_NO_CLEANUP_AUTHORIZATION"
+            or backup.get("zip_sha256") != audit.get("zip_sha256")
+            or backup.get("different_filesystem_volume") is not True
+            or backup.get("delete_authorized") is not False
+            or backup.get("commands") != []):
+        raise ValueError("backup externo em outro volume nao comprovado")
+    if scenario == "C2":
+        if (ownership.get("network", {}).get("name") !=
+                f"tcc2-pon-e11-c2-{label}" or
+                set(ownership.get("containers", {})) != {
+                    "attribute-source", "logic-engine", "rule-executor", "client"}):
+            raise ValueError("ownership C2 incompleto")
+        resource_ids = {
+            "network_id": ownership["network"].get("id"),
+            "container_ids": {k: v.get("id") for k, v in
+                              ownership["containers"].items()},
+        }
+        if not resource_ids["network_id"] or not all(resource_ids["container_ids"].values()):
+            raise ValueError("IDs Docker ausentes")
+    else:
+        if (ownership.get("namespace", {}).get("name") !=
+                f"tcc2-pon-e11-{scenario.lower()}-{label}" or
+                set(ownership.get("pods", {})) != {
+                    "attribute-source", "logic-engine", "rule-executor", "client"}):
+            raise ValueError("ownership kind incompleto")
+        resource_ids = {
+            "namespace_uid": ownership["namespace"].get("uid"),
+            "pod_uids": {k: v.get("uid") for k, v in
+                         ownership["pods"].items()},
+        }
+        if not resource_ids["namespace_uid"] or not all(resource_ids["pod_uids"].values()):
+            raise ValueError("UIDs kind ausentes")
+    return {
+        **base,
+        "status": "REVIEW_ONLY_EVIDENCE_CONSOLIDATED",
+        "zip_sha256": audit["zip_sha256"],
+        "resource_immutable_ids": resource_ids,
+        "backup_in_distinct_volume": True,
+        "independent_physical_device_verified": False,
+        "requires_operator_and_sacrificial_cleanup_validation": True,
+        "delete_authorized": False,
+        "commands": [],
+        "note": "Pacote documental; mesmo a copia em outro volume nao autoriza stop/delete",
+    }
+
+
 def retirement_review_only(scenario, label, run_id, audit):
     """Allowlist positiva, sem gerar comandos executaveis de stop/delete."""
     require_new_timing_identity(TIMING_ONLY, scenario, label, run_id)
