@@ -17,6 +17,7 @@ from benchmark.runner import client_program
 from benchmark.campaign_controls import final_readonly_cold_check
 from benchmark.environment_snapshot import capture_environment
 from benchmark.runtime_gate import assess_capacity, capture_effective_quotas
+from benchmark.campaign_exclusivity import check_exclusivity_readonly
 from benchmark.measurement_profile import (
     TIMING_ONLY, RESOURCES_DIAGNOSTIC, MODES, select_sampler, profile_record,
     not_collected_quality, require_new_timing_identity,
@@ -208,6 +209,9 @@ def run(args, rows, network, names):
     try:
         setup = preflight(network, names)
         if args.measurement_mode == TIMING_ONLY:
+            exclusive = check_exclusivity_readonly(
+                "C2", network, lambda *argv: checked(*argv))
+            write_json(output / "campaign-exclusivity.json", exclusive)
             environment = capture_environment("C2", args.run_id)
             write_json(output / "environment.json", environment)
             capacity_gate = assess_capacity(environment)
