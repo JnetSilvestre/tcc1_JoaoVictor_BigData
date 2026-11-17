@@ -62,6 +62,14 @@ class RuntimeGateTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate_cgroup_v2(bad, "rule-executor")
 
+    def test_swap_nonzero_missing_or_unlimited_blocks(self):
+        for swap in ("max", "1048576", None):
+            with self.subTest(swap=swap):
+                value = sample(APP_MEMORY_BYTES)
+                value["memory_swap_max"] = swap
+                with self.assertRaises(ValueError):
+                    validate_cgroup_v2(value, "attribute-source")
+
     def test_new_docker_names_only_and_four_readonly_probes(self):
         base = "tcc2-pon-e11-c2-m01-b01-"
         names = {r: base+r for r in
