@@ -90,3 +90,11 @@ Blobs de referência inspecionados:
 5. Registro da revisão acadêmica/orientador quando exigida; nenhuma aprovação externa está implícita neste documento.
 
 **Decisão:** o **DESENHO** experimental de E11-M00-v1 está pré-registrado para impedir alterações oportunistas, porém a **EXECUÇÃO** não foi autorizada. E11-M01 permanece **`BLOCKED`**. Nenhum benchmark, POST, snapshot, `kubectl apply/delete`, stop, rm, prune ou manipulação das bancadas históricas foi realizado ao criar este documento. Qualquer alteração de regras após início da coleta deverá constar em aditamento versionado e não pode ser escolhida com base nos tempos.
+
+## 7. Atualização após regressão Windows do pacote v1
+
+**Evidência:** `docs/tcc2/etapa-11-e11-m00-v1-auditoria-regressao-81-tests.md` (commit `edf4f413b30ee41628f99b670bb61353cee40693`) registra o texto fornecido pelo acadêmico em 17/11/2026: HEAD **`e6e83ffa64e5074b6bcb80635dd472a2f3cf2401`**, `ARQUIVOS: PASS`, `COMPILACAO: PASS`, `Ran 81 tests in 0.314s`, `OK`, `TESTES: PASS`. São 81/81 casos sintéticos e **não** 81 execuções da aplicação. Novo pacote de quotas/host, exclusividade e auditoria de ZIP está **regressionado estaticamente neste SHA**.
+
+**Gates agora fechados:** compilação e unittest Windows para o SHA indicado. **Permanecem abertos:** disponibilidade efetiva de RAM Windows `>= 3 GiB` (último valor observado ~2,01 GiB), comprovação de `cpu.max`/`memory.max`/`memory.swap.max` nos quatro contêineres/Pods de uma **bancada nova e autorizada**, política de backup e encerramento restrita ao novo recurso com IDs/UID imutáveis e allowlist positiva, análise de resultados de falha e autorização de execução; evitar acumular 30 bancadas novas. Qualquer alteração de código após o SHA acima exige nova regressão da versão modificada.
+
+**Estado atualizado:** `DESIGN_FROZEN / SYNTHETIC_REGRESSION_PASS / OPERATIONAL_READINESS_BLOCKED`. **E11-M01 NÃO AUTORIZADO**. Não transformar a aprovação de testes mock em certificação de quota física nem tocar em históricos.
