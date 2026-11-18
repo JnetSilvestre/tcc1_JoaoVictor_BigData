@@ -143,7 +143,7 @@ try {
     if ($approval -cne $phrase) {
         Write-Host "SEM AUTORIZACAO: C2-S01 permanece intacta." -ForegroundColor Yellow
         Write-Host "RESULTADO: GATES_E_PREVIEW_PASS_C2_NAO_RETIRADA_M01_BLOQUEADA"
-        exit 0
+        exit 3
     }
 
     # UM UNICO ponto mutante, depois de testes, dry-run, preview e aceite.
