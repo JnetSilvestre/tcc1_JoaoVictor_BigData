@@ -744,3 +744,11 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 **Documento:** `docs/tcc2/etapa-11-e11-m00d-ciclo-vida-ownership-backup-reviewonly.md` (commit `fb8eaad935a083b9c11259ed8fd72bd2e66eb54a`) e aditamento §8 do pré-registro E11-M00-v1 (commit `c8ef30355b58b7c6d694cd57db3fa724a8299068`).
 
 **Estado:** `DESIGN_FROZEN / M00D_IMPLEMENTED_UNTESTED / M01_BLOCKED`. Última RAM livre Windows real ~2,01 GiB, abaixo da margem de 3 GiB; quotas reais C2/C3/C4 ainda não comprovadas em bancada M01 nova; política destrutiva deliberadamente inexistente, com testes sacrificiais/aceite e backup real pendentes. **Nenhum novo benchmark, snapshot, POST, apply, stop, delete, rm, prune ou alteração de bancadas históricas.**
+
+## 17/11/2026 — E11-M00D: compilação, 96/96 testes e GIT LIMPO na versão e86d2e8
+
+**Evidência PowerShell (arquivo anexo `Texto colado(3).txt`):** `git pull --ff-only` fast-forward `e6e83ff` → **`e86d2e884f0bb70a22de4ba6409e8fe98713b40c`**, `COMPILACAO: PASS`, **`Ran 96 tests in 0.352s`**, **`OK`**, `TESTES: PASS`, **`GIT: LIMPO`**. Todos os 96 casos listados `ok`, inclusive 8 `OwnershipTests`, 5 `BackupIntegrityTests` e 2 novos `LifecycleAuditTests`, relativos a identidades/UIDs de bancadas novas, labels e SHA/CRC de ZIPs e à recusa de autorização automática para apagar recursos. **0,352 s é tempo da suíte unittest, NÃO tempo de benchmark.**
+
+**Veredito:** `E11_M00D_SYNTHETIC_REGRESSION_PASS` no SHA testado. Laudo `docs/tcc2/etapa-11-e11-m00d-auditoria-regressao-96-tests.md` (commit `4b2b175b6795f603eb4c81dd954ff05a95e6af1c`). Nenhum novo benchmark, POST, snapshot, limpeza, `docker run` ou `kubectl apply/delete` demonstrado. Alterações futuras de código exigem nova regressão.
+
+**Pendências explícitas:** RAM Windows >=3 GiB antes de criar bancada nova (última leitura reportada ~2,01 GiB; sem atualização nesta rodada), disco >=15 GiB, comprovação de quotas/swap em NOVOS cgroups antes de POST, cópia real/externa do ZIP, provenance UID/ID real e teste seguro de ciclo de vida de recursos **exclusivamente novos** com aprovação específica. Nenhuma rotina de stop/rm/delete foi implementada ou autorizada. Ambientes históricos permanentemente preservados neste escopo. `E11_M01_BLOCKED`; campanha definitiva 30 rodadas não iniciada.
