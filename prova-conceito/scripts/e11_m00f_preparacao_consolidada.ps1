@@ -59,8 +59,8 @@ try {
     $testLog | ForEach-Object { Write-Host $_ }
     Assert-True ($testCode -eq 0) "Falha nos testes Python"
     $testText = $testLog -join "`n"
-    Assert-True ($testText -match 'Ran 116 tests' -and $testText -match '(?m)^OK\s*$') "Esperados 116 testes PASS"
-    Write-Host "REGRESSAO: 116/116 PASS" -ForegroundColor Green
+    Assert-True ($testText -match 'Ran 117 tests' -and $testText -match '(?m)^OK\s*$') "Esperados 117 testes PASS"
+    Write-Host "REGRESSAO: 117/117 PASS" -ForegroundColor Green
 
     Assert-True ((docker context show).Trim() -eq "desktop-linux") "Docker context incorreto"
     Assert-True ($LASTEXITCODE -eq 0) "Docker indisponivel"
