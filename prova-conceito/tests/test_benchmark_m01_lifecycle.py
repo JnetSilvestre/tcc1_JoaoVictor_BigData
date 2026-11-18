@@ -473,6 +473,115 @@ class LifecycleTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "posterior"):
                 life.assert_prior_completed(1, root, root)
 
+    def test_kube_run_synthetic_creates_only_new_ns_and_backups(self):
+        slot = life.slot_by_position(3)
+        with TemporaryDirectory() as tmp, patch.object(
+            life, "MAIN_CAMPAIGN_ENABLED", True
+        ), patch.object(
+            life, "run_sequence_preflight", return_value={"status": "M01_SLOT_PLAN_ONLY"}
+        ), patch.object(
+            life, "inspect_global_exclusivity", return_value={}
+        ), patch.object(
+            life, "verify_storage_before_run", return_value=True
+        ), patch.object(
+            life, "capture_kind_ownership", return_value={
+                "namespace": {"name": slot["resource_base"], "uid": "new-uid"}
+            }
+        ), patch.object(
+            life, "audit_archive", side_effect=valid_audit
+        ), patch.object(
+            life, "compare_backup_pair", side_effect=valid_backup
+        ), patch(
+            "benchmark.prepare.render",
+            return_value=(slot["resource_base"], "kind: Namespace\nmetadata:\n  name: " +
+                          slot["resource_base"] + "\n")
+        ):
+            base = Path(tmp)
+            backup_root = base / "backups"
+            (backup_root / "E11-M01").mkdir(parents=True)
+            p = life.paths_for(slot, base, backup_root)
+            actions = []
+            def action(*args):
+                actions.append(args)
+                if "benchmark.runner" in args:
+                    p["primary"].write_bytes(b"synthetic-zip-only")
+                return "mock-command-pass"
+            result = life.execute_run(
+                3, base, backup_root, "fixture", SHA,
+                life.approval_phrase("RUN", slot), empty_inventory,
+                approved_capacity, action)
+            self.assertEqual(result["status"], "M01_RUN_PASS_BACKED_UP")
+            self.assertEqual(p["backup"].read_bytes(), b"synthetic-zip-only")
+            applies = [x for x in actions if x[0] == "kubectl" and "apply" in x]
+            self.assertEqual(len(applies), 2)
+            self.assertTrue(all(str(p["manifest"]) in x for x in applies))
+            self.assertEqual(sum("benchmark.runner" in x for x in actions), 1)
+            self.assertFalse(any("delete" in x for x in actions))
+            self.assertFalse(p["retire_journal"].exists())
+
+    def test_docker_retirement_synthetic_targets_only_four_ids_and_network(self):
+        slot = life.slot_by_position(1)
+        network_id = "a" * 64
+        names = life.exact_names(slot)
+        container_ids = {role: str(i+1) * 64
+                         for i, role in enumerate(life.ROLES)}
+        owner = {
+            "network": {"name": slot["resource_base"], "id": network_id},
+            "containers": {role: {"name": names[role], "id": container_ids[role],
+                                   "image_id": life.IMAGE_ID}
+                           for role in life.ROLES},
+        }
+        packet = {
+            "status": "M01_RETIREMENT_REVIEW_ONLY_PASS",
+            "zip_sha256": HASH,
+            "resource_immutable_ids": {
+                "network_id": network_id, "container_ids": container_ids,
+            },
+            "ownership": owner,
+        }
+        with TemporaryDirectory() as tmp, patch.object(
+            life, "MAIN_CAMPAIGN_ENABLED", True
+        ), patch.object(
+            life, "assert_prior_completed", return_value=True
+        ), patch.object(
+            life, "review_retirement", return_value=packet
+        ), patch.object(
+            life, "verify_c2_network", return_value=None
+        ), patch.object(
+            life, "inspect_c2_container", return_value=None
+        ), patch.object(
+            life, "sha256_file", return_value=HASH
+        ):
+            base = Path(tmp)
+            (base / "E11-M01").mkdir(parents=True)
+            actions = []
+            def action(*args):
+                actions.append(args)
+                return "synthetic-ok"
+            result = life.execute_retirement(
+                1, base, base, SHA,
+                life.approval_phrase("RETIRE", slot),
+                empty_inventory, action)
+            self.assertEqual(result["status"], "M01_RETIREMENT_COMPLETE")
+            self.assertEqual(len(actions), 9)
+            stop = [x for x in actions if x[:3] == (
+                "docker", "container", "stop")]
+            rm = [x for x in actions if x[:3] == (
+                "docker", "container", "rm")]
+            network = [x for x in actions if x[:3] == (
+                "docker", "network", "rm")]
+            self.assertEqual(len(stop), 4)
+            self.assertEqual(len(rm), 4)
+            self.assertEqual(len(network), 1)
+            self.assertEqual({x[-1] for x in stop},
+                             set(container_ids.values()))
+            self.assertEqual({x[-1] for x in rm},
+                             set(container_ids.values()))
+            self.assertEqual(network[0][-1], network_id)
+            self.assertEqual(life.last_event(
+                life.paths_for(slot, base, base)["retire_journal"]
+            )["status"], "M01_RETIREMENT_COMPLETE")
+
     def test_retirement_refuses_incorrect_approval_before_mutation(self):
         with patch.object(life, "MAIN_CAMPAIGN_ENABLED", True):
             with TemporaryDirectory() as tmp:
