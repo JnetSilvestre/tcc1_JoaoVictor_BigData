@@ -96,7 +96,14 @@ try {
         Assert-True (Test-Path -LiteralPath $f) "Falta arquivo: $f"
     }
     $fixtureHash = (Get-FileHash -LiteralPath $fixture -Algorithm SHA256).Hash.ToLowerInvariant()
-    Assert-True ($fixtureHash -eq "26121e3a8747c94fd8e690e040ac31cdd7bd4c6aba14f90551") "Fixture canonica divergente"
+    $expectedFixtureHash = "26121e3a8747c94fd8e690e4ca04762cf469e040ac31cdd7bd4c6aba14f90551"
+    Assert-True ($expectedFixtureHash.Length -eq 64) "Constante SHA-256 invalida no proprio script"
+    if ($fixtureHash -ne $expectedFixtureHash) {
+        Write-Host "FIXTURE_SHA256_OBSERVADO: $fixtureHash" -ForegroundColor Yellow
+        Write-Host "FIXTURE_SHA256_ESPERADO: $expectedFixtureHash" -ForegroundColor Yellow
+        throw "STOP: Fixture canonica divergente"
+    }
+    Write-Host "FIXTURE CANONICA SHA256: PASS" -ForegroundColor Green
     $zipHash = (Get-FileHash -LiteralPath $original -Algorithm SHA256).Hash.ToLowerInvariant()
     $backupHash = (Get-FileHash -LiteralPath $backup -Algorithm SHA256).Hash.ToLowerInvariant()
     $wantedZip = "6e448f37f80456590af80309586e245b038b6e143400cd4b4d325766dd8d5bd6"
