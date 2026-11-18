@@ -21,11 +21,10 @@ import sys
 from zipfile import ZipFile
 
 from benchmark.backup_integrity import compare_backup_pair, sha256_file
-from benchmark.campaign_exclusivity import NEW_DOCKER, NEW_KUBE
 from benchmark.environment_snapshot import capture_environment, run_readonly
 from benchmark.lifecycle_audit import audit_archive, review_retirement_packet
 from benchmark.m01_readiness import (
-    FIXTURE_SHA, ARCHIVES, check_completed_sacrificial_archives,
+    FIXTURE_SHA, check_completed_sacrificial_archives,
     full_schedule, inspect_global_exclusivity,
 )
 from benchmark.ownership import (
@@ -233,8 +232,10 @@ def verify_c2_network(slot, ownership, query, *, must_be_empty=False):
     entry = raw[0]
     check_labels(entry.get("Labels"), slot["run_id"])
     if (entry.get("Id") != net_id
-            or entry.get("Name") != slot["resource_base"]):
-        raise ValueError("STOP: rede ID/nome alterados")
+            or entry.get("Name") != slot["resource_base"]
+            or entry.get("Driver") != "bridge"
+            or entry.get("Internal") is not True):
+        raise ValueError("STOP: rede ID/nome/configuracao alterados")
     endpoints = entry.get("Containers") or {}
     if must_be_empty:
         if endpoints:
@@ -260,6 +261,7 @@ def inspect_c2_container(slot, ownership, role, query, running):
     if (item.get("Id") != obj["id"]
             or item.get("Name", "").lstrip("/") != obj["name"]
             or item.get("Image") != IMAGE_ID
+            or item.get("RestartCount") != 0
             or set(networks) != {slot["resource_base"]}
             or (item.get("State") or {}).get("Running") is not running):
         raise ValueError("STOP: identidade/estado de container alterado")
