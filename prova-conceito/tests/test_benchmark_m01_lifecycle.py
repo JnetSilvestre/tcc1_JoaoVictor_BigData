@@ -430,7 +430,7 @@ class LifecycleTests(unittest.TestCase):
         ), patch.object(
             life, "compare_backup_pair", side_effect=valid_backup
         ), patch.object(
-            life, "require_complete", return_value={}
+            life, "require_complete", return_value={"zip_sha256": HASH}
         ), patch.object(
             life, "capture_docker_ownership", return_value=owner
         ), patch.object(
