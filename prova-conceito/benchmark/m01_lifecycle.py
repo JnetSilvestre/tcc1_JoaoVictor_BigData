@@ -160,10 +160,12 @@ def global_inventory(query):
                          "--format", "{{.Name}}").splitlines())
     nss = namespaces(query)
     return {
-        "docker": {x for x in containers if NEW_DOCKER.fullmatch(x)},
-        "networks": {x for x in networks if re.fullmatch(
-            r"tcc2-pon-e11-c2-m[a-z0-9-]+", x)},
-        "namespaces": {x for x in nss if NEW_KUBE.fullmatch(x)},
+        # Detectar TAMBEM nomes inesperados com prefixo M01, nao apenas
+        # os quatro roles conhecidos. Um recurso novo desconhecido bloqueia.
+        "docker": {x for x in containers if x.startswith("tcc2-pon-e11-c2-m")},
+        "networks": {x for x in networks if x.startswith("tcc2-pon-e11-c2-m")},
+        "namespaces": {x for x in nss if x.startswith((
+            "tcc2-pon-e11-c3-m", "tcc2-pon-e11-c4-m"))},
         "namespace_uids": nss,
     }
 
@@ -223,6 +225,8 @@ def verify_kube_objects(slot, archived, query):
 
 def verify_c2_network(slot, ownership, query, *, must_be_empty=False):
     net_id = ownership["network"]["id"]
+    if not re.fullmatch(r"[a-f0-9]{64}", net_id):
+        raise ValueError("STOP: ID completo de rede Docker ausente")
     raw = json.loads(query("docker", "network", "inspect", net_id))
     if len(raw) != 1:
         raise ValueError("STOP: rede alterada")
@@ -245,6 +249,8 @@ def verify_c2_network(slot, ownership, query, *, must_be_empty=False):
 
 def inspect_c2_container(slot, ownership, role, query, running):
     obj = ownership["containers"][role]
+    if not re.fullmatch(r"[a-f0-9]{64}", obj["id"]):
+        raise ValueError("STOP: ID completo do container Docker ausente")
     raw = json.loads(query("docker", "inspect", obj["id"]))
     if len(raw) != 1:
         raise ValueError("STOP: inspect container incompleto")
@@ -332,6 +338,13 @@ def approval_phrase(stage, slot):
 def run_sequence_preflight(position, home, backup_root, fixture, query, capture):
     slot = slot_by_position(position)
     paths = paths_for(slot, home, backup_root)
+    if query("git", "branch", "--show-current").strip() != "tcc2/desenvolvimento":
+        raise ValueError("STOP: branch Git incorreta")
+    if query("git", "status", "--porcelain").strip():
+        raise ValueError("STOP: arvore Git suja")
+    if not re.fullmatch(r"[a-f0-9]{40}",
+                        query("git", "rev-parse", "HEAD").strip()):
+        raise ValueError("STOP: Git SHA invalido")
     if sha256_file(fixture) != FIXTURE_SHA:
         raise ValueError("STOP: fixture canonica alterada")
     check_completed_sacrificial_archives(home, backup_root)
