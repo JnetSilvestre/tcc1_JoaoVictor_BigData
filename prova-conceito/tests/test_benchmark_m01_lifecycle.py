@@ -285,6 +285,8 @@ class LifecycleTests(unittest.TestCase):
         ), patch.object(
             life, "review_retirement", return_value=packet
         ), patch.object(
+            life, "assert_prior_completed", return_value=True
+        ), patch.object(
             life, "namespaces", side_effect=[
                 {"default": "old", slot["resource_base"]: uid},
                 {"default": "old", slot["resource_base"]: uid},
@@ -314,6 +316,102 @@ class LifecycleTests(unittest.TestCase):
             self.assertEqual(life.last_event(
                 life.paths_for(slot, tmp, backup_root)["retire_journal"]
             )["status"], "M01_RETIREMENT_COMPLETE")
+
+    def test_duplicate_retirement_journal_blocks_any_action(self):
+        slot = life.slot_by_position(1)
+        with TemporaryDirectory() as tmp, patch.object(
+            life, "MAIN_CAMPAIGN_ENABLED", True
+        ), patch.object(
+            life, "assert_prior_completed", return_value=True
+        ):
+            root = Path(tmp)
+            dst = life.paths_for(slot, root, root)
+            dst["backup_root"].mkdir(parents=True)
+            dst["retire_journal"].write_text("old attempt", encoding="utf-8")
+            action_calls = []
+            with self.assertRaisesRegex(ValueError, "registrada"):
+                life.execute_retirement(
+                    1, root, root, SHA, life.approval_phrase("RETIRE", slot),
+                    empty_inventory, lambda *argv: action_calls.append(argv))
+            self.assertEqual(action_calls, [])
+
+    def test_kube_retirement_action_failure_is_journaled_no_retry(self):
+        slot = life.slot_by_position(3)
+        uid = "uid-of-new-c4"
+        packet = {"zip_sha256": HASH,
+                  "resource_immutable_ids": {"namespace_uid": uid},
+                  "ownership": {"namespace": {
+                      "name": slot["resource_base"], "uid": uid}},
+                  "status": "M01_RETIREMENT_REVIEW_ONLY_PASS"}
+        with TemporaryDirectory() as tmp, patch.object(
+            life, "MAIN_CAMPAIGN_ENABLED", True
+        ), patch.object(
+            life, "assert_prior_completed", return_value=True
+        ), patch.object(
+            life, "review_retirement", return_value=packet
+        ), patch.object(
+            life, "namespaces", side_effect=[
+                {"default": "old", slot["resource_base"]: uid},
+                {"default": "old", slot["resource_base"]: uid},
+            ]
+        ):
+            root = Path(tmp)
+            paths = life.paths_for(slot, root, root)
+            paths["backup_root"].mkdir(parents=True)
+            actions = []
+            def failing_action(*args):
+                actions.append(args)
+                raise RuntimeError("falha DELETE sintetica")
+            with self.assertRaisesRegex(RuntimeError, "DELETE sintetica"):
+                life.execute_retirement(
+                    3, root, root, SHA, life.approval_phrase("RETIRE", slot),
+                    empty_inventory, failing_action)
+            self.assertEqual(len(actions), 1)
+            last = life.last_event(paths["retire_journal"])
+            self.assertEqual(last["stage"], "INTERRUPTED_DO_NOT_RETRY")
+            with self.assertRaises(ValueError):
+                life.execute_retirement(
+                    3, root, root, SHA, life.approval_phrase("RETIRE", slot),
+                    empty_inventory, failing_action)
+            self.assertEqual(len(actions), 1)
+
+    def test_readonly_retirement_requires_matching_archived_docker_ids(self):
+        slot = life.slot_by_position(1)
+        owner = {
+            "status": "NEW_BENCH_OWNERSHIP_READONLY_PASS", "scenario": "C2",
+            "run_id": slot["run_id"],
+            "network": {"name": slot["resource_base"], "id": "a"*64},
+            "containers": {r: {
+                "name": life.exact_names(slot)[r], "id": str(i+1)*64,
+                "image_id": life.IMAGE_ID,
+            } for i, r in enumerate(life.ROLES)},
+            "delete_authorized": False, "commands": [],
+        }
+        class FakeZip:
+            def __enter__(self):
+                return self
+            def __exit__(self, *_):
+                return False
+            def read(self, name):
+                self.assert_owned = name
+                return json.dumps({
+                    "network": owner["network"],
+                    "containers": {"client": {"id": "f"*64}},
+                }).encode()
+        with TemporaryDirectory() as tmp, patch.object(
+            life, "audit_archive", side_effect=valid_audit
+        ), patch.object(
+            life, "compare_backup_pair", side_effect=valid_backup
+        ), patch.object(
+            life, "require_complete", return_value={}
+        ), patch.object(
+            life, "capture_docker_ownership", return_value=owner
+        ), patch.object(
+            life, "ZipFile", return_value=FakeZip()
+        ):
+            paths = life.paths_for(slot, tmp, tmp)
+            with self.assertRaisesRegex(ValueError, "diferentes do ZIP"):
+                life.review_retirement(slot, paths, empty_inventory)
 
     def test_retirement_refuses_incorrect_approval_before_mutation(self):
         with patch.object(life, "MAIN_CAMPAIGN_ENABLED", True):
