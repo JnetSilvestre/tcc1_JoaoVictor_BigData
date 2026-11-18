@@ -38,8 +38,13 @@ from benchmark.runtime_gate import assess_capacity, MIN_DISK_FREE_BYTES
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTEXT = "kind-tcc2-pon"
-# TRAVA INTENCIONAL: nenhum --execute na campanha principal ainda.
+# Trava global mantida: SEM liberacao geral para os 30 slots.
+# Release estrito e documental: SOMENTE a primeira bancada B01/C2.
+# RUN e RETIRE exigem dois aceites interativos INDEPENDENTES; RETIRE ainda
+# depende do ZIP/backup PASS e da propriedade por IDs Docker completos.
+# Os 29 slots posteriores permanecem proibidos, inclusive --stage retire.
 MAIN_CAMPAIGN_ENABLED = False
+RELEASED_OPERATIONS = frozenset({(1, "RUN"), (1, "RETIRE")})
 
 
 def slot_by_position(position):
@@ -335,6 +340,18 @@ def verify_clean_git(query, approved_head):
     return head
 
 
+def require_stage_release(stage, position):
+    """Nenhuma outra bancada M01 e liberada pela aprovacao B01/C2."""
+    slot = slot_by_position(position)
+    if stage not in ("RUN", "RETIRE"):
+        raise ValueError("STOP: fase mutante invalida")
+    if slot["run_id"] != "e11-c2-m01-b01" and not MAIN_CAMPAIGN_ENABLED:
+        raise ValueError("STOP: somente B01/C2 foi liberada")
+    if not MAIN_CAMPAIGN_ENABLED and (position, stage) not in RELEASED_OPERATIONS:
+        raise ValueError("STOP: fase/rodada sem liberacao formal")
+    return slot
+
+
 def approval_phrase(stage, slot):
     if stage not in ("RUN", "RETIRE"):
         raise ValueError("STOP: tipo de aceite invalido")
@@ -406,9 +423,7 @@ def invoke_runner(slot, paths, fixture, action):
 
 def execute_run(position, home, backup_root, fixture, approved_head,
                 approval, query, capture, action):
-    if not MAIN_CAMPAIGN_ENABLED:
-        raise ValueError("STOP: E11-M01 permanece bloqueada por codigo")
-    slot = slot_by_position(position)
+    slot = require_stage_release("RUN", position)
     if approval != approval_phrase("RUN", slot):
         raise ValueError("STOP: consentimento de RUN ausente")
     verify_clean_git(query, approved_head)
@@ -485,9 +500,7 @@ def execute_run(position, home, backup_root, fixture, approved_head,
 
 def execute_retirement(position, home, backup_root, approved_head,
                        approval, query, action):
-    if not MAIN_CAMPAIGN_ENABLED:
-        raise ValueError("STOP: E11-M01 permanece bloqueada por codigo")
-    slot = slot_by_position(position)
+    slot = require_stage_release("RETIRE", position)
     if approval != approval_phrase("RETIRE", slot):
         raise ValueError("STOP: consentimento de RETIRE ausente")
     verify_clean_git(query, approved_head)
@@ -601,8 +614,8 @@ def main(argv=None):
         print(json.dumps(review_retirement(slot, paths, query_command),
                          indent=2, ensure_ascii=False))
         return 0
-    if not MAIN_CAMPAIGN_ENABLED:
-        parser.error("E11-M01 ainda bloqueada, nenhuma operacao mutante liberada")
+    # A CLI tambem impede pedir consentimento sobre qualquer rodada nao liberada.
+    require_stage_release("RUN" if args.stage == "run" else "RETIRE", args.position)
     if not args.approved_head:
         parser.error("SHA do codigo testado requerido")
     phrase = approval_phrase("RUN" if args.stage == "run" else "RETIRE", slot)
