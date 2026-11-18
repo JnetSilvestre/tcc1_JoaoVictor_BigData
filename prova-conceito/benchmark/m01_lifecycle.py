@@ -34,7 +34,7 @@ from benchmark.ownership import (
 from benchmark.retirement_execute_c3_s01 import (
     INVENTORY_TYPES, ALLOWED_OTHER_OBJECTS, SERVICE_NAMES,
 )
-from benchmark.runtime_gate import assess_capacity
+from benchmark.runtime_gate import assess_capacity, MIN_DISK_FREE_BYTES
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTEXT = "kind-tcc2-pon"
@@ -86,7 +86,8 @@ def assert_prior_completed(position, home, backup_root):
     for i, older in enumerate(full_schedule(), start=1):
         p = paths_for(older, home, backup_root)
         exists = [p[x].exists() for x in ("root", "primary", "backup",
-                                          "run_journal", "retire_journal")]
+                                          "run_journal", "retire_journal",
+                                          "delete_options")]
         if i < position:
             require_complete(p["run_journal"], older["run_id"], "COMPLETE",
                              "M01_RUN_PASS_BACKED_UP")
@@ -275,8 +276,11 @@ def review_retirement(slot, paths, query):
     if (copy["different_filesystem_volume"] is not True
             or copy["zip_sha256"] != audit["zip_sha256"]):
         raise ValueError("STOP: backup nao aprovado")
-    require_complete(paths["run_journal"], slot["run_id"], "COMPLETE",
-                     "M01_RUN_PASS_BACKED_UP")
+    run_done = require_complete(
+        paths["run_journal"], slot["run_id"], "COMPLETE",
+        "M01_RUN_PASS_BACKED_UP")
+    if run_done.get("zip_sha256") != audit["zip_sha256"]:
+        raise ValueError("STOP: SHA do ZIP nao confere com journal da rodada")
     with ZipFile(paths["primary"]) as z:
         archived = json.loads(z.read("ownership-start.json"))
     if slot["scenario"] == "C2":
@@ -367,6 +371,23 @@ def run_sequence_preflight(position, home, backup_root, fixture, query, capture)
             "start_authorized": False, "commands": []}
 
 
+
+def verify_storage_before_run(paths):
+    """Falha antes da criacao se D nao for outro volume ou estiver sem espaco."""
+    backup_root = paths["backup_root"]
+    if backup_root.is_symlink() or not backup_root.is_dir():
+        raise ValueError("STOP: diretorio de backup ausente, invalido ou link")
+    probe = paths["root"]
+    while not probe.exists() and probe != probe.parent:
+        probe = probe.parent
+    if (not probe.is_dir() or probe.is_symlink()
+            or probe.stat().st_dev == backup_root.stat().st_dev):
+        raise ValueError("STOP: backup nao esta em outro volume filesystem")
+    if shutil.disk_usage(backup_root).free < MIN_DISK_FREE_BYTES:
+        raise ValueError("STOP: volume de backup tem menos de 15 GiB livres")
+    return True
+
+
 def invoke_runner(slot, paths, fixture, action):
     """Nao automatico: chamado 1x apos aceite e journal exclusivo."""
     cmd = [
@@ -394,8 +415,7 @@ def execute_run(position, home, backup_root, fixture, approved_head,
     plan = run_sequence_preflight(position, home, backup_root, fixture,
                                   query, capture)
     paths = paths_for(slot, home, backup_root)
-    if paths["backup_root"].is_symlink() or not paths["backup_root"].is_dir():
-        raise ValueError("STOP: volume de backup nao preparado")
+    verify_storage_before_run(paths)
     # Retestar exclusividade o mais proximo possivel da criacao.
     inspect_global_exclusivity(query)
     paths["root"].mkdir(parents=True, exist_ok=False)
