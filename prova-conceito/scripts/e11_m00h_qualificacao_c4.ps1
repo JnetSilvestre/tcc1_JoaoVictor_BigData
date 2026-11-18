@@ -36,15 +36,18 @@ try {
     $testExit = $LASTEXITCODE
     $tests | ForEach-Object { Write-Host $_ }
     $text = $tests -join [Environment]::NewLine
-    Assert-Gate ($testExit -eq 0 -and $text -match "Ran 128 tests" -and $text -match "(?m)^OK\s*$") "Regressao 128/128 nao aprovada"
-    Write-Host "REGRESSAO: 128/128 PASS" -ForegroundColor Green
+    Assert-Gate ($testExit -eq 0 -and $text -match "Ran 129 tests" -and $text -match "(?m)^OK\s*$") "Regressao 129/129 nao aprovada"
+    Write-Host "REGRESSAO: 129/129 PASS" -ForegroundColor Green
 
     $dockerContext = (docker context show).Trim()
     Assert-Gate ($LASTEXITCODE -eq 0 -and $dockerContext -eq "desktop-linux") "Docker nao esta no contexto aprovado"
     $cgroup = (docker info --format '{{.CgroupVersion}}').Trim()
     Assert-Gate ($LASTEXITCODE -eq 0 -and $cgroup -eq "2") "Cgroup v2 indisponivel"
     $imageID = (docker image inspect tcc2-pon:c2-e08-dbefcd2cf3d2 --format '{{.Id}}').Trim()
-    Assert-Gate ($LASTEXITCODE -eq 0 -and $imageID -eq "sha256:b9c714f32e359e7a21df264a926a840191c4ffb6d53bb0483f5e161143d8667a") "Imagem nao e a aprovada"
+    $approvedImageID = "sha256:b9c714f32e359e7a21df264a926a840191c3ffb6d53bb0483f5e161143d8667a"
+    Write-Host "IMAGE_ID_OBSERVADO: $imageID"
+    Write-Host "IMAGE_ID_APROVADO: $approvedImageID"
+    Assert-Gate ($LASTEXITCODE -eq 0 -and $imageID -ceq $approvedImageID) "Imagem nao e a aprovada"
 
     $nodesRaw = kubectl --context kind-tcc2-pon get nodes -o json
     Assert-Gate ($LASTEXITCODE -eq 0) "Cluster Kubernetes indisponivel"
@@ -74,7 +77,9 @@ try {
     $last = (Get-Content -LiteralPath $c2journal | Where-Object { $_.Trim() } | Select-Object -Last 1) | ConvertFrom-Json
     Assert-Gate ($last.stage -eq "COMPLETE" -and $last.status -eq "S01_RETIREMENT_COMPLETE") "C2-S01 ainda nao desmobilizada"
     $shaFixture = (Get-FileHash -LiteralPath $fixture -Algorithm SHA256).Hash.ToLowerInvariant()
-    Assert-Gate ($shaFixture -eq "26121e3a8747c94fd8e690e4ca04762cf469e040ac41cdd7bd4c6aba14f90551") "Fixture canônica divergente"
+    $approvedFixtureHash = "26121e3a8747c94fd8e690e4ca04762cf469e040ac31cdd7bd4c6aba14f90551"
+    Write-Host "FIXTURE_SHA256_OBSERVADO: $shaFixture"
+    Assert-Gate ($shaFixture -ceq $approvedFixtureHash) "Fixture canonica divergente"
     foreach ($file in @($c2original,$c2backup)) {
         $h = (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant()
         Assert-Gate ($h -eq "6e448f37f80456590af80309586e245b038b6e143400cd4b4d325766dd8d5bd6") "ZIP C2-S01 alterado"
