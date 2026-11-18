@@ -42,7 +42,7 @@ class CampaignExclusivityTests(unittest.TestCase):
             if argv[0] == "docker":
                 if argv != ("docker", "ps", "-a", "--format", "{{.Names}}"):
                     raise AssertionError("inventario deve incluir os parados")
-                return ("tcc2-pon-e11-c2-m01-s02-rule-executor\\n"
+                return ("tcc2-pon-e11-c2-m01-s02-rule-executor\n"
                         "tcc2-v05-attribute-source")
             return json.dumps({"items": [
                 {"metadata": {"name": "tcc2-pon"}},
