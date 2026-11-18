@@ -191,6 +191,29 @@ class LifecycleTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "unica"):
             life.check_live_slot_only(slot, reader)
 
+    def test_unexpected_m01_role_also_blocks(self):
+        slot = life.slot_by_position(1)
+        names = set(life.exact_names(slot).values())
+        names.add("tcc2-pon-e11-c2-m01-b01-foreign-helper")
+        def reader(*args):
+            if args == ("docker", "ps", "-a", "--format", "{{.Names}}"):
+                return "\n".join(sorted(names))
+            if args == ("docker", "network", "ls", "--format", "{{.Name}}"):
+                return slot["resource_base"]
+            return empty_inventory(*args)
+        with self.assertRaisesRegex(ValueError, "unica"):
+            life.check_live_slot_only(slot, reader)
+
+    def test_dirty_git_fails_plan_before_any_mutation(self):
+        def dirty_reader(*argv):
+            if argv == ("git", "status", "--porcelain"):
+                return "M benchmark/runner.py"
+            return empty_inventory(*argv)
+        with TemporaryDirectory() as tmp:
+            with self.assertRaisesRegex(ValueError, "suja"):
+                life.run_sequence_preflight(
+                    1, tmp, tmp, "fixture", dirty_reader, approved_capacity)
+
     def test_run_preflight_pass_readonly_only(self):
         with TemporaryDirectory() as tmp, patch.object(
             life, "sha256_file", return_value=life.FIXTURE_SHA
