@@ -1,4 +1,4 @@
-"""E11-M00C: somente UMA bancada NOVA ativa por vez, consultas read-only.
+"""E11-M00C: somente UMA bancada NOVA presente por vez, consultas read-only.
 
 Bancadas historicas (p..., v03/v05/v06/c2 e namespaces antigos)
 nao sao consideradas para limpeza ou alteracao: sao preservadas.
@@ -36,7 +36,8 @@ def check_exclusivity(scenario, target, active_docker_names, kube_names):
 
 
 def check_exclusivity_readonly(scenario, target, reader):
-    docker_names = reader("docker", "ps", "--format", "{{.Names}}").splitlines()
+    # Inclui contêineres parados: ainda ocupam nomes/identidades M01.
+    docker_names = reader("docker", "ps", "-a", "--format", "{{.Names}}").splitlines()
     namespaces = json.loads(reader(
         "kubectl", "--context", "kind-tcc2-pon", "get", "namespaces", "-o", "json"))
     names = [x["metadata"]["name"] for x in namespaces["items"]]
