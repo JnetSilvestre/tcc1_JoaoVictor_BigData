@@ -958,3 +958,15 @@ Resultados observados no Windows: branch `tcc2/desenvolvimento`, HEAD `3742a852a
 **Revisão técnica posterior à evidência, código novo NÃO testado no Windows:** endurecimento de `benchmark/m01_lifecycle.py` para (a) exigir integridade SHA do ZIP contra `run_journal` atual antes de retirada, (b) bloquear arquivo `delete_options` residual de rodada futura, (c) exigir **outro volume filesystem e >=15 GiB livres no diretório de backup ANTES de executar POST**; três novos testes sintéticos inseridos em `tests/test_benchmark_m01_lifecycle.py` para falha fechada. Os testes anteriores que usam temp dir receberam mock explícito da validação de volume, sem modificar o teste real. **Este endurecimento não altera os 173 PASS já observados, mas a nova versão precisa de nova regressão.**
 
 **Decisão:** `E11_M00J_PLAN_B01_C2_173_PASS / RELEASE_GATE_REVIEW_PENDING / MAIN_CAMPAIGN_ENABLED_FALSE / E11_M01_MAIN_SERIES_BLOCKED`. Não inferir que 173 PASS aprovam automaticamento a execução mutante generalizada. A série definitiva exige liberação documentada do código após regressões adicionais, roteiro para emergência/estado parcial e aceite operacional exclusivamente B01/C2. Nenhum dado de qualificação sacrificial deve integrar as 30 rodadas.
+
+## 18/11/2026 — E11-M00J: revisão pré-GO endurecida (178 testes previstos), execução ainda travada
+
+A revisão de código após o `173/173 PASS` real e `M01_SLOT_PLAN_ONLY` real (SHA `e2da6a36fde5d7a924e3f730730b5cfd91ca6b38`) identificou mais três condições fail-closed para a futura rodada B01/C2. Foram implementadas em `benchmark/m01_lifecycle.py`:
+
+1. Antes de `RUN`, exigir que o backup D da campanha exista em **filesystem diferente** do projeto e tenha pelo menos **15 GiB livres**, bloqueando antes de criar a bancada se faltar capacidade/independência de volume (não confundir com hardware independente).
+2. Antes de `REVIEW/RETIRE`, comparar o SHA-256 do ZIP/backup com o SHA registrado no `run_journal` da rodada atual, não somente o status PASS.
+3. Bloquear a presença de `*-delete-options.json` em slots posteriores como evidência de tentativa prévia, ainda que não haja ZIP/journal principal.
+
+**Testes sintéticos novos:** 5 casos adicionais em `tests/test_benchmark_m01_lifecycle.py` (volumes idênticos, SHA journal diferente, artefato residual futuro, execução C4 simulada sem cleanup e retirada C2 simulada restrita a 4 IDs/1 rede). Novo total **178 testes ESPERADOS**, **NÃO executados no Windows** neste SHA. O 173/173 permanece evidência da versão anterior. Relatório `docs/tcc2/etapa-11-e11-m00j-revisao-final-pre-go-b01.md` (commit `a4c2e3181956096400fee1d2ba517c7be9315ab4`).
+
+**Decisão:** `E11_M00J_173_PASS_PLAN_B01_C2_PASS / M00J_HARDENING_178_PENDING_WINDOWS_TEST / E11_M01_MAIN_SERIES_BLOCKED`. `MAIN_CAMPAIGN_ENABLED=False` **permanece**; não executar B01 nem remover bancada alguma. Próximo passo limitado a atualização Git limpa, `compileall`, 178/178 testes e `--stage plan --position 1`; somente depois considerar release explícito da rodada B01/C2 com trava por identidade e dois consentimentos distintos para RUN e RETIRE. **Nenhuma amostra definitiva foi coletada.**
