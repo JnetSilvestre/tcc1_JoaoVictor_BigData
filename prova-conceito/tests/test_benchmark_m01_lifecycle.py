@@ -238,6 +238,8 @@ class LifecycleTests(unittest.TestCase):
             life, "run_sequence_preflight", return_value={"status": "M01_SLOT_PLAN_ONLY"}
         ), patch.object(
             life, "inspect_global_exclusivity", return_value={}
+        ), patch.object(
+            life, "verify_storage_before_run", return_value=True
         ):
             base = Path(tmp)
             backup = base / "backups" / "E11-M01"
@@ -270,6 +272,8 @@ class LifecycleTests(unittest.TestCase):
             life, "run_sequence_preflight", return_value={"status": "M01_SLOT_PLAN_ONLY"}
         ), patch.object(
             life, "inspect_global_exclusivity", return_value={}
+        ), patch.object(
+            life, "verify_storage_before_run", return_value=True
         ), patch.object(
             life, "audit_archive", side_effect=valid_audit
         ), patch.object(
@@ -435,6 +439,39 @@ class LifecycleTests(unittest.TestCase):
             paths = life.paths_for(slot, tmp, tmp)
             with self.assertRaisesRegex(ValueError, "diferentes do ZIP"):
                 life.review_retirement(slot, paths, empty_inventory)
+
+    def test_same_filesystem_backup_blocks_before_mutation(self):
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            backup = root / "backups" / "E11-M01"
+            backup.mkdir(parents=True)
+            slot = life.slot_by_position(1)
+            with self.assertRaisesRegex(ValueError, "outro volume"):
+                life.verify_storage_before_run(
+                    life.paths_for(slot, root, root / "backups"))
+
+    def test_current_zip_sha_mismatch_in_journal_blocks_retirement_review(self):
+        slot = life.slot_by_position(1)
+        with TemporaryDirectory() as tmp, patch.object(
+            life, "audit_archive", side_effect=valid_audit
+        ), patch.object(
+            life, "compare_backup_pair", side_effect=valid_backup
+        ), patch.object(
+            life, "require_complete", return_value={"zip_sha256": "0"*64}
+        ):
+            with self.assertRaisesRegex(ValueError, "SHA do ZIP"):
+                life.review_retirement(
+                    slot, life.paths_for(slot, tmp, tmp), empty_inventory)
+
+    def test_future_delete_options_orphan_blocks_current_slot(self):
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            target = life.paths_for(life.slot_by_position(2), root, root)
+            target["delete_options"].parent.mkdir(parents=True)
+            target["delete_options"].write_text(
+                '{"preconditions":{"uid":"unknown"}}', encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "posterior"):
+                life.assert_prior_completed(1, root, root)
 
     def test_retirement_refuses_incorrect_approval_before_mutation(self):
         with patch.object(life, "MAIN_CAMPAIGN_ENABLED", True):
