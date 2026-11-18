@@ -117,6 +117,15 @@ try {
     Run-Checked "GERAR MANIFESTO INEDITO" { python -m benchmark.prepare --scenario C3 --label m01-s01 --output $manifest }
     Run-Checked "VALIDAR MANIFESTO SEM APPLY" { kubectl --context kind-tcc2-pon apply --dry-run=client --validate=strict -f $manifest }
 
+    # Revalidar exclusividade no instante imediatamente anterior ao apply.
+    $redoDocker = @(docker ps -a --format '{{.Names}}')
+    Assert-Gate ($LASTEXITCODE -eq 0 -and @($redoDocker | Where-Object { $_ -match '^tcc2-pon-e11-c2-m' }).Count -eq 0) "Bancada Docker M01 apareceu durante preflight"
+    $redoNetworks = @(docker network ls --format '{{.Name}}')
+    Assert-Gate ($LASTEXITCODE -eq 0 -and @($redoNetworks | Where-Object { $_ -match '^tcc2-pon-e11-c2-m' }).Count -eq 0) "Rede Docker M01 apareceu durante preflight"
+    $redoNsRaw = kubectl --context kind-tcc2-pon get namespaces -o json
+    Assert-Gate ($LASTEXITCODE -eq 0) "Nao foi possivel reconfirmar namespaces"
+    $redoNsItems = ($redoNsRaw | ConvertFrom-Json).items
+    Assert-Gate (@($redoNsItems | Where-Object { $_.metadata.name -match '^tcc2-pon-e11-c[34]-m' }).Count -eq 0) "Namespace M01 apareceu durante preflight"
     New-Item -ItemType File -Path $journal -ErrorAction Stop | Out-Null
     Write-Journal "BEFORE_APPLY" ("git=" + $sha)
     Run-Checked "APLICAR SOMENTE MANIFESTO C3-S01" { kubectl --context kind-tcc2-pon apply -f $manifest }
@@ -165,6 +174,10 @@ try {
     Write-Host "C4: NAO INICIADO; CAMPANHA 30 LOTES: NAO INICIADA"
 }
 catch {
+    $journalVariable = Get-Variable -Name journal -ErrorAction SilentlyContinue
+    if ($null -ne $journalVariable -and (Test-Path -LiteralPath $journalVariable.Value)) {
+        try { Write-Journal "STOP_NO_RETRY" $_.Exception.Message } catch {}
+    }
     Write-Host ("STOP: " + $_.Exception.Message) -ForegroundColor Red
     Write-Host "Preservar recursos, dados, journal e nao repetir automaticamente." -ForegroundColor Yellow
     exit 2
