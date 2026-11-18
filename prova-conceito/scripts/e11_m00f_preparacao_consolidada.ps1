@@ -52,7 +52,9 @@ try {
     Invoke-Gate "COMPILACAO PYTHON" { python -m compileall -q benchmark tests }
 
     Write-Host "=== REGRESSAO COMPLETA ===" -ForegroundColor Cyan
-    $testLog = @(python -m unittest discover -s tests -p "test_benchmark*.py" 2>&1)
+    # unittest escreve em stderr; cmd redireciona internamente para stdout
+    # e evita NativeCommandError espurio no Windows PowerShell 5.1.
+    $testLog = @(cmd /c 'python -m unittest discover -s tests -p "test_benchmark*.py" 2>&1')
     $testCode = $LASTEXITCODE
     $testLog | ForEach-Object { Write-Host $_ }
     Assert-True ($testCode -eq 0) "Falha nos testes Python"
@@ -126,8 +128,8 @@ try {
             kubectl --context kind-tcc2-pon apply --dry-run=client --validate=strict -f $manifest
         }
         $ns = "tcc2-pon-e11-" + $scenario.ToLower() + "-m01-s01"
-        $lookup = kubectl --context kind-tcc2-pon get namespace $ns -o name 2>&1
-        Assert-True ($LASTEXITCODE -ne 0) "Namespace de qualificacao $ns JA EXISTE"
+        $lookup = @(kubectl --context kind-tcc2-pon get namespace $ns -o name --ignore-not-found)
+        Assert-True ($LASTEXITCODE -eq 0 -and $lookup.Count -eq 0) "Namespace de qualificacao $ns JA EXISTE ou consulta falhou"
         Write-Host "$scenario MANIFESTO: PREPARADO/NAO APLICADO" -ForegroundColor Green
     }
 
