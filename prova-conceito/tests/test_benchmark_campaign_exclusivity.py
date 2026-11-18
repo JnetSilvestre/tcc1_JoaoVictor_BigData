@@ -35,6 +35,25 @@ class CampaignExclusivityTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             check_exclusivity("C3", "tcc2-pon-e11-c3-m01-b01", [], ["tcc2-pon"])
 
+    def test_readonly_rejects_stopped_m01_containers(self):
+        calls = []
+        def query(*argv):
+            calls.append(argv)
+            if argv[0] == "docker":
+                if argv != ("docker", "ps", "-a", "--format", "{{.Names}}"):
+                    raise AssertionError("inventario deve incluir os parados")
+                return ("tcc2-pon-e11-c2-m01-s02-rule-executor\\n"
+                        "tcc2-v05-attribute-source")
+            return json.dumps({"items": [
+                {"metadata": {"name": "tcc2-pon"}},
+                {"metadata": {"name": "tcc2-pon-e11-c3-m01-s01"}},
+            ]})
+        with self.assertRaisesRegex(ValueError, "outra bancada"):
+            check_exclusivity_readonly(
+                "C3", "tcc2-pon-e11-c3-m01-s01", query)
+        self.assertEqual(calls[0], (
+            "docker", "ps", "-a", "--format", "{{.Names}}"))
+
     def test_readonly_query_is_exact_and_does_not_mutate(self):
         calls = []
         def query(*argv):
