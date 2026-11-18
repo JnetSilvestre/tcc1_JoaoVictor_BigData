@@ -117,7 +117,6 @@ class C3S01RetirementTests(unittest.TestCase):
             side_effect=[
                 {"default": "old", NS: UID},
                 {"default": "old", NS: UID},
-                {"default": "old", NS: UID},
                 {"default": "old"},
             ]
         ), patch(
