@@ -123,27 +123,40 @@ class LifecycleTests(unittest.TestCase):
             life.verify_kube_objects(
                 slot, {"pods": pods}, lambda *args: json.dumps({"items": rows}))
 
-    def test_no_main_execution_without_code_release(self):
-        slot = life.slot_by_position(1)
+    def test_unreleased_slot_two_cannot_execute(self):
+        slot = life.slot_by_position(2)
         self.assertFalse(life.MAIN_CAMPAIGN_ENABLED)
         with TemporaryDirectory() as tmp:
             root = Path(tmp)
-            with self.assertRaisesRegex(ValueError, "bloqueada"):
-                life.execute_run(1, root, root, root / "inputs.jsonl",
+            with self.assertRaisesRegex(ValueError, "somente B01/C2"):
+                life.execute_run(2, root, root, root / "inputs.jsonl",
                                  SHA, life.approval_phrase("RUN", slot),
                                  empty_inventory, approved_capacity,
                                  lambda *args: self.fail("nunca executar"))
             self.assertFalse((root / "TCC2-Evidencias" / "E11-M01").exists())
 
-    def test_no_main_retirement_without_code_release(self):
-        slot = life.slot_by_position(1)
+    def test_unreleased_slot_two_cannot_retire(self):
+        slot = life.slot_by_position(2)
         with TemporaryDirectory() as tmp:
-            with self.assertRaisesRegex(ValueError, "bloqueada"):
+            with self.assertRaisesRegex(ValueError, "somente B01/C2"):
                 life.execute_retirement(
-                    1, tmp, tmp, SHA,
+                    2, tmp, tmp, SHA,
                     life.approval_phrase("RETIRE", slot),
                     empty_inventory,
                     lambda *args: self.fail("nunca executar"))
+
+    def test_targeted_b01_only_release_under_global_lock(self):
+        self.assertFalse(life.MAIN_CAMPAIGN_ENABLED)
+        self.assertEqual(life.RELEASED_OPERATIONS,
+                         frozenset({(1, "RUN"), (1, "RETIRE")}))
+        for stage in ("RUN", "RETIRE"):
+            self.assertEqual(life.require_stage_release(stage, 1)["run_id"],
+                             "e11-c2-m01-b01")
+            for pos in range(2, 31):
+                with self.assertRaisesRegex(ValueError, "somente B01/C2"):
+                    life.require_stage_release(stage, pos)
+        with self.assertRaises(ValueError):
+            life.require_stage_release("UNKNOWN", 1)
 
     def test_run_consent_refused_even_in_synthetic_release(self):
         with patch.object(life, "MAIN_CAMPAIGN_ENABLED", True):
