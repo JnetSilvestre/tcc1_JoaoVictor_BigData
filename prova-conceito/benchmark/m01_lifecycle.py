@@ -96,9 +96,11 @@ def assert_prior_completed(position, home, backup_root):
             audit = audit_archive(p["primary"], older["scenario"],
                                   older["label"], older["run_id"])
             copy = compare_backup_pair(p["primary"], p["backup"])
+            final = last_event(p["retire_journal"])
             if (copy["zip_sha256"] != audit["zip_sha256"]
-                    or copy["different_filesystem_volume"] is not True):
-                raise ValueError("STOP: evidencia anterior alterada")
+                    or copy["different_filesystem_volume"] is not True
+                    or final.get("zip_sha256") != audit["zip_sha256"]):
+                raise ValueError("STOP: evidencia/journal anterior alterado")
         if i > position and any(exists):
             raise ValueError("STOP: rodada posterior ja possui artefatos")
     return True
@@ -454,12 +456,15 @@ def execute_retirement(position, home, backup_root, approved_head,
     if approval != approval_phrase("RETIRE", slot):
         raise ValueError("STOP: consentimento de RETIRE ausente")
     verify_clean_git(query, approved_head)
+    assert_prior_completed(position, home, backup_root)
     paths = paths_for(slot, home, backup_root)
     if paths["retire_journal"].exists() or paths["delete_options"].exists():
         raise ValueError("STOP: tentativa de retirada ja registrada")
     packet = review_retirement(slot, paths, query)
     initial = namespaces(query)
     owner = packet["ownership"]
+    if paths["backup_root"].is_symlink() or not paths["backup_root"].is_dir():
+        raise ValueError("STOP: diretorio do diario de retirada ausente/invalido")
     with paths["retire_journal"].open("x", encoding="utf-8", newline="\n") as events:
         journal(events, "AUTHORIZED_BEGIN", slot, git_sha=approved_head,
                 zip_sha256=packet["zip_sha256"],
