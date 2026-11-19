@@ -1,3 +1,25 @@
+# Monografia TCC2 — projeto Overleaf
+
+Branch `tcc2/overleaf-utfpr`, reorganizada a partir da master `b1318108591bff28d9672d0c836ef545381b99fd` em 19/11/2026.
+
+## Uso
+
+1. Selecione esta branch no GitHub e use **Code → Download ZIP**.
+2. Importe o arquivo no Overleaf com **New Project → Upload Project**.
+3. Selecione **main.tex** como documento principal e **pdfLaTeX** como compilador.
+
+Não é necessário montar um pacote separado. A raiz mantém a organização do template original: `PreTexto/`, `capitulos/`, `PosTexto/`, `figuras/` e `uteis/`, além dos arquivos principais LaTeX, BibTeX, classe e estilo.
+
+Todos os capítulos, referências, figuras, tabelas e apêndices da master foram preservados. As quatro listagens usam arquivos completos em `uteis/codigo-original/` e `uteis/codigo-tcc2/`, com os mesmos blobs Git dos arquivos de origem. Apenas os caminhos de inclusão e a indicação da pasta dos originais foram ajustados no capítulo de implementação.
+
+A implementação completa, infraestrutura, documentação, dados experimentais e entregas anteriores permanecem na [master](https://github.com/JnetSilvestre/tcc1_JoaoVictor_BigData/tree/master), que não foi alterada. Os caminhos históricos e comandos nos apêndices referem-se àquele repositório completo; esta branch contém o projeto editorial e suas dependências de compilação. Não contém ZIPs internos nem PDFs compilados da monografia.
+
+Verificação desta reorganização: preservação dos identificadores Git e conferência dos caminhos das dependências. Nenhuma nova compilação LaTeX ou execução experimental foi realizada nesta atividade. A compilação anterior está documentada na master. Permanecem as revisões acadêmicas e a folha oficial de aprovação pendentes.
+
+---
+
+## Documentação original do template
+
 # Modelo Latex para desenvolvimento de TCCs do DACOM (UTFPR-CP)
 
   Este modelo LaTeX permite a produção de trabalhos acadêmicos (teses, dissertações, trabalhos de conclusão, etc.) da Universidade Tecnológica Federal do Paraná (UTFPR).

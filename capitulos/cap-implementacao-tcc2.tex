@@ -5,7 +5,7 @@ Este capítulo apresenta a passagem da hipótese arquitetural para a implementa�
 
 \section{Código de referência e delimitação da adaptação}
 
-O ponto de partida foi o código Python fornecido no contexto da orientação e disponibilizado no repositório \texttt{JnetSilvestre/codigoPon}, na revisão \texttt{c2d525b5c675}. Essa referência foi fixada para permitir distinguir o material recebido das alterações realizadas neste trabalho. Os arquivos usados nas Listagens~\ref{lst:atributo-original} e~\ref{lst:composicao-original} foram conferidos diretamente nessa revisão e acompanham o projeto em \texttt{docs/tcc2/codigo-original}. A referência bibliográfica identifica a versão consultada \cite{codigoponreferencia}.
+O ponto de partida foi o código Python fornecido no contexto da orientação e disponibilizado no repositório \texttt{JnetSilvestre/codigoPon}, na revisão \texttt{c2d525b5c675}. Essa referência foi fixada para permitir distinguir o material recebido das alterações realizadas neste trabalho. Os arquivos usados nas Listagens~\ref{lst:atributo-original} e~\ref{lst:composicao-original} foram conferidos diretamente nessa revisão e acompanham o projeto em \texttt{uteis/codigo-original}. A referência bibliográfica identifica a versão consultada \cite{codigoponreferencia}.
 
 Essa implementação representa entidades do PON em Python. Embora a motivação do estudo se relacione à linha de pesquisa sobre NOP Query, a aplicação ensaiada não implementa o sistema completo de consultas em vídeo em C++ descrito por \citeonline{kossoski2024tese}. O objeto experimental é a cadeia de atributos, premissas, condições, regras e ações da prova de conceito. Essa delimitação evita atribuir ao sistema original resultados medidos em uma adaptação menor e com outro ambiente de execução.
 
@@ -16,7 +16,7 @@ A Listagem~\ref{lst:atributo-original} mostra o mecanismo original de atualizaç
 \begin{sourcecode}[htbp]
 \caption{Trecho original: atualização de valor em \texttt{Attribute}.}
 \label{lst:atributo-original}
-\lstinputlisting[style=tccpython,firstline=17,lastline=23,firstnumber=17]{docs/tcc2/codigo-original/Attribute.py}
+\lstinputlisting[style=tccpython,firstline=17,lastline=23,firstnumber=17]{uteis/codigo-original/Attribute.py}
 \fonte{Código de referência, revisão \texttt{c2d525b5c675}, \texttt{pon/Attribute.py}}
 \end{sourcecode}
 
@@ -25,7 +25,7 @@ A composição de condições também está presente no código recebido. Na Lis
 \begin{sourcecode}[htbp]
 \caption{Trecho original: composição de condições pela operação lógica E.}
 \label{lst:composicao-original}
-\lstinputlisting[style=tccpython,firstline=60,lastline=65,firstnumber=60]{docs/tcc2/codigo-original/Condition.py}
+\lstinputlisting[style=tccpython,firstline=60,lastline=65,firstnumber=60]{uteis/codigo-original/Condition.py}
 \fonte{Código de referência, revisão \texttt{c2d525b5c675}, \texttt{pon/Condition.py}}
 \end{sourcecode}
 
@@ -64,7 +64,7 @@ A Listagem~\ref{lst:adaptacao-condicao} mostra a conexão do estado recebido com
 \begin{sourcecode}[htbp]
 \caption{Adaptação: construção da cadeia lógica a partir do snapshot.}
 \label{lst:adaptacao-condicao}
-\lstinputlisting[style=tccpython,firstline=146,lastline=154,firstnumber=146]{prova-conceito/c1/state.py}
+\lstinputlisting[style=tccpython,firstline=146,lastline=154,firstnumber=146]{uteis/codigo-tcc2/state.py}
 \fonte{Implementação do TCC2, \texttt{prova-conceito/c1/state.py}}
 \end{sourcecode}
 
@@ -117,7 +117,7 @@ O cluster kind possui um nó de controle e um worker. O arquivo de configuraçã
 \begin{sourcecode}[htbp]
 \caption{Configuração dos dois nós virtuais do cluster kind.}
 \label{lst:kind-config}
-\lstinputlisting[style=tcccode,firstline=3]{infraestrutura/kind/kind-config.yaml}
+\lstinputlisting[style=tcccode,firstline=3]{uteis/codigo-tcc2/kind-config.yaml}
 \fonte{Configuração versionada em \texttt{infraestrutura/kind/kind-config.yaml}}
 \end{sourcecode}
 
