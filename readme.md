@@ -16,6 +16,20 @@ A implementação completa, infraestrutura, documentação, dados experimentais 
 
 Verificação desta reorganização: preservação dos identificadores Git e conferência dos caminhos das dependências. Nenhuma nova compilação LaTeX ou execução experimental foi realizada nesta atividade. A compilação anterior está documentada na master. Permanecem as revisões acadêmicas e a folha oficial de aprovação pendentes.
 
+## Revisão editorial e bibliográfica — Etapa 15 (19/11/2026)
+
+A revisão mantém a estrutura UTFPR, a classe, o estilo bibliográfico e as configurações globais. Os objetivos, os dados experimentais, as tabelas derivadas e os arquivos originais de código foram preservados. A figura das camadas passou para o fim da Seção 3.1, com barreira local nativa do memoir; sua nota inferior foi reposicionada no arquivo gráfico. As quatro listagens e os dois blocos de comandos receberam ajustes locais de recuo e numeração. O fonte do desenho revisado está em `uteis/gerar_camadas_ambiente.py`.
+
+Hashes e identificadores da campanha foram concentrados no apêndice de rastreabilidade, mantendo os vínculos com as evidências. Foram corrigidas legendas, a descrição da ordem do capítulo teórico e passagens que ainda apresentavam como futuras atividades já realizadas. A redação distingue os resultados publicados sobre NOP Query dos resultados desta prova de conceito e evita generalizar complexidade ou ganho de desempenho.
+
+A base `main.bib` tinha 303 entradas. A análise estrutural examinou a base inteira: 17 duplicações confirmadas foram consolidadas, restando 286 entradas sem repetição de chave, DOI ou título normalizado. As chaves correspondentes foram atualizadas nos arquivos LaTeX. Houve ajustes de metadados em 35 entradas; as 39 referências efetivamente citadas foram objeto da conferência bibliográfica dirigida. A consolidação inclui `simao2008` → `Simao2009inferencebasednotifications`, `linhares2020noca` → `linhares2020`, `alam2020videobigdatasurvey` → `alam2020` e as entradas repetidas da documentação Docker/Kubernetes. Os demais mapeamentos permanecem registrados em comentários no próprio BibTeX.
+
+Entre as correções documentadas estão o DOI e a autoria do artigo de Alam, Ullah e Lee ([registro dos autores](https://arxiv.org/abs/2011.07807)), o DOI do artigo NOCA, os metadados das teses no repositório UTFPR, a data do livro de Burns e a grafia dos nomes. Não se atribuiu autor ou data ao código de referência sem comprovação. O pedido de patente PI0805518-1 foi normalizado com base nas referências acadêmicas; a confirmação direta da ficha no INPI continua pendente.
+
+A conferência externa foi concentrada nas obras citadas e nas duplicações identificadas. As 247 entradas não citadas foram preservadas e verificadas estruturalmente; seus metadados e links não foram todos confirmados individualmente em fontes externas. Alguns portais editoriais limitaram o acesso automático, sendo usados documentos dos autores, registros institucionais e anais quando disponíveis. A auditoria não equivale à validação integral de todos os campos de cada registro herdado.
+
+A validação local usa pdfLaTeX e BibTeX, com o estilo `abntex2-alf.bst` já existente. A compilação final produziu 61 páginas, inspecionadas visualmente. Não houve citações ou referências indefinidas, rótulos duplicados nem avisos de transbordamento horizontal. Permanecem avisos de pacotes legados do template e de justificação (`Underfull hbox`), sem cortes observados. O PDF de revisão é temporário e não integra esta branch. A importação mantém `main.tex` na raiz e todas as dependências nos diretórios originais. A execução no serviço Overleaf e a inclusão da folha oficial de aprovação permanecem pendentes; não houve nova execução experimental.
+
 ---
 
 ## Documentação original do template

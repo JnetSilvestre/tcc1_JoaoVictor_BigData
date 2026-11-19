@@ -23,7 +23,7 @@ Como resultados materiais, o trabalho entrega uma arquitetura executável, uma p
 
 \section{Síntese da avaliação temporal}
 
-A campanha E11-M01 comparou três configurações em dez blocos. Os tempos medianos por lote de 1.000 requisições foram 18,09 s em C2, 18,35 s em C3 e 19,03 s em C4. As respectivas vazões medianas foram 55,29, 54,49 e 52,56 requisições por segundo. Na comparação pareada, C4 apresentou duração maior que C2 nos dez blocos, com diferença mediana de 1,04 s; C3 apresentou duração maior que C2 em sete blocos, com diferença mediana de 0,57 s.
+A campanha principal comparou três configurações em dez blocos. Os tempos medianos por lote de 1.000 requisições foram 18,09 s em C2, 18,35 s em C3 e 19,03 s em C4. As respectivas vazões medianas foram 55,29, 54,49 e 52,56 requisições por segundo. Na comparação pareada, C4 apresentou duração maior que C2 nos dez blocos, com diferença mediana de 1,04 s; C3 apresentou duração maior que C2 em sete blocos, com diferença mediana de 0,57 s.
 
 O resultado temporal indica que a implantação distribuída funcionou com um acréscimo de duração observado nessa configuração e nessa carga. A comparação não demonstrou um ganho de desempenho pelo uso de Kubernetes. Também não identificou uma parcela isolada de custo atribuível exclusivamente à orquestração ou à rede: os cenários alteram camadas de execução, caminhos de comunicação e, em C4, o contexto do avaliador no control-plane.
 

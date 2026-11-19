@@ -1,7 +1,7 @@
 \chapter{Rastreabilidade da implementação e das evidências}
 \label{ap:rastreabilidade}
 
-Este apêndice reúne os caminhos relativos ao repositório da monografia que sustentam as principais afirmações. O código experimental está separado dos capítulos LaTeX, mas integra o mesmo projeto versionado. A Tabela~\ref{tab:mapa-evidencias} permite localizar o material sem depender de um caminho absoluto do computador utilizado.
+A campanha principal é identificada como E11-M01 no acervo; seu pré-registro é E11-M00-v1, e o inventário inicial do ambiente é E11-D01. Este apêndice reúne os caminhos da implementação completa, preservada na branch \texttt{master} do \href{https://github.com/JnetSilvestre/tcc1_JoaoVictor_BigData/tree/13d1892da1be68203e0693beb19e2b2c11e7c512}{repositório do trabalho, na versão de integração da monografia}. A branch \texttt{tcc2/overleaf-utfpr} contém os arquivos necessários à compilação; nela, as cópias dos códigos citados estão em \path{uteis/codigo-original/} e \path{uteis/codigo-tcc2/}. Os demais caminhos da tabela referem-se à implementação completa. A Tabela~\ref{tab:mapa-evidencias} permite localizar o material sem depender de um caminho absoluto do computador utilizado.
 
 \begin{table}[htbp]
 \centering\small
@@ -9,7 +9,7 @@ Este apêndice reúne os caminhos relativos ao repositório da monografia que su
 \label{tab:mapa-evidencias}
 \begin{tabularx}{\linewidth}{@{}p{4.1cm}X@{}}
 \toprule
-Afirmação ou procedimento & Artefato relativo à raiz do projeto \\
+Afirmação ou procedimento & Artefato na implementação completa \\
 \midrule
 Origem do núcleo Python & \path{docs/tcc2/codigo-original/} e sua nota de proveniência \\
 Adaptação de entidades & \path{prova-conceito/pon/} \\
@@ -44,7 +44,7 @@ Os ZIPs originais e os journals permanecem no acervo de evidências. O pacote de
 
 \section*{Exemplo de topologia observada em uma rodada real}
 
-A Tabela~\ref{tab:topologia-real} transcreve campos do arquivo \texttt{topology-end.json} arquivado em \texttt{e11-c4-m01-b10}. O recorte foi extraído do ZIP original e seu hash interno foi conferido. Trata-se de evidência histórica da rodada, e não de uma consulta atual ao cluster ou de uma representação de saída simulada.
+A Tabela~\ref{tab:topologia-real} transcreve campos do arquivo \texttt{topology-end.json} arquivado na rodada C4 do bloco B10. O recorte foi extraído do ZIP original e seu hash interno foi conferido. Trata-se de evidência histórica da rodada, e não de uma consulta atual ao cluster ou de uma representação de saída simulada.
 
 \begin{table}[htbp]
 \centering\small
@@ -59,7 +59,7 @@ Papel & Nó registrado & Reinícios \\
 \texttt{rule-executor} & \texttt{tcc2-pon-worker} & 0 \\
 \bottomrule
 \end{tabularx}
-\fonte{Arquivo original \texttt{topology-end.json}, rodada \texttt{e11-c4-m01-b10}}
+\fonte{Arquivo original \texttt{topology-end.json}, rodada C4/B10}
 \end{table}
 
 Os nomes e UIDs completos dos Pods, os identificadores de contêiner e os demais campos permanecem no arquivo documental \path{docs/tcc2/e11-m01-exemplo-c4-b10-topology-end.json}. O inventário do pacote derivado liga essa rodada ao ZIP original de SHA-256:

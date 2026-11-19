@@ -5,7 +5,7 @@ Este capítulo apresenta a passagem da hipótese arquitetural para a implementa�
 
 \section{Código de referência e delimitação da adaptação}
 
-O ponto de partida foi o código Python fornecido no contexto da orientação e disponibilizado no repositório \texttt{JnetSilvestre/codigoPon}, na revisão \texttt{c2d525b5c675}. Essa referência foi fixada para permitir distinguir o material recebido das alterações realizadas neste trabalho. Os arquivos usados nas Listagens~\ref{lst:atributo-original} e~\ref{lst:composicao-original} foram conferidos diretamente nessa revisão e acompanham o projeto em \texttt{uteis/codigo-original}. A referência bibliográfica identifica a versão consultada \cite{codigoponreferencia}.
+O ponto de partida foi a implementação Python fornecida no contexto da orientação, que representa as entidades e o mecanismo local de notificações do PON \cite{codigoponreferencia}. Os trechos originais apresentados nas Listagens~\ref{lst:atributo-original} e~\ref{lst:composicao-original} foram conferidos na versão de referência. O Apêndice~\ref{ap:rastreabilidade} identifica essa versão e distingue o material recebido das alterações desenvolvidas neste trabalho.
 
 Essa implementação representa entidades do PON em Python. Embora a motivação do estudo se relacione à linha de pesquisa sobre NOP Query, a aplicação ensaiada não implementa o sistema completo de consultas em vídeo em C++ descrito por \citeonline{kossoski2024tese}. O objeto experimental é a cadeia de atributos, premissas, condições, regras e ações da prova de conceito. Essa delimitação evita atribuir ao sistema original resultados medidos em uma adaptação menor e com outro ambiente de execução.
 
@@ -16,8 +16,8 @@ A Listagem~\ref{lst:atributo-original} mostra o mecanismo original de atualizaç
 \begin{sourcecode}[htbp]
 \caption{Trecho original: atualização de valor em \texttt{Attribute}.}
 \label{lst:atributo-original}
-\lstinputlisting[style=tccpython,firstline=17,lastline=23,firstnumber=17]{uteis/codigo-original/Attribute.py}
-\fonte{Código de referência, revisão \texttt{c2d525b5c675}, \texttt{pon/Attribute.py}}
+\lstinputlisting[style=tccpython,xleftmargin=3.4em,xrightmargin=0.4em,framexleftmargin=0pt,framexrightmargin=0pt,framesep=3pt,numbersep=9pt,firstline=17,lastline=23,firstnumber=17]{uteis/codigo-original/Attribute.py}
+\fonte{Código de referência \cite{codigoponreferencia}, arquivo \texttt{Attribute.py}}
 \end{sourcecode}
 
 A composição de condições também está presente no código recebido. Na Listagem~\ref{lst:composicao-original}, a operação lógica E cria uma condição associada aos dois elementos de entrada. O registro das dependências permite que mudanças sejam propagadas entre entidades. O uso de operadores da linguagem facilita a expressão da regra, mas não acrescenta transporte entre processos: as referências aos elementos continuam sendo objetos locais.
@@ -25,8 +25,8 @@ A composição de condições também está presente no código recebido. Na Lis
 \begin{sourcecode}[htbp]
 \caption{Trecho original: composição de condições pela operação lógica E.}
 \label{lst:composicao-original}
-\lstinputlisting[style=tccpython,firstline=60,lastline=65,firstnumber=60]{uteis/codigo-original/Condition.py}
-\fonte{Código de referência, revisão \texttt{c2d525b5c675}, \texttt{pon/Condition.py}}
+\lstinputlisting[style=tccpython,xleftmargin=3.4em,xrightmargin=0.4em,framexleftmargin=0pt,framexrightmargin=0pt,framesep=3pt,numbersep=9pt,firstline=60,lastline=65,firstnumber=60]{uteis/codigo-original/Condition.py}
+\fonte{Código de referência \cite{codigoponreferencia}, arquivo \texttt{Condition.py}}
 \end{sourcecode}
 
 \subsection{Ajustes funcionais e referência local}
@@ -64,7 +64,7 @@ A Listagem~\ref{lst:adaptacao-condicao} mostra a conexão do estado recebido com
 \begin{sourcecode}[htbp]
 \caption{Adaptação: construção da cadeia lógica a partir do snapshot.}
 \label{lst:adaptacao-condicao}
-\lstinputlisting[style=tccpython,firstline=146,lastline=154,firstnumber=146]{uteis/codigo-tcc2/state.py}
+\lstinputlisting[style=tccpython,xleftmargin=3.4em,xrightmargin=0.4em,framexleftmargin=0pt,framexrightmargin=0pt,framesep=3pt,numbersep=9pt,firstline=146,lastline=154,firstnumber=146]{uteis/codigo-tcc2/state.py}
 \fonte{Implementação do TCC2, \texttt{prova-conceito/c1/state.py}}
 \end{sourcecode}
 
@@ -112,22 +112,14 @@ A infraestrutura foi construída de forma incremental. Primeiro, o núcleo foi v
 
 O \texttt{Dockerfile} da prova de conceito empacota o código e estabelece o ambiente Python usado pelos processos. A campanha conferiu o identificador da imagem e os limites configurados, em vez de assumir que a igualdade de uma etiqueta de imagem asseguraria conteúdo idêntico. Os serviços e o cliente foram executados na imagem aprovada. O cliente persistente realiza o lote dentro da rede da bancada; não é criado um novo processo \texttt{kubectl exec} para cada POST.
 
-O cluster kind possui um nó de controle e um worker. O arquivo de configuração efetivamente versionado aparece na Listagem~\ref{lst:kind-config}. A documentação do kind define seus nós como contêineres usados para executar um cluster local \cite{kinddocumentation}. A Figura~\ref{fig:camadas-ambiente} explicita as camadas presentes no experimento: os dois nós virtuais compartilham o mesmo equipamento e a infraestrutura WSL2/Docker Desktop.
+O cluster kind possui um nó de controle e um worker. O arquivo de configuração efetivamente versionado aparece na Listagem~\ref{lst:kind-config}. A documentação do kind define seus nós como contêineres usados para executar um cluster local \cite{kinddocumentation}. As camadas apresentadas na Figura~\ref{fig:camadas-ambiente} são compartilhadas pelos cenários; a configuração dos nós é detalhada nesta seção.
 
 \begin{sourcecode}[htbp]
 \caption{Configuração dos dois nós virtuais do cluster kind.}
 \label{lst:kind-config}
-\lstinputlisting[style=tcccode,firstline=3]{uteis/codigo-tcc2/kind-config.yaml}
+\lstinputlisting[style=tcccode,xleftmargin=3.4em,xrightmargin=0.4em,framexleftmargin=0pt,framexrightmargin=0pt,framesep=3pt,numbersep=9pt,firstline=3]{uteis/codigo-tcc2/kind-config.yaml}
 \fonte{Configuração versionada em \texttt{infraestrutura/kind/kind-config.yaml}}
 \end{sourcecode}
-
-\begin{figure}[htbp]
-\centering
-\caption{Camadas de execução e compartilhamento do host físico.}
-\label{fig:camadas-ambiente}
-\includegraphics[width=\linewidth]{tcc2-camadas-ambiente.pdf}
-\fonte{}
-\end{figure}
 
 Cada cenário Kubernetes utiliza um namespace próprio por rodada, três Deployments com uma réplica e três Services internos. A configuração dos destinos da cadeia é fornecida por ConfigMap. Seletores de nó definem o posicionamento requerido. As verificações confrontam a intenção declarada nos manifestos com os Pods observados, seus identificadores e o nó de execução. O Apêndice~\ref{ap:rastreabilidade} indica os arquivos e as revisões que permitem inspecionar essas decisões.
 
@@ -140,10 +132,10 @@ A Figura~\ref{fig:topologias} compara as três configurações da campanha. Em C
 \centering
 \caption{Posicionamento dos componentes em C2, C3 e C4.}
 \label{fig:topologias}
-\includegraphics[width=.97\linewidth]{tcc2-topologias-c2-c3-c4.pdf}
+\includegraphics[width=.85\linewidth]{tcc2-topologias-c2-c3-c4.pdf}
 \fonte{}
 \end{figure}
 
 O posicionamento em C4 demonstra que a cadeia pode atravessar a rede interna entre nós kind preservando o comportamento observado. Entretanto, o control-plane também executa componentes de controle. Portanto, C3 e C4 diferem tanto no percurso de comunicação quanto no contexto de execução do avaliador. Essa configuração não permite atribuir toda diferença de tempo exclusivamente ao tráfego entre nós.
 
-A opção por uma réplica de cada papel mantém um único proprietário para cada estado. Aumentar réplicas sem definir particionamento, roteamento e recuperação poderia enviar mensagens de uma mesma entidade a instâncias com históricos diferentes. Assim, os mecanismos de implantação do Kubernetes foram utilizados para organizar e posicionar a aplicação; escalabilidade horizontal e tolerância a falhas permanecem questões para extensões com protocolos próprios.
+Uma réplica por papel mantém um proprietário por estado. A replicação exigiria particionamento, roteamento e recuperação para evitar históricos divergentes de uma mesma entidade. O Kubernetes organizou e posicionou a aplicação; escalabilidade horizontal e tolerância a falhas requerem extensões com protocolos próprios.

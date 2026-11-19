@@ -25,7 +25,7 @@ A avaliação deverá considerar o funcionamento da aplicação, a comunicação
 \section{Arquitetura distribuída proposta para a prova de conceito Python}
 \label{sec:arquitetura-proposta-python}
 
-A inspeção do código-fonte disponível no repositório \texttt{JnetSilvestre/codigoPon}, na revisão \texttt{c2d525b5c675820806af34348e259bff32a6bc5f}, identificou uma implementação experimental em Python de atributos, premissas, condições, regras, ações e instigações. As notificações entre os elementos são realizadas por chamadas locais a métodos, enquanto a classe \texttt{NOPManager} disponibiliza pontos de extensão para mecanismos de comunicação. Não foi identificado, nessa revisão, um transporte de rede implementado ou uma configuração de execução em Kubernetes. Consequentemente, a arquitetura descrita a seguir constitui uma proposta de adaptação, e não uma distribuição previamente comprovada.
+A análise da implementação Python de referência identificou os componentes responsáveis pela representação de atributos, premissas, condições, regras, ações e instigações e pela propagação de notificações entre eles \cite{codigoponreferencia}. A versão analisada está identificada no Apêndice~\ref{ap:rastreabilidade}. As notificações entre os elementos são realizadas por chamadas locais a métodos, enquanto a classe \texttt{NOPManager} disponibiliza pontos de extensão para mecanismos de comunicação. Não foi identificado, no código analisado, um transporte de rede implementado ou uma configuração de execução em Kubernetes. Consequentemente, a arquitetura descrita a seguir constitui uma proposta de adaptação, e não uma distribuição previamente comprovada.
 
 Propõe-se organizar a prova de conceito em três unidades de execução: (i) um produtor de mudanças de atributos, responsável pela emissão de notificações de estado; (ii) um avaliador lógico, no qual as alterações recebidas alimentam as premissas e condições PON; e (iii) um executor de regras, responsável por receber transições de condições e produzir ações observáveis. Cada unidade será executada em processo e contêiner próprios. Essa decisão evita a implantação de uma instância Kubernetes para cada entidade de inferência e preserva a avaliação local da cadeia de notificações no interior do avaliador lógico.
 
@@ -35,11 +35,22 @@ O produtor manterá os valores autoritativos dos atributos e a numeração de su
 
 Na primeira configuração de Kubernetes, cada unidade terá uma réplica, com \textit{Deployment} e \textit{Service} internos, sendo a distribuição comprovada por registros das notificações e pela identificação de processos e \textit{Pods} distintos. A execução em nós computacionais diferentes será demonstrada apenas se a topologia do cluster permitir tal posicionamento. A replicação horizontal de componentes com estado ficará condicionada à definição de particionamento e roteamento consistentes, não sendo assumida como consequência automática do uso de Kubernetes.
 
-Esta definição representa uma arquitetura mínima para investigar a viabilidade técnica prevista nos objetivos do trabalho. A descrição completa de interfaces, mensagens, riscos e critérios de verificação consta no registro técnico da Etapa 04, enquanto o protocolo experimental será especificado na Etapa 05. A Figura~\ref{fig:metodoproposto}, herdada da proposta inicial, deve ser interpretada como hipótese conceitual, e não como retrato da divisão em três processos escolhida nesta etapa. A Figura~\ref{fig:arquitetura-implementada} apresenta a divisão efetivamente implementada e validada no TCC2.
+Esta definição representa uma arquitetura mínima para investigar a viabilidade técnica prevista nos objetivos do trabalho. A descrição das interfaces, mensagens e mecanismos implementados consta no Capítulo~\ref{cap:implementacao}, enquanto o protocolo experimental é apresentado no Capítulo~\ref{cap:metodologia-tcc2}. A Figura~\ref{fig:metodoproposto}, herdada da proposta inicial, deve ser interpretada como hipótese conceitual, e não como retrato da divisão em três processos escolhida nesta etapa. A Figura~\ref{fig:arquitetura-implementada} apresenta a divisão efetivamente implementada e validada no TCC2.
+
+A Figura~\ref{fig:camadas-ambiente} relaciona a proposta de distribuição ao ambiente utilizado posteriormente nos ensaios. A bancada Docker e os nós do cluster kind compartilham o mesmo host físico e as camadas Windows, WSL2 e Docker Desktop. Assim, a separação entre nós virtuais não equivale à distribuição entre máquinas físicas independentes.
+
+\begin{figure}[htbp]
+\centering
+\caption{Camadas de execução e compartilhamento do host físico.}
+\label{fig:camadas-ambiente}
+\includegraphics[width=\linewidth]{tcc2-camadas-ambiente.pdf}
+\fonte{}
+\end{figure}
+\FloatBlock
 
 \section{Cronograma preliminar}
 
-A Tabela~\ref{tab:cronograma} apresenta um planejamento relativo elaborado no TCC1. Os períodos M1 a M8 ainda não correspondem a meses civis definidos; esse mapeamento deverá ser atualizado após a confirmação do calendário do TCC2.
+A Tabela~\ref{tab:cronograma} apresenta um planejamento relativo elaborado no TCC1. Os períodos M1 a M8 representam a distribuição relativa das atividades na proposta, sem correspondência com meses civis ou com as datas efetivas da campanha experimental.
 
 \begin{table}[htbp]
 \centering

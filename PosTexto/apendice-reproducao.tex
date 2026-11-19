@@ -1,15 +1,15 @@
 \chapter{Reprodução da análise e compilação}
 \label{ap:reproducao}
 
-A análise utiliza Python 3.13 e Matplotlib 3.10.7. Na raiz do repositório, os comandos abaixo leem os dados arquivados e geram os artefatos, sem executar experimentos:
+A análise utiliza Python 3.13 e Matplotlib 3.10.7. Na raiz da implementação completa identificada no Apêndice~\ref{ap:rastreabilidade}, os comandos abaixo leem os dados arquivados e geram os artefatos, sem executar experimentos. Esses scripts e o pacote derivado estão preservados na branch \texttt{master}; não integram a branch de compilação do Overleaf:
 
-\begin{lstlisting}[style=tcccode]
+\begin{lstlisting}[style=tcccode,xleftmargin=3.4em,xrightmargin=0.4em,framexleftmargin=0pt,framexrightmargin=0pt,framesep=3pt,numbersep=9pt]
 python -B prova-conceito/benchmark/m01_analyze.py E11-M01-auditoria-extracao.zip
 python -B prova-conceito/benchmark/m01_publication.py
 python -B docs/tcc2/gerar_ilustracoes_monografia.py
 \end{lstlisting}
 
-O primeiro comando valida o pacote e gera métricas e gráficos; o segundo gera as tabelas de apresentação e os contrastes. O terceiro desenha os diagramas da arquitetura, que não são capturas de novas execuções.
+O primeiro comando valida o pacote e gera métricas e gráficos; o segundo gera as tabelas de apresentação e os contrastes. O terceiro desenha os diagramas da arquitetura, que não são capturas de novas execuções. A versão revisada da figura de camadas é gerada por \path{uteis/gerar_camadas_ambiente.py}, na branch \texttt{tcc2/overleaf-utfpr}.
 
 A Tabela~\ref{tab:arquivos-pacote} descreve o pacote derivado. As durações brutas estão em nanossegundos, convertidos conforme a Seção~\ref{sec:metricas}.
 
@@ -32,7 +32,7 @@ Arquivo & Conteúdo \\
 
 Para compilar a monografia, o arquivo principal é \texttt{main.tex}. O projeto utiliza pdfLaTeX, BibTeX, a classe \texttt{utfpr.cls} e o estilo \texttt{abntex2-alf.bst}. As figuras estão em \texttt{figuras/}; as tabelas derivadas, em \texttt{capitulos/dados-e11-m01/}; os trechos de código são incluídos diretamente dos arquivos identificados. Uma sequência de compilação local é:
 
-\begin{lstlisting}[style=tcccode]
+\begin{lstlisting}[style=tcccode,xleftmargin=3.4em,xrightmargin=0.4em,framexleftmargin=0pt,framexrightmargin=0pt,framesep=3pt,numbersep=9pt]
 pdflatex -interaction=nonstopmode -halt-on-error main.tex
 bibtex main
 pdflatex -interaction=nonstopmode -halt-on-error main.tex

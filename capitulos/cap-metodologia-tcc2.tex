@@ -7,7 +7,7 @@ O estudo experimental exploratório investigou a preservação funcional da cade
 
 A organização do protocolo considerou a necessidade de definir métricas, registrar configurações e manter correspondência entre resultados e afirmações. Esses aspectos são discutidos por \citeonline{papadopoulos2021methodological} como princípios de avaliação reprodutível de desempenho. No presente trabalho, sua aplicação resultou em um pré-registro, em verificações anteriores à execução e em arquivos auditáveis por rodada.
 
-O planejamento foi refinado antes da série definitiva. Pilotos e sondagens serviram para qualificar a bancada e avaliar os instrumentos, sem integrar a amostra final. A campanha E11-M01 adotou exclusivamente o modo \texttt{timing\_only}: duração de lote e tempos de resposta compõem as métricas, enquanto CPU e RAM não foram coletadas periodicamente durante os lotes. Essa decisão delimita o que pode ser concluído sobre custo computacional.
+O planejamento foi refinado antes da série definitiva. Pilotos e sondagens serviram para qualificar a bancada e avaliar os instrumentos, sem integrar a amostra final. A campanha principal adotou exclusivamente o modo \texttt{timing\_only}: duração de lote e tempos de resposta compõem as métricas, enquanto CPU e RAM não foram coletadas periodicamente durante os lotes. Essa decisão delimita o que pode ser concluído sobre custo computacional.
 
 \section{Ambiente e controle da configuração}
 
@@ -30,7 +30,7 @@ Kubernetes & v1.37.0; um control-plane e um worker kind \\
 Controle de recursos & cgroups v2; quotas conferidas nas bancadas \\
 \bottomrule
 \end{tabularx}
-\fonte{Inventário E11-D01 e registros de preparação da campanha}
+\fonte{Inventário do ambiente e registros de preparação da campanha}
 \end{table}
 
 Os limites foram conferidos tanto na configuração declarada quanto nos registros de cgroup das bancadas. Cada contêiner foi limitado a 0,5 CPU. Os serviços tiveram limite de 256 MiB e o cliente, de 128 MiB; o swap ficou desabilitado. Nos manifestos Kubernetes, as solicitações de recursos foram 100m de CPU e 128 MiB por serviço, e 100m e 64 MiB para o cliente. Esses valores expressam políticas de alocação e limitação, e não consumo observado ou recursos físicos dedicados.
@@ -56,7 +56,7 @@ Transições / notificações de condição & 500 \\
 Efeitos produzidos pela regra & 250 \\
 \bottomrule
 \end{tabularx}
-\fonte{Entrada canônica e oráculo da campanha E11-M01}
+\fonte{Entrada canônica e oráculo da campanha principal}
 \end{table}
 
 A carga exercita a condição da Equação~\ref{eq:condicao-experimental}, com concorrência igual a um. O cliente aguarda a resposta antes de enviar a próxima requisição. A vazão resultante caracteriza esse circuito serial; não representa a capacidade máxima do sistema sob múltiplos clientes. O servidor utiliza HTTP/1.0, portanto a permanência de um único processo cliente não deve ser confundida com reutilização garantida de uma conexão TCP em todo o lote.
@@ -65,7 +65,7 @@ A rodada em bancada nova constitui a unidade experimental. As 1.000 requisiçõe
 
 \section{Blocos e sequência de execução}
 
-O pré-registro E11-M00-v1 fixou dez blocos, B01 a B10, com uma execução de C2, C3 e C4 por bloco, totalizando 30 rodadas. A ordem dos cenários varia segundo uma matriz previamente registrada. Essa organização permite comparar configurações dentro do mesmo bloco e evita concentrar todas as execuções de um cenário antes das demais. A literatura identifica a ordem de ensaios como possível fonte de viés \cite{duplyakin2023ordering}; o uso de blocos é uma medida de controle, sem eliminar toda dependência temporal do host.
+O pré-registro experimental fixou dez blocos, B01 a B10, com uma execução de C2, C3 e C4 por bloco, totalizando 30 rodadas. A ordem dos cenários varia segundo uma matriz previamente registrada. Essa organização permite comparar configurações dentro do mesmo bloco e evita concentrar todas as execuções de um cenário antes das demais. A literatura identifica a ordem de ensaios como possível fonte de viés \cite{duplyakin2023ordering}; o uso de blocos é uma medida de controle, sem eliminar toda dependência temporal do host.
 
 Cada rodada começou com serviços novos, estado inicial frio e identificadores exclusivos. As verificações de disponibilidade não foram tratadas como aquecimento do caminho mutante. Um único snapshot precedeu o lote. A execução das 1.000 solicitações ocorreu uma única vez; após seu término, foram coletados estados e logs para validação. A Figura~\ref{fig:ciclo-rodada} apresenta o ciclo adotado e o tratamento de falhas.
 
@@ -77,9 +77,9 @@ Cada rodada começou com serviços novos, estado inicial frio e identificadores 
 \fonte{}
 \end{figure}
 
-O controlador da campanha foi executado na revisão \texttt{24740e922181}. B01/C2 havia sido executada na revisão \texttt{eecc15e3bb1c}; a retomada reconheceu os arquivos e o journal existentes e prosseguiu com a revisão e o encerramento, sem repetir seus POSTs. As outras 29 rodadas foram executadas pelo controlador integrado. Essa diferença de proveniência foi preservada no inventário e não motivou a exclusão de B01.
+A primeira rodada de C2 foi realizada antes da adoção do controlador integrado da campanha. A retomada reconheceu os arquivos e o registro de execução existentes e prosseguiu com a verificação e o encerramento, sem repetir as requisições. As outras 29 rodadas foram executadas pelo controlador integrado. Essa diferença de proveniência foi preservada no inventário e no Apêndice~\ref{ap:rastreabilidade}, sem motivar a exclusão do primeiro bloco.
 
-O encerramento exigiu ZIP íntegro, cópia preservada, conferência da identidade dos recursos e consentimento específico. A retirada foi dirigida aos IDs ou UIDs da bancada correspondente. Pilotos, qualificações S01 e recursos históricos não foram incorporados à amostra E11-M01. Os registros de encerramento servem para rastrear o ciclo de vida da bancada e não compõem o tempo de lote.
+O encerramento exigiu ZIP íntegro, cópia preservada, conferência da identidade dos recursos e consentimento específico. A retirada foi dirigida aos IDs ou UIDs da bancada correspondente. Pilotos, rodadas de qualificação e recursos históricos não foram incorporados à amostra principal. Os registros de encerramento servem para rastrear o ciclo de vida da bancada e não compõem o tempo de lote.
 
 \section{Definição das métricas}
 \label{sec:metricas}
