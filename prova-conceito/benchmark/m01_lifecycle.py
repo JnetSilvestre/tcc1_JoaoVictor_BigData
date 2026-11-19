@@ -1,8 +1,8 @@
-"""E11-M00J: controlador GERAL de uma rodada M01, fail-closed.
+"""E11-M01: controlador GERAL de rodadas, com controles fail-closed.
 
 As 30 identidades e ordem sao as do pre-registro E11-M00-v1.
-Toda criacao/POST/retirada esta DESABILITADA por padrao nesta revisao.
-O codigo mutante so sera habilitado apos regressao no host e homologacao.
+Cada RUN e RETIRE exige consentimento especifico para a identidade da rodada.
+A campanha pode ser conduzida por benchmark.m01_campaign, uma etapa por vez.
 
 Estados de rodada:
   PLAN_ONLY -> RUN_PASS_BACKED_UP -> RETIREMENT_COMPLETE
@@ -38,13 +38,14 @@ from benchmark.runtime_gate import assess_capacity, MIN_DISK_FREE_BYTES
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTEXT = "kind-tcc2-pon"
-# Trava global mantida: SEM liberacao geral para os 30 slots.
-# Release estrito e documental: SOMENTE a primeira bancada B01/C2.
-# RUN e RETIRE exigem dois aceites interativos INDEPENDENTES; RETIRE ainda
-# depende do ZIP/backup PASS e da propriedade por IDs Docker completos.
-# Os 29 slots posteriores permanecem proibidos, inclusive --stage retire.
-MAIN_CAMPAIGN_ENABLED = False
-RELEASED_OPERATIONS = frozenset({(1, "RUN"), (1, "RETIRE")})
+# Release sequencial para os 30 slots pre-registrados, sem autorizar
+# limpeza generica, repeticao de snapshot/POST ou violacao da ordem.
+# Cada etapa mutante exige NOVO consentimento interativo por slot.
+MAIN_CAMPAIGN_ENABLED = True
+RELEASED_OPERATIONS = frozenset(
+    (position, stage) for position in range(1, 31)
+    for stage in ("RUN", "RETIRE")
+)
 
 
 def slot_by_position(position):
@@ -341,13 +342,9 @@ def verify_clean_git(query, approved_head):
 
 
 def require_stage_release(stage, position):
-    """Nenhuma outra bancada M01 e liberada pela aprovacao B01/C2."""
+    """Verifica allowlist exata dos 30 slots; nao contorna ordem/journals."""
     slot = slot_by_position(position)
-    if stage not in ("RUN", "RETIRE"):
-        raise ValueError("STOP: fase mutante invalida")
-    if slot["run_id"] != "e11-c2-m01-b01" and not MAIN_CAMPAIGN_ENABLED:
-        raise ValueError("STOP: somente B01/C2 foi liberada")
-    if not MAIN_CAMPAIGN_ENABLED and (position, stage) not in RELEASED_OPERATIONS:
+    if not MAIN_CAMPAIGN_ENABLED or (position, stage) not in RELEASED_OPERATIONS:
         raise ValueError("STOP: fase/rodada sem liberacao formal")
     return slot
 
