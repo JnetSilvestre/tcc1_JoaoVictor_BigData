@@ -1,6 +1,8 @@
 # STATUS ATUAL — TCC2
 
-Atualizado em: 2026-11-15
+Atualizado em: 2026-11-19
+
+**Checkpoint mais recente: publicação da monografia ampliada concluída em 19/11/2026.** As branches `master` e `tcc2/desenvolvimento` foram conferidas no commit de entrega `13d1892da1be68203e0693beb19e2b2c11e7c512`. Consulte o registro de retomada ao final deste documento; os registros anteriores preservam o histórico e não representam a situação atual.
 
 ## Leitura rápida — última situação verificada
 
@@ -1060,3 +1062,12 @@ A versão local da monografia foi compilada com pdfLaTeX e BibTeX em 38 páginas
 **Publicação neste checkpoint: preparada, ainda não confirmada.** A última leitura remota identificou desenvolvimento em `ac674ebe18c522235be0b7875bff7b9cb193d3a7` e master em `05ed7d674ca34cd22e2434e4db19e9402b9c23d6`, sem divergência entre elas. Como o diretório `.git` deste workspace é protegido contra escrita e o acesso Git nativo à rede está indisponível, a publicação foi preparada pelo conector GitHub, preservando a árvore e o histórico de desenvolvimento. O índice e a branch local não foram alterados. A confirmação remota, quando concluída, será registrada em checkpoint posterior; esta preparação não representa publicação consumada.
 
 **Pendências separadas.** Revisão acadêmica pelo orientador; conferência com o PDF final do TCC1; aceite pessoal dos agradecimentos; folha oficial de aprovação; validação institucional de depósito/PDF-A. O acesso automático à interface do Overleaf foi interrompido porque a ferramenta não conseguiu verificar a URL atual do navegador com segurança; nenhum projeto foi alterado nem compilado nessa plataforma. O pacote foi validado localmente. A campanha continua sustentando somente a viabilidade funcional nas condições ensaiadas e comparações temporais descritivas por bloco: dois nós kind virtuais em um host físico, carga serial, `timing_only`, sem CPU/RAM durante os lotes.
+
+## 19/11/2026 — Retomada da Etapa 14: publicação concluída e conferida
+
+1. **Ponto retomado.** Continuação do chat "Atualização concluída". A monografia ampliada e o pacote compacto já estavam validados localmente; faltavam a publicação completa e sua confirmação remota. Nenhum conteúdo científico novo, benchmark, POST ou operação Docker/Kubernetes foi executado nesta retomada.
+2. **Entrega publicada.** Commit `13d1892da1be68203e0693beb19e2b2c11e7c512`, árvore `2a1edef80b27bb402b60cc857946ca67c2144605`, com 55 arquivos adicionados/alterados sobre `ac674ebe18c522235be0b7875bff7b9cb193d3a7`. A publicação preserva o histórico. Ambas as branches foram atualizadas sem força, com controle do SHA anterior, e consultadas novamente: `master` e `tcc2/desenvolvimento` apontavam para esse commit. Este registro posterior documenta a confirmação da entrega.
+3. **Conferência desta retomada.** Os hashes SHA-256 do PDF e ZIP coincidem com os registrados na validação editorial. Os 103 arquivos do ZIP foram comparados aos correspondentes locais, com zero diferenças. A árvore remota foi criada com os identificadores Git dos arquivos completos, incluindo PDF e ZIP. O manifesto transitório anterior tinha versões antigas do status e do relatório de validação; foram utilizadas as versões atuais desses documentos. A comparação remota confirmou os 55 caminhos previstos.
+4. **Arquivos disponíveis.** `output/pdf/TCC2-monografia.pdf` (62 páginas; SHA-256 `8c18ffd4da2f53dbabcf82184d9116d1994742eec2ab5f7cc7c1d9f56237513a`) e `output/overleaf/TCC2-Overleaf.zip` (103 arquivos; SHA-256 `f91fcd346ca571538f446777b4129c0096ada55b74c036ab1b3be16c0f830408`). Fontes, figuras, tabelas, referências e trechos de código estão integrados à estrutura UTFPR. A compilação local anterior permanece a evidência de compilação; não houve nova compilação nem acesso ao Overleaf nesta retomada.
+5. **Próximos passos.** Importar o ZIP no Overleaf da universidade, selecionar `main.tex` e pdfLaTeX e revisar o documento com o orientador. Permanecem pendentes a comparação com o PDF final aprovado do TCC1, a revisão pessoal dos agradecimentos, a folha oficial de aprovação e a validação institucional de depósito/PDF-A. A publicação não representa aprovação acadêmica.
+6. **Estado do workspace.** A publicação ocorreu pelo acesso remoto ao GitHub. O diretório `.git` local, protegido contra escrita, não foi modificado; o HEAD/índice local ainda refletem a base anterior e podem exibir as alterações publicadas como diferenças locais. Não descartar esses arquivos nem interpretar esse estado como falha da publicação remota.
