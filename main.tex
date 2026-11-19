@@ -82,6 +82,7 @@
 
 %% Formatação de páginas de elementos pré-textuais
 \pretextual%% Não comente esta linha
+\hypersetup{pageanchor=false}
 
 %% Capa
 %\incluircapa%% Comente para remover este item
@@ -94,6 +95,7 @@
 % luiz - iniciar contagem depois da folha de rosto
 \clearpage
 \setcounter{page}{2}
+\hypersetup{pageanchor=true}
 
 %% Ficha catalográfica (teses e dissertações)
 %\incluirfichacatalografica%% Comente para remover este item
@@ -111,7 +113,7 @@
 % \include{./PreTexto/dedicatoria}%% Comente para remover este item
 
 %% Agradecimentos
-% \include{./PreTexto/agradecimentos}%% Comente para remover este item
+\include{./PreTexto/agradecimentos}%% Comente para remover este item
 
 %% Epígrafe
 % \include{./PreTexto/epigrafe}%% Comente para remover este item
@@ -156,10 +158,11 @@
 %\incluirlistadequadros
 
 %% Listagem de códigos fonte
-%\incluirlistadecodigosfonte
+\incluirlistadecodigosfonte
 
 %% Lista de abreviaturas, siglas e acrônimos
-\incluirlistadeacronimos{none}%% Opções: "glossaries" (pacote) ou "file" (arquivo) ou "none" (desabilita)
+\include{PreTexto/siglas-tcc2}
+%\incluirlistadeacronimos{none}%% Opções: "glossaries" (pacote) ou "file" (arquivo) ou "none" (desabilita)
 
 %% Lista de símbolos
 \incluirlistadesimbolos{none}%% Opções: "nomencl" (pacote) ou "file" (arquivo) ou "none" (desabilita)
@@ -194,10 +197,11 @@
 \include{./capitulos/cap-proposta}%% Comente para remover este item
 
 %% Capítulo
-%\include{./capitulos/cap-metodologia}%% Comente para remover este item
+\include{capitulos/cap-implementacao-tcc2}
+\include{./capitulos/cap-metodologia-tcc2}
 
 %% Capítulo
-%\include{./capitulos/cap-experimentos-resultados}%% Comente para remover este item
+\include{./capitulos/cap-resultados}
 
 %% Capítulo - esse capítulo contém exemplos para melhor uso do modelo Latex
 %% Na versão final do TCC esse capítulo deve ser removido utilizando o sinal %
@@ -231,7 +235,9 @@
 \renewcommand{\chaptername}{Apêndice} % Muda a palavra "Capítulo" para "Apêndice"
 
 %% Arquivos de apêndices
-\begin{arquivosdeapendices}%% Os arquivos de apêndices devem se incluídos neste ambiente - Não comente esta linha
+\begin{arquivosdeapendices}
+\include{PosTexto/apendice-rastreabilidade}
+\include{PosTexto/apendice-reproducao}%% Os arquivos de apêndices devem se incluídos neste ambiente - Não comente esta linha
 %  \partapendices%% Página de início dos apêndices - adiciona uma página com o título Apêndices
 %   %% Capítulo de exemplo
 %\begin{apendicesenv}

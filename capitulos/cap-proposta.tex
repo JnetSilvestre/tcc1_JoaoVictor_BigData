@@ -1,6 +1,8 @@
 \chapter{Proposta de Distribuição da Aplicação PON}
 \label{cap:proposta}
 
+Este capítulo registra a hipótese arquitetural e o cronograma formulados na proposta. A implementação avaliada e o protocolo executado são descritos nos Capítulos~\ref{cap:implementacao} e~\ref{cap:metodologia-tcc2}, respectivamente. A redação prospectiva e os períodos relativos deste capítulo preservam o registro do planejamento; não representam pendências da implementação já concluída.
+
 Esta proposta investiga a viabilidade técnica da distribuição de uma aplicação de prova de conceito fundamentada no Paradigma Orientado a Notificações (PON), utilizando uma infraestrutura de contêineres orquestrados pelo Kubernetes.
 
 A arquitetura do PON caracteriza-se pela colaboração entre entidades responsáveis pela representação de fatos e pelo processamento de decisões lógicas. Essas entidades interagem por meio de notificações, permitindo organizar o processamento em componentes com responsabilidades específicas \cite{kossoski2024applsci,kossoski2024tese}. Entretanto, o desacoplamento lógico entre entidades não implica, necessariamente, que possam ser distribuídas individualmente entre processos ou nós computacionais sem adaptações.
@@ -33,7 +35,7 @@ O produtor manterá os valores autoritativos dos atributos e a numeração de su
 
 Na primeira configuração de Kubernetes, cada unidade terá uma réplica, com \textit{Deployment} e \textit{Service} internos, sendo a distribuição comprovada por registros das notificações e pela identificação de processos e \textit{Pods} distintos. A execução em nós computacionais diferentes será demonstrada apenas se a topologia do cluster permitir tal posicionamento. A replicação horizontal de componentes com estado ficará condicionada à definição de particionamento e roteamento consistentes, não sendo assumida como consequência automática do uso de Kubernetes.
 
-Esta definição representa uma arquitetura mínima para investigar a viabilidade técnica prevista nos objetivos do trabalho. A descrição completa de interfaces, mensagens, riscos e critérios de verificação consta no registro técnico da Etapa 04, enquanto o protocolo experimental será especificado na Etapa 05. A Figura~\ref{fig:metodoproposto}, herdada da proposta inicial, deve ser interpretada como hipótese conceitual, e não como retrato da divisão em três processos escolhida nesta etapa. Uma figura definitiva será produzida a partir da implementação validada.
+Esta definição representa uma arquitetura mínima para investigar a viabilidade técnica prevista nos objetivos do trabalho. A descrição completa de interfaces, mensagens, riscos e critérios de verificação consta no registro técnico da Etapa 04, enquanto o protocolo experimental será especificado na Etapa 05. A Figura~\ref{fig:metodoproposto}, herdada da proposta inicial, deve ser interpretada como hipótese conceitual, e não como retrato da divisão em três processos escolhida nesta etapa. A Figura~\ref{fig:arquitetura-implementada} apresenta a divisão efetivamente implementada e validada no TCC2.
 
 \section{Cronograma preliminar}
 

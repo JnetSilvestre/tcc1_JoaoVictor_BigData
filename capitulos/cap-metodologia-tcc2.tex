@@ -1,58 +1,123 @@
-% Etapa 05 — ESQUELETO DE METODOLOGIA.
-% Nao incluir no main.tex antes da revisao e integracao da Etapa 13.
-% Planejamento: nenhuma execucao experimental foi realizada nesta etapa.
-% Preservar o capitulo e a figura conceitual do TCC1.
 \chapter{Metodologia e protocolo experimental}
 \label{cap:metodologia-tcc2}
 
-\section{Caracterizacao da investigacao}
-\label{sec:met-caracterizacao}
-% Descrever estudo experimental exploratorio de viabilidade tecnica.
-% Objetivos aprovados em TCC1: NAO reescrever.
-% Distinguir aplicacao Python PON de NOP Query C++.
+\section{Caracterização da investigação}
 
-\section{Prova de conceito e arquitetura investigada}
-\label{sec:met-arquitetura}
-% Descrever attribute-source, logic-engine e rule-executor,
-% contratos HTTP/JSON, fluxo de notificacoes e gerenciamento de estado.
-% Modelo 1: figura conceitual herdada do TCC1 em cap-proposta.tex.
-% Modelo 2: diagrama especificado em docs/tcc2/etapa-04-arquitetura-distribuida.md.
-% Inserir FIGURA DEFINITIVA do modelo implementado apos validacao
-% nas Etapas 07--10, durante consolidacao da Etapa 13.
-% Nao apresentar o modelo de projeto como implementacao comprovada.
+O estudo experimental exploratório investigou a preservação funcional da cadeia PON após sua separação em serviços e caracterizou o tempo de execução em três configurações. A viabilidade funcional foi avaliada pela concordância dos estados, eventos e efeitos com um oráculo independente. A avaliação temporal comparou configurações completas de implantação, com a mesma sequência de entradas e o mesmo código de aplicação.
 
-\section{Ambiente experimental}
-\label{sec:met-ambiente}
-% PENDENTE Etapa 06: maquina, SO, CPU, RAM, virtualizacao,
-% distribuicao Kubernetes, Docker, versoes, topologia e limites.
-% Separar cluster virtual multinó de máquinas físicas.
+A organização do protocolo considerou a necessidade de definir métricas, registrar configurações e manter correspondência entre resultados e afirmações. Esses aspectos são discutidos por \citeonline{papadopoulos2021methodological} como princípios de avaliação reprodutível de desempenho. No presente trabalho, sua aplicação resultou em um pré-registro, em verificações anteriores à execução e em arquivos auditáveis por rodada.
 
-\section{Cenarios e casos de teste}
-\label{sec:met-cenarios}
-% C0: processo unico; C1: tres processos locais;
-% C2: Docker; C3: Kubernetes; C4: multinó condicional;
-% C5: variacao de carga complementar; F1: reinicios condicionais.
-% Matriz completa V01--V12 em docs/tcc2/etapa-05-protocolo-experimental.md.
+O planejamento foi refinado antes da série definitiva. Pilotos e sondagens serviram para qualificar a bancada e avaliar os instrumentos, sem integrar a amostra final. A campanha E11-M01 adotou exclusivamente o modo \texttt{timing\_only}: duração de lote e tempos de resposta compõem as métricas, enquanto CPU e RAM não foram coletadas periodicamente durante os lotes. Essa decisão delimita o que pode ser concluído sobre custo computacional.
 
-\section{Entradas deterministicas e oraculo}
-\label{sec:met-oraculo}
-% Fixar fixture, estado inicial, seeds e hashes antes das medicoes.
-% Comparar efeitos causais e ordem entre oraculo e cenarios distribuídos.
+\section{Ambiente e controle da configuração}
 
-\section{Metricas e instrumentos de observacao}
-\label{sec:met-metricas}
-% Correcao funcional obrigatoria. Latencia, CPU, memoria, vazao e rede
-% complementares quando houver instrumentacao valida.
-% Relogios monotônicos so dentro da mesma origem.
+A bancada utilizou um computador com Windows 10, Intel Core i5-9300H, quatro núcleos físicos, oito processadores lógicos e aproximadamente 16 GiB de memória instalada. O Docker Desktop operou sobre WSL2 com cgroups v2. C3 e C4 utilizaram o cluster kind de dois nós virtuais apresentado na Figura~\ref{fig:topologias}. A Tabela~\ref{tab:ambiente-versoes} apresenta as principais informações do inventário de preparação.
 
-\section{Procedimentos de coleta e reprodutibilidade}
-\label{sec:met-reproducao}
-% Descrever comandos efetivamente executados apenas apos experimentos,
-% incluir SHA, digests, logs, manifestos, topologia, dados brutos e hashes.
-% Etapa 11 executa; Etapa 12 analisa.
+\begin{table}[htbp]
+\centering\small
+\caption{Ambiente documentado na preparação da campanha.}
+\label{tab:ambiente-versoes}
+\begin{tabularx}{\linewidth}{@{}p{4cm}X@{}}
+\toprule
+Componente & Configuração registrada \\
+\midrule
+Sistema do host & Windows 10 Home, versão 10.0.19045 \\
+Processador & Intel Core i5-9300H; 4 núcleos e 8 processadores lógicos \\
+Memória do host & 16.614.052 KiB visíveis ao Windows (aproximadamente 16 GiB) \\
+Camada Linux & WSL2; kernel 6.18.58.1-microsoft-standard-WSL2 \\
+Docker & Desktop 4.99.0; Engine 29.9.3; contexto \texttt{desktop-linux} \\
+Kubernetes & v1.37.0; um control-plane e um worker kind \\
+Controle de recursos & cgroups v2; quotas conferidas nas bancadas \\
+\bottomrule
+\end{tabularx}
+\fonte{Inventário E11-D01 e registros de preparação da campanha}
+\end{table}
 
-\section{Criterios de avaliacao e limitacoes}
-\label{sec:met-criterios}
-% V01--V08 e V11: evidencia funcional nuclear.
-% V09 condicional; V10 recuperacao transparente; V12 complementar.
-% Nao exigir melhoria de desempenho para atestar viabilidade.
+Os limites foram conferidos tanto na configuração declarada quanto nos registros de cgroup das bancadas. Cada contêiner foi limitado a 0,5 CPU. Os serviços tiveram limite de 256 MiB e o cliente, de 128 MiB; o swap ficou desabilitado. Nos manifestos Kubernetes, as solicitações de recursos foram 100m de CPU e 128 MiB por serviço, e 100m e 64 MiB para o cliente. Esses valores expressam políticas de alocação e limitação, e não consumo observado ou recursos físicos dedicados.
+
+Antes de cada rodada, o controlador verificou a imagem aprovada, a integridade da entrada, a disponibilidade de memória e disco, a ausência de outra bancada da campanha e a identidade dos recursos. Os limiares operacionais de 3 GiB de RAM livre no Windows e 15 GiB de espaço em disco foram critérios de segurança do procedimento, sem interpretação estatística. A presença de capacidade mínima não garante ausência de competição por recursos, frequência constante do processador ou equivalência física entre contêineres Docker e Pods kind.
+
+\section{Carga de trabalho e unidade experimental}
+
+A entrada canônica contém 1.000 solicitações sequenciais, geradas com semente 20260502. Seu conteúdo e o resultado esperado foram fixados por SHA-256 antes da campanha. Cada rodada recebeu uma identidade própria, mantendo os valores e a ordem da carga. A Tabela~\ref{tab:carga-canonica} diferencia as contagens: requisição, mudança de atributo, transição de condição e efeito são eventos de naturezas distintas.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Composição da carga canônica por rodada.}
+\label{tab:carga-canonica}
+\begin{tabularx}{\linewidth}{@{}Xr@{}}
+\toprule
+Evento esperado & Quantidade \\
+\midrule
+Requisições de alteração & 1.000 \\
+Mudanças efetivas de atributo / notificações de atributo & 874 \\
+Operações sem alteração de valor & 126 \\
+Transições / notificações de condição & 500 \\
+Efeitos produzidos pela regra & 250 \\
+\bottomrule
+\end{tabularx}
+\fonte{Entrada canônica e oráculo da campanha E11-M01}
+\end{table}
+
+A carga exercita a condição da Equação~\ref{eq:condicao-experimental}, com concorrência igual a um. O cliente aguarda a resposta antes de enviar a próxima requisição. A vazão resultante caracteriza esse circuito serial; não representa a capacidade máxima do sistema sob múltiplos clientes. O servidor utiliza HTTP/1.0, portanto a permanência de um único processo cliente não deve ser confundida com reutilização garantida de uma conexão TCP em todo o lote.
+
+A rodada em bancada nova constitui a unidade experimental. As 1.000 requisições de uma rodada compartilham o estado e o contexto de execução; não são tratadas como 1.000 réplicas experimentais independentes. A distinção entre níveis de repetição é importante na avaliação de sistemas, como discutem \citeonline{kalibera2013rigorous}. Neste estudo, os resumos são calculados primeiro dentro de cada rodada e depois entre as dez rodadas de cada cenário.
+
+\section{Blocos e sequência de execução}
+
+O pré-registro E11-M00-v1 fixou dez blocos, B01 a B10, com uma execução de C2, C3 e C4 por bloco, totalizando 30 rodadas. A ordem dos cenários varia segundo uma matriz previamente registrada. Essa organização permite comparar configurações dentro do mesmo bloco e evita concentrar todas as execuções de um cenário antes das demais. A literatura identifica a ordem de ensaios como possível fonte de viés \cite{duplyakin2023ordering}; o uso de blocos é uma medida de controle, sem eliminar toda dependência temporal do host.
+
+Cada rodada começou com serviços novos, estado inicial frio e identificadores exclusivos. As verificações de disponibilidade não foram tratadas como aquecimento do caminho mutante. Um único snapshot precedeu o lote. A execução das 1.000 solicitações ocorreu uma única vez; após seu término, foram coletados estados e logs para validação. A Figura~\ref{fig:ciclo-rodada} apresenta o ciclo adotado e o tratamento de falhas.
+
+\begin{figure}[htbp]
+\centering
+\caption{Ciclo de execução, validação e preservação de uma rodada.}
+\label{fig:ciclo-rodada}
+\includegraphics[width=\linewidth]{tcc2-ciclo-rodada.pdf}
+\fonte{}
+\end{figure}
+
+O controlador da campanha foi executado na revisão \texttt{24740e922181}. B01/C2 havia sido executada na revisão \texttt{eecc15e3bb1c}; a retomada reconheceu os arquivos e o journal existentes e prosseguiu com a revisão e o encerramento, sem repetir seus POSTs. As outras 29 rodadas foram executadas pelo controlador integrado. Essa diferença de proveniência foi preservada no inventário e não motivou a exclusão de B01.
+
+O encerramento exigiu ZIP íntegro, cópia preservada, conferência da identidade dos recursos e consentimento específico. A retirada foi dirigida aos IDs ou UIDs da bancada correspondente. Pilotos, qualificações S01 e recursos históricos não foram incorporados à amostra E11-M01. Os registros de encerramento servem para rastrear o ciclo de vida da bancada e não compõem o tempo de lote.
+
+\section{Definição das métricas}
+\label{sec:metricas}
+
+O desfecho primário é o tempo de lote $T_{s,b}$ do cenário $s$ no bloco $b$. Ele corresponde à diferença entre leituras do relógio monotônico \texttt{time.perf\_counter\_ns} no mesmo processo cliente, antes e depois do laço de requisições:
+\begin{equation}
+ T_{s,b}=\frac{t_{\mathrm{fim}}-t_{\mathrm{inicio}}}{10^9},
+ \qquad V_{s,b}=\frac{1000}{T_{s,b}}.
+\label{eq:tempo-vazao}
+\end{equation}
+O tempo é expresso em segundos e a vazão $V$ em requisições por segundo. A vazão é uma transformação da duração do lote, não uma evidência independente de desempenho.
+
+A janela do lote inclui o trabalho do cliente no laço, a comunicação e o processamento síncrono dos serviços. Exclui criação da bancada, instalação do snapshot, geração da carga, avaliação do oráculo, inspeção final e empacotamento. A escrita das respostas do cliente em saída padrão ocorre depois da janela; o registro de eventos nos serviços integra o caminho da aplicação medida. Por isso, o resultado caracteriza a versão instrumentada e configurada no experimento.
+
+Para cada solicitação $i$, o RTT é medido imediatamente antes do envio HTTP e após a leitura e decodificação da resposta, no mesmo cliente, em milissegundos. Ele não é tempo exclusivo de CPU, nem latência de rede pura. A serialização do corpo da solicitação precede o marcador individual de RTT, mas ocorre dentro da janela global do lote. A soma dos RTTs, portanto, não precisa ser idêntica ao tempo total.
+
+Em cada rodada, os RTTs são ordenados e os percentis usam a posição superior mais próxima:
+\begin{equation}
+ Q_p=x_{(\lceil p n\rceil)},\qquad n=1000,\quad p\in\{0{,}95;0{,}99\}.
+\end{equation}
+O p95 corresponde ao elemento de posição 950 e o p99 ao de posição 990. Também são calculados a mediana e a amplitude entre o maior e o menor RTT. A mediana dos p99 entre rodadas é uma síntese de dez percentis; não é o p99 de um conjunto agregado de 10.000 requisições.
+
+\section{Auditoria e tratamento dos dados}
+
+A validação funcional confrontou a sequência de entradas com o oráculo, os efeitos ordenados, as relações causais, os valores e sequências finais e os registros de emissão e recepção. HTTP 200 isoladamente não foi considerado prova de correção. A auditoria conferiu a grade de 30 combinações de cenário e bloco, 1.000 requisições por rodada, unicidade de identificadores, integridade dos arquivos e correspondência das cópias.
+
+Os 30 ZIPs originais, seus 30 backups e os 60 journals foram conciliados. O pacote derivado contém inventário, tabela de rodadas, tabela de requisições e checksums. Os scripts de análise leem esse pacote sem acessar os serviços. A Figura~\ref{fig:rastreabilidade} mostra como os resultados apresentados permanecem ligados às evidências arquivadas. Volumes C: e D: distintos foram utilizados para as cópias, mas isso não comprova dispositivos físicos independentes.
+
+\begin{figure}[htbp]
+\centering
+\caption{Rastreabilidade entre evidências originais, dados derivados e monografia.}
+\label{fig:rastreabilidade}
+\includegraphics[width=\linewidth]{tcc2-rastreabilidade.pdf}
+\fonte{}
+\end{figure}
+
+Entre as dez rodadas de cada cenário, foram calculados mediana, quartis por interpolação linear inclusiva e extremos. A distribuição completa dos tempos por bloco é apresentada para tornar visível a variabilidade, aspecto que pode afetar a interpretação de comparações de sistemas \cite{maricq2018taming}. Não houve descarte de rodadas por apresentarem tempos altos.
+
+Os contrastes preservam o pareamento: para configurações $A$ e $B$, calculam-se $\Delta_b=T_{A,b}-T_{B,b}$ e $R_b=T_{A,b}/T_{B,b}$. Valores positivos de $\Delta$ e razões acima de um indicam maior duração no numerador. A síntese usa a mediana das dez diferenças ou razões. Em geral, a mediana das diferenças não é igual à diferença entre medianas, e a mesma distinção vale para razões.
+
+A análise é descritiva. Não foram estabelecidos testes de hipótese, intervalos de confiança ou margem de equivalência para afirmar superioridade populacional. Dez blocos documentam as execuções desta bancada; não constituem, por si só, garantia de poder estatístico. O Apêndice~\ref{ap:reproducao} apresenta a reprodução da análise sem nova execução experimental.

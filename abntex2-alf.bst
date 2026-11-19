@@ -1733,7 +1733,7 @@ FUNCTION {article}
   format.author.or.organization  new.sentence
   iso.year.label
   format.title "title" output.check new.block
-  format.journal output ", " * write
+  format.journal output ", " *
   iso.date.place {format.year output} 'skip$ if$
   %iso.date.place {format.date output} 'skip$ if$
   %iso.date.place {abnt.alf 'skip$ {format.year output new.sentence} if$}
@@ -1741,9 +1741,9 @@ FUNCTION {article}
   section "section" bibinfo.check output.dash
   publisher "publisher" bibinfo.check output
   address "address" bibinfo.check output
-  format.volume output "," * write
-  format.number output "," * write
-  format.pages output "," * write
+  format.volume output "," *
+  format.number output "," *
+  format.pages output "," *
   non.iso.date 
   format.issn output new.block
   format.note output new.block
@@ -1759,7 +1759,7 @@ FUNCTION {book}
   format.furtherresp new.sentence
   format.edition output new.sentence
   format.publisher.address output
-  ", " * write
+  ", " *
   iso.date.place {abnt.alf 'skip$ {format.year output new.sentence} if$}
                  {format.year output new.sentence} if$
   format.volume output new.sentence
@@ -1808,7 +1808,7 @@ FUNCTION {inbook}
   %booktitle output
   format.furtherresp new.sentence
   format.edition output new.sentence
-  format.publisher.address output ", " * write
+  format.publisher.address output ", " *
   %format.year output new.sentence
   iso.date.place {abnt.alf 'skip$ {format.year output new.sentence} if$}
                  {format.year output new.sentence} if$
@@ -1853,13 +1853,13 @@ FUNCTION {inproceedings}
   %volume output ".," * write
   format.in.ed.booktitle.inproceedings
   format.bvolume.noword output
-  "." * write
+  "." *
   %iso.date.place {abnt.alf 'skip$ {format.year output.comma new.sentence} if$}
   %               {format.year output.comma} if$
   format.year output.comma 
   address output.comma
-  ". " * write
-  "\textbf{Anais [...]}" * write
+  ". " *
+  "\textbf{Anais [...]}" *
   format.publisher.address output
   %format.year output new.sentence
   iso.date.place {abnt.alf 'skip$ {format.year output new.sentence} if$}
@@ -1898,7 +1898,7 @@ FUNCTION {conference} { inproceedings }
 FUNCTION {manual}
 { output.bibitem
   format.author.or.editor.or.organization new.sentence
-  institution output " " * write
+  institution output " " *
   iso.year.label
   format.btitle "title" output.check new.block
   format.furtherresp new.sentence
@@ -1906,7 +1906,7 @@ FUNCTION {manual}
   %address "address" bibinfo.check output
   format.address.manual output 
   org-short output 
-  ", " * write % Adiciona o campo org-short, se existir
+  ", " * % Adiciona o campo org-short, se existir
   iso.date.place 
     { abnt.alf 'skip$ { format.year output } if$ }
     { format.year output } if$
@@ -1922,7 +1922,7 @@ FUNCTION {manual}
 FUNCTION {misc}
 { output.bibitem
   format.author.or.editor.or.organization new.sentence
-  institution output "" * write
+  institution output "" *
   iso.year.label
   format.type output
   format.btitle output new.sentence
@@ -1932,7 +1932,7 @@ FUNCTION {misc}
   %format.publisher.address output
   %format.publisher.address.relax output 
   %addres output
-  org-short output ", " * write
+  org-short output
   %format.date output  new.block
   iso.date.place {abnt.alf 'skip$ {format.year output new.sentence} if$}
                  {format.year output new.sentence} if$
@@ -1946,6 +1946,8 @@ FUNCTION {misc}
   fin.entry
   empty.misc.check
 }
+
+FUNCTION {online} { misc }
 
 FUNCTION {patent}
 { output.bibitem

@@ -157,7 +157,7 @@
   urlcolor=\@cordosvinculos,%%
   bookmarksopen=true,%%
   bookmarksnumbered=true,%%
-  pdfdisplaydoctitle=true,%%
+  % DisplayDocTitle é definido por pdfx, evitando ViewerPreferences duplicado.
   pdfpagelayout=SinglePage%%
 }
 
@@ -716,7 +716,7 @@
 		\vfill
 		\large\textbf{\allcaps{\@address}}\par
 		\large\textbf{\allcaps{\@depositshortdate}}\par
-             \hfill \mbox{\scriptsize{versão 11.0 (abr. 25)}}%
+             % Identificação da versão do template mantida apenas no código-fonte.
 	\end{adjustwidth}
     
 	\clearpage{\pagestyle{empty}\cleardoublepage}
@@ -749,7 +749,7 @@
 \renewcommand{\@goalfulltext}{
     \begin{Spacing}{0.8} % Inicia o ambiente de espaçamento simples
         \@goal{} como requisito para obtenção do título de \@degree{}
-        em \@degreearea{} do \@program{} da \@university{}.
+        em \ifx\@degreearea\@empty\@program{}\else\@degreearea{} do curso de \@program{}\fi{} da \@university{}.
     \end{Spacing} % Finaliza o ambiente de espaçamento simples
 }
 
@@ -762,11 +762,14 @@
 % #3: tamanho da figura
 % #4: link da licença CC
 \newcommand{\licencaCCTabela}[4]{
-    \begin{tabular}[t]{@{}p{#3}@{}p{13.2cm}@{}}
-        \setstretch{.6}
-        \centering \includegraphics[scale=0.6]{./PreTexto/arquivos/licencasCC/#1} & \multirow{2}{*}{\setstretch{.9} \small \begin{tabular}{p{13.2cm}}\vspace{-1.2cm}#2\end{tabular}} \\
-        \centering \vspace{-0.7cm} \href{#4}{~\textcolor{blue}{\small\underline{4.0 Internacional}}} &
-    \end{tabular}
+  \begingroup
+  \setlength{\tabcolsep}{0pt}
+  \begin{tabular}{@{}p{#3}p{\dimexpr\linewidth-#3\relax}@{}}
+    \centering\includegraphics[width=2.4cm]{./PreTexto/arquivos/licencasCC/#1}\par
+    \href{#4}{\scriptsize 4.0 Internacional}
+    & \small\setstretch{.9}#2
+  \end{tabular}
+  \endgroup
 }
 % luiz: old
 % \newcommand{\licencaCCTabela}[4]{
@@ -1692,7 +1695,7 @@
 
  \renewcommand*{\l@section}[2]
  {% luiz - o xmakefirstuc está funcionando, todavia a primeira coisa que vem é o número... e depois o texto, então ele não deixa a primeira letra maiúscula por causa disso... tem que ver como resolver
-     \l@chapapp{\ABNTEXsectionfont\xmakefirstuc{#1}}{#2}{\cftsectionname}
+     \l@chapapp{\ABNTEXsectionfont #1}{#2}{\cftsectionname}
  }
  
  \renewcommand{\cftdotsep}{0.8}

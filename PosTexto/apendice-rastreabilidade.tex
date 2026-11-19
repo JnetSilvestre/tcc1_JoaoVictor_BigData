@@ -1,0 +1,70 @@
+\chapter{Rastreabilidade da implementação e das evidências}
+\label{ap:rastreabilidade}
+
+Este apêndice reúne os caminhos relativos ao repositório da monografia que sustentam as principais afirmações. O código experimental está separado dos capítulos LaTeX, mas integra o mesmo projeto versionado. A Tabela~\ref{tab:mapa-evidencias} permite localizar o material sem depender de um caminho absoluto do computador utilizado.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Mapa entre afirmações e artefatos de suporte.}
+\label{tab:mapa-evidencias}
+\begin{tabularx}{\linewidth}{@{}p{4.1cm}X@{}}
+\toprule
+Afirmação ou procedimento & Artefato relativo à raiz do projeto \\
+\midrule
+Origem do núcleo Python & \path{docs/tcc2/codigo-original/} e sua nota de proveniência \\
+Adaptação de entidades & \path{prova-conceito/pon/} \\
+Referência local e oráculo & \path{prova-conceito/c0/pon_execution.py} e \path{prova-conceito/c0/oracle.py} \\
+Estado e contratos HTTP & \path{prova-conceito/c1/state.py} e \path{prova-conceito/c1/protocol.py} \\
+Imagem e topologia kind & \path{prova-conceito/Dockerfile} e \path{infraestrutura/kind/kind-config.yaml} \\
+Implantação funcional C3/C4 & \path{infraestrutura/kubernetes/c3/manifests.yaml} e \path{infraestrutura/kubernetes/c4/manifests.yaml} \\
+Agenda e ciclo da campanha & \path{prova-conceito/benchmark/m01_campaign.py} e \path{prova-conceito/benchmark/m01_lifecycle.py} \\
+Auditoria e extração & \path{prova-conceito/benchmark/m01_extract.py} \\
+Métricas, tabelas e gráficos & \path{prova-conceito/benchmark/m01_analyze.py} e \path{prova-conceito/benchmark/m01_publication.py} \\
+Laudo da amostra & \path{docs/tcc2/etapa-12-auditoria-extracao-e11-m01.md} \\
+\bottomrule
+\end{tabularx}
+\fonte{}
+\end{table}
+
+O código de referência foi fixado na revisão
+\begin{center}\small\texttt{c2d525b5c675820806af34348e259bff32a6bc5f}.\end{center}
+A revisão do controlador da série é
+\begin{center}\small\texttt{24740e922181dace018a26938b353f10d952da06}.\end{center}
+A rodada B01/C2 conserva a revisão de execução
+\begin{center}\small\texttt{eecc15e3bb1c36c9ee51b3165f882d76a0c6ed9b}.\end{center}
+Esses identificadores representam papéis distintos: origem do núcleo, controlador da campanha e execução anterior da primeira rodada. A revisão editorial da monografia não substitui os identificadores registrados nas evidências.
+
+O pacote \path{E11-M01-auditoria-extracao.zip} contém os arquivos derivados necessários à análise. Seu SHA-256 é apresentado em duas linhas apenas para leitura; a verificação utiliza a sequência contínua de 64 caracteres:
+\begin{center}\ttfamily\small
+66d115c77f7b22819cc43ad84e11ccd43\\
+759ca319ac5ef26c3f23e2af8645329
+\end{center}
+
+Os ZIPs originais e os journals permanecem no acervo de evidências. O pacote derivado permite reproduzir as estatísticas publicadas, enquanto a repetição integral da auditoria de logs, estado e topologia requer esse acervo original. Os 30 registros históricos de revisão do controlador são distinguidos da auditoria binária posterior no laudo da Etapa 12.
+
+\section*{Exemplo de topologia observada em uma rodada real}
+
+A Tabela~\ref{tab:topologia-real} transcreve campos do arquivo \texttt{topology-end.json} arquivado em \texttt{e11-c4-m01-b10}. O recorte foi extraído do ZIP original e seu hash interno foi conferido. Trata-se de evidência histórica da rodada, e não de uma consulta atual ao cluster ou de uma representação de saída simulada.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Posicionamento registrado ao final da rodada C4/B10.}
+\label{tab:topologia-real}
+\begin{tabularx}{\linewidth}{@{}p{3.8cm}Xr@{}}
+\toprule
+Papel & Nó registrado & Reinícios \\
+\midrule
+\texttt{attribute-source} & \texttt{tcc2-pon-worker} & 0 \\
+\texttt{logic-engine} & \texttt{tcc2-pon-control-plane} & 0 \\
+\texttt{rule-executor} & \texttt{tcc2-pon-worker} & 0 \\
+\bottomrule
+\end{tabularx}
+\fonte{Arquivo original \texttt{topology-end.json}, rodada \texttt{e11-c4-m01-b10}}
+\end{table}
+
+Os nomes e UIDs completos dos Pods, os identificadores de contêiner e os demais campos permanecem no arquivo documental \path{docs/tcc2/e11-m01-exemplo-c4-b10-topology-end.json}. O inventário do pacote derivado liga essa rodada ao ZIP original de SHA-256:
+\begin{center}\ttfamily\small
+a21bd54e385d70923ed2e6b84e7be6a46\\
+a41a592fdd5257cdf5385927978b24d
+\end{center}
+Essa evidência exemplifica a diferença entre declarar um seletor de nó no manifesto e verificar o posicionamento efetivo dos componentes. A conclusão sobre a campanha completa depende da auditoria das 30 rodadas, e não apenas deste exemplo.

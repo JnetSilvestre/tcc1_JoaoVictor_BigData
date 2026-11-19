@@ -1,10 +1,48 @@
-%%%% CONSIDERAÇÕES FINAIS DA PROPOSTA DO TCC1
-\chapter{Considerações finais}\label{cap:conclusoeseperspectivas}
+\chapter{Considerações finais}
+\label{cap:conclusoeseperspectivas}
 
-Este trabalho apresentou a proposta de investigação da viabilidade técnica de distribuição de uma aplicação de prova de conceito baseada no Paradigma Orientado a Notificações (PON) em um cluster Kubernetes. A pesquisa fundamenta-se nos princípios do paradigma e nos trabalhos relacionados ao método NOP Query, considerando a possibilidade de organizar componentes orientados a notificações em uma infraestrutura distribuída.
+\section{Resposta ao problema de pesquisa}
 
-A revisão teórica permitiu identificar características do PON relevantes para essa investigação, especialmente a colaboração entre entidades e o processamento orientado por notificações. Entretanto, tais características não são suficientes para demonstrar, isoladamente, a viabilidade de uma implementação distribuída. Aspectos como comunicação entre processos, gerenciamento de estado, sincronização e utilização de recursos precisam ser examinados durante o desenvolvimento.
+Este trabalho investigou se uma aplicação de prova de conceito baseada no Paradigma Orientado a Notificações poderia ser organizada, conteinerizada e executada em Kubernetes, estabelecendo uma base para avaliações posteriores. Os resultados sustentam uma resposta afirmativa dentro do escopo ensaiado: a aplicação Python foi organizada em três serviços, implantada em contêineres e executada com componentes no mesmo nó virtual e em dois nós kind do mesmo computador, preservando os resultados funcionais esperados para a sequência de entradas utilizada.
 
-A continuidade do trabalho compreenderá a análise da aplicação de prova de conceito, a definição de uma arquitetura de distribuição, a preparação do ambiente conteinerizado e a implantação em Kubernetes. A partir dessas atividades, pretende-se obter evidências sobre o funcionamento da solução e identificar as limitações técnicas associadas à distribuição.
+A viabilidade observada dependeu de uma adaptação explícita das fronteiras de estado e comunicação. O desacoplamento entre entidades do código local não eliminou a necessidade de instalar um estado inicial consistente, identificar mensagens, controlar sequências e tratar falhas de encaminhamento. A distribuição foi possível porque essas responsabilidades foram definidas para o produtor de atributos, o avaliador lógico e o executor de regras, mantendo a avaliação PON local no interior dos processos pertinentes.
 
-As conclusões sobre a viabilidade da abordagem serão formuladas a partir dos resultados efetivamente obtidos na etapa experimental. Este capítulo encerra a proposta do TCC1 e deverá ser substituído por conclusões baseadas nos resultados reais na versão final do TCC2.
+A contribuição central não se limita à execução de contêineres. O trabalho estabeleceu uma ligação verificável entre o código de referência, a implementação adaptada, os recursos de implantação e o comportamento observado. O Kubernetes forneceu os mecanismos para organizar serviços e posicioná-los nos nós virtuais; a preservação da semântica continuou sendo responsabilidade dos contratos e do estado da aplicação.
+
+\section{Atendimento aos objetivos e contribuições}
+
+O primeiro objetivo específico foi atendido pelo estudo das entidades PON e pela inspeção do código Python de referência. Essa análise distinguiu a prova de conceito do NOP Query completo e identificou os ajustes necessários para produzir uma referência local determinística. A apresentação de trechos originais e das alterações permite reconhecer a origem da solução e delimitar o que foi desenvolvido neste trabalho.
+
+O segundo objetivo foi atendido pela conteinerização e pela preparação da infraestrutura. Foram estabelecidos uma imagem de aplicação, uma configuração kind com dois nós virtuais, manifestos de implantação, serviços internos, parâmetros de comunicação e limites de recursos. A conferência da imagem, das identidades e do posicionamento tornou essas configurações inspecionáveis e permitiu associar cada resultado à bancada efetivamente utilizada.
+
+O terceiro objetivo foi atendido pela implantação progressiva e pela validação funcional nos cenários distribuídos. A evolução de C0 para C1, C2, C3 e C4 permitiu verificar o núcleo, os contratos HTTP, o ambiente de contêineres e o posicionamento em Kubernetes. Na campanha definitiva, as 30 rodadas tiveram 30.000 respostas HTTP 200 e 7.500 efeitos conciliados com o oráculo. Esses números são acompanhados por verificações de identidade, ordem e causalidade, que dão conteúdo à afirmação de preservação funcional para os casos cobertos.
+
+O quarto objetivo foi atendido pela documentação dos desafios e dos limites da solução. A inicialização, o controle de mensagens, o estado em memória, a ausência de recuperação persistente e o compartilhamento do host físico foram identificados como aspectos que condicionam a interpretação e a continuidade do trabalho. A exclusão de CPU e RAM das métricas da campanha também foi registrada, preservando a distinção entre quotas configuradas e consumo medido.
+
+Como resultados materiais, o trabalho entrega uma arquitetura executável, uma progressão documentada de validação, um controlador de campanha com verificação e preservação de evidências e um processo de extração e análise reproduzível. Esses artefatos permitem inspecionar os resultados sem relançar as requisições originais e oferecem um ponto de partida para investigações posteriores.
+
+\section{Síntese da avaliação temporal}
+
+A campanha E11-M01 comparou três configurações em dez blocos. Os tempos medianos por lote de 1.000 requisições foram 18,09 s em C2, 18,35 s em C3 e 19,03 s em C4. As respectivas vazões medianas foram 55,29, 54,49 e 52,56 requisições por segundo. Na comparação pareada, C4 apresentou duração maior que C2 nos dez blocos, com diferença mediana de 1,04 s; C3 apresentou duração maior que C2 em sete blocos, com diferença mediana de 0,57 s.
+
+O resultado temporal indica que a implantação distribuída funcionou com um acréscimo de duração observado nessa configuração e nessa carga. A comparação não demonstrou um ganho de desempenho pelo uso de Kubernetes. Também não identificou uma parcela isolada de custo atribuível exclusivamente à orquestração ou à rede: os cenários alteram camadas de execução, caminhos de comunicação e, em C4, o contexto do avaliador no control-plane.
+
+As diferenças entre blocos e entre percentis reforçam a necessidade de apresentar dispersão e caudas, em vez de resumir toda a experiência a um único tempo médio. B01 permaneceu na análise, inclusive com sua proveniência específica. Essa manutenção evita selecionar apenas as execuções mais favoráveis e permite que o leitor avalie o alcance das sínteses apresentadas.
+
+\section{Limitações da investigação}
+
+A conclusão de viabilidade se restringe à prova de conceito Python, à regra e às entradas avaliadas, ao transporte HTTP/JSON síncrono e à implantação com uma réplica por papel. Ela não equivale a uma demonstração de correção universal do paradigma, nem à validação de todas as funcionalidades do NOP Query. O conjunto de entradas oferece evidência funcional delimitada, e não cobertura de todos os estados ou falhas possíveis.
+
+Os dois nós kind compartilham um host físico. Por isso, a investigação não caracteriza comunicação entre computadores independentes, disponibilidade diante da perda do host ou expansão de capacidade física. A carga serial também não permite concluir sobre capacidade máxima, elasticidade ou atendimento concorrente. A presença do avaliador no control-plane acrescenta uma particularidade que deve ser considerada em comparações futuras.
+
+Quanto às métricas, foram avaliados tempos e contagens funcionais. O modo \texttt{timing\_only} não produziu medidas de CPU ou RAM por lote; limites configurados não podem substituí-las. A análise descritiva de dez blocos não estabelece significância estatística, equivalência ou uma diferença universal de desempenho. Essas limitações qualificam a resposta ao problema sem invalidar a demonstração funcional realizada.
+
+\section{Trabalhos futuros}
+
+Uma primeira continuidade consiste em executar a mesma arquitetura em máquinas físicas distintas, com registro das características de rede e separação do control-plane dos nós de aplicação. Esse desenho permitiria investigar o custo do transporte entre hosts e reduziria a confusão introduzida pelo compartilhamento do nó de controle. A carga e os critérios de validação poderiam ser preservados como referência inicial.
+
+Uma segunda direção é ampliar o conjunto de cargas, regras e padrões de alteração, incluindo concorrência controlada. Para isso, será necessário rever o servidor serial e estabelecer sincronização, particionamento de estado e roteamento por entidade antes de aumentar réplicas. Somente depois dessa definição será possível avaliar escalabilidade horizontal com uma interpretação coerente dos resultados.
+
+Outra continuidade é introduzir persistência dos registros de mensagens e do estado, juntamente com protocolos de recuperação e ensaios de falha. A deduplicação em memória fornece uma proteção limitada durante a vida do processo; sua extensão para reinicializações requer definir o que deve ser confirmado, persistido e retomado. Os cenários de falha devem ser acompanhados por critérios funcionais tão explícitos quanto os da campanha concluída.
+
+Por fim, uma campanha específica pode avaliar CPU, memória e custo da própria coleta, validando resolução temporal, escopo dos contadores e comparabilidade entre Docker e Kubernetes. Com esses instrumentos e um desenho de repetição adequado à variabilidade observada, será possível ampliar a investigação do custo computacional. A arquitetura, os contratos e a organização das evidências produzidos neste trabalho constituem a base concreta para essas extensões.

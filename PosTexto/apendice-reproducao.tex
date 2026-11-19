@@ -1,0 +1,42 @@
+\chapter{Reprodução da análise e compilação}
+\label{ap:reproducao}
+
+A análise utiliza Python 3.13 e Matplotlib 3.10.7. Na raiz do repositório, os comandos abaixo leem os dados arquivados e geram os artefatos, sem executar experimentos:
+
+\begin{lstlisting}[style=tcccode]
+python -B prova-conceito/benchmark/m01_analyze.py E11-M01-auditoria-extracao.zip
+python -B prova-conceito/benchmark/m01_publication.py
+python -B docs/tcc2/gerar_ilustracoes_monografia.py
+\end{lstlisting}
+
+O primeiro comando valida o pacote e gera métricas e gráficos; o segundo gera as tabelas de apresentação e os contrastes. O terceiro desenha os diagramas da arquitetura, que não são capturas de novas execuções.
+
+A Tabela~\ref{tab:arquivos-pacote} descreve o pacote derivado. As durações brutas estão em nanossegundos, convertidos conforme a Seção~\ref{sec:metricas}.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Conteúdo do pacote derivado usado na análise.}
+\label{tab:arquivos-pacote}
+\begin{tabularx}{\linewidth}{@{}p{4cm}X@{}}
+\toprule
+Arquivo & Conteúdo \\
+\midrule
+\texttt{inventario.json} & Identidades, revisões, hashes e vínculos com os arquivos de cada rodada. \\
+\texttt{rodadas.csv} & 30 linhas com cenário, bloco, posição e duração monotônica do lote. \\
+\texttt{requisicoes.csv} & 30.000 registros com rodada, passo, identidade, status e duração individual. \\
+\texttt{checksums.sha256} & Hashes dos três arquivos para verificação de integridade. \\
+\bottomrule
+\end{tabularx}
+\fonte{}
+\end{table}
+
+Para compilar a monografia, o arquivo principal é \texttt{main.tex}. O projeto utiliza pdfLaTeX, BibTeX, a classe \texttt{utfpr.cls} e o estilo \texttt{abntex2-alf.bst}. As figuras estão em \texttt{figuras/}; as tabelas derivadas, em \texttt{capitulos/dados-e11-m01/}; os trechos de código são incluídos diretamente dos arquivos identificados. Uma sequência de compilação local é:
+
+\begin{lstlisting}[style=tcccode]
+pdflatex -interaction=nonstopmode -halt-on-error main.tex
+bibtex main
+pdflatex -interaction=nonstopmode -halt-on-error main.tex
+pdflatex -interaction=nonstopmode -halt-on-error main.tex
+\end{lstlisting}
+
+No Overleaf, deve-se importar a estrutura do projeto sem reorganizar as pastas, selecionar \texttt{main.tex} como documento principal e pdfLaTeX como compilador. A folha de aprovação oficial deve ser incorporada aos pré-textuais após sua emissão.

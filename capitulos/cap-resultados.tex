@@ -1,5 +1,162 @@
+\chapter{Resultados e discussão}
+\label{cap:resultados-e11}
 
+\section{Viabilidade funcional e integridade da amostra}
 
-\chapter{Discussão e Resultados}
+As 30 rodadas previstas foram concluídas, com dez por cenário. Todas as 30.000 requisições registraram HTTP 200 e identificadores únicos. Em cada rodada, a auditoria conciliou 874 mudanças de atributo, 126 operações sem alteração, 500 notificações de condição e 250 efeitos com os registros do cliente, os logs de serviço e o oráculo regenerado. A Tabela~\ref{tab:resultado-funcional} apresenta as contagens agregadas por cenário.
 
-Capítulo de discussão e resultados.
+\begin{table}[htbp]
+\centering\small
+\caption{Resultados funcionais auditados por cenário.}
+\label{tab:resultado-funcional}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Cenário & Rodadas & HTTP 200 & Mudanças & Condições & Efeitos \\
+\midrule
+C2 & 10 & 10.000 & 8.740 & 5.000 & 2.500 \\
+C3 & 10 & 10.000 & 8.740 & 5.000 & 2.500 \\
+C4 & 10 & 10.000 & 8.740 & 5.000 & 2.500 \\
+\midrule
+Total & 30 & 30.000 & 26.220 & 15.000 & 7.500 \\
+\bottomrule
+\end{tabular}
+\fonte{Dados auditados da campanha E11-M01}
+\end{table}
+
+As identidades das três instâncias de serviço foram preservadas durante os lotes e os registros indicaram zero reinícios. A auditoria também verificou a correspondência entre mensagens e efeitos, e não apenas a igualdade das contagens. Essa diferença é importante: duas execuções podem produzir a mesma quantidade de efeitos e ainda divergir na ordem ou nas entradas que os causaram. A conciliação com o oráculo e com as relações causais sustenta a preservação funcional nos casos exercitados.
+
+A execução em C3 demonstra que a aplicação adaptada funcionou com seus três serviços em Pods distintos no mesmo nó virtual. C4 amplia essa evidência para o percurso entre dois nós kind. O resultado responde à questão de viabilidade da implantação delimitada no trabalho, sem estender a conclusão a outros conjuntos de regras, execução concorrente ou falhas com perda de estado.
+
+\section{Tempo de lote e vazão}
+
+A Tabela~\ref{tab:e11-resumo} separa mediana, quartis e extremos em colunas para facilitar a leitura. Cada linha sintetiza dez rodadas. Os tempos medianos de lote foram 18,09 s em C2, 18,35 s em C3 e 19,03 s em C4. As vazões medianas correspondentes foram 55,29, 54,49 e 52,56 requisições por segundo.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Duração, vazão e RTT típico entre as dez rodadas de cada cenário.}
+\label{tab:e11-resumo}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}llrrrrr@{}}
+\toprule
+Métrica & Cenário & Mediana & Q1 & Q3 & Mínimo & Máximo \\
+\midrule
+\input{capitulos/dados-e11-m01/publicacao-resumo-1}
+\end{tabular}
+\fonte{Dados da campanha E11-M01}
+\end{table}
+
+A vazão da Equação~\ref{eq:tempo-vazao} usa a mesma duração do lote e não fornece uma segunda confirmação independente de vantagem ou desvantagem. Como a carga é serial, o cliente limita a emissão ao término de cada resposta. Os valores observados não devem ser interpretados como taxa máxima de atendimento nem como resultado de um teste de saturação.
+
+A Figura~\ref{fig:e11-blocos} e a Tabela~\ref{tab:e11-blocos} preservam a estrutura dos blocos. C4 apresentou seu maior tempo em B01, com 27,52 s. A exibição de todos os valores permite observar que as diferenças não foram constantes ao longo da campanha.
+
+\begin{figure}[htbp]
+\centering
+\caption{Tempo de lote observado em cada bloco da campanha E11-M01.}
+\label{fig:e11-blocos}
+\includegraphics[width=\linewidth]{e11-m01-tempos-por-bloco.pdf}
+\fonte{}
+\end{figure}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Ordem dos cenários e duração de cada lote, em segundos.}
+\label{tab:e11-blocos}
+\begin{tabular}{@{}llrrr@{}}
+\toprule
+Bloco & Ordem de execução & C2 & C3 & C4 \\
+\midrule
+\input{capitulos/dados-e11-m01/publicacao-tempos}
+\end{tabular}
+\fonte{Dados da campanha E11-M01}
+\end{table}
+
+Os maiores contrastes envolvendo C4 ocorreram nos primeiros blocos. O desenho não permite identificar sua causa apenas pelo formato das curvas: aquecimento de componentes da plataforma, competição de recursos e posição temporal são explicações possíveis, mas não foram isoladas por intervenções específicas. B01 foi mantido conforme o planejamento, incluindo o registro da revisão distinta na execução de B01/C2. Retirá-lo depois de observar o tempo elevado reduziria artificialmente a variabilidade apresentada.
+
+\section{Latência típica e caudas da distribuição}
+
+A Tabela~\ref{tab:e11-cauda} reúne os percentis e a amplitude dos RTTs. Cada p95 ou p99 foi calculado dentro de uma rodada; as colunas sintetizam depois os dez valores obtidos. Assim, as linhas não descrevem uma distribuição formada pela mistura de todas as requisições de um cenário.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Caudas e amplitude do RTT, em milissegundos, entre as dez rodadas.}
+\label{tab:e11-cauda}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}llrrrrr@{}}
+\toprule
+Métrica & Cenário & Mediana & Q1 & Q3 & Mínimo & Máximo \\
+\midrule
+\input{capitulos/dados-e11-m01/publicacao-resumo-2}
+\end{tabular}
+\fonte{Dados da campanha E11-M01}
+\end{table}
+
+A mediana entre rodadas do p99 foi 82,94 ms em C2, 85,77 ms em C3 e 88,08 ms em C4. Para o p95, os intervalos observados se sobrepuseram e C3 apresentou a menor mediana entre rodadas. Portanto, a ordenação dos cenários depende da métrica utilizada: um menor p95 não significa necessariamente menor duração total ou menor p99.
+
+\begin{figure}[htbp]
+\centering
+\caption{Percentis 95 e 99 do RTT por bloco da campanha E11-M01.}
+\label{fig:e11-cauda}
+\includegraphics[width=\linewidth]{e11-m01-cauda-rtt.pdf}
+\fonte{}
+\end{figure}
+
+O RTT inclui o processamento e o retorno síncrono do caminho efetivamente percorrido. Como a carga combina operações sem mudança, mudanças sem transição e mudanças com efeito, há percursos distintos dentro do mesmo lote. A análise apresentada descreve a composição fixa da carga. Não foram estimados efeitos causais separados por tipo de percurso nem uma latência de rede obtida por subtração de relógios entre serviços.
+
+O p99 também depende de uma porção pequena das 1.000 observações ordenadas de cada rodada. Sua apresentação é útil para tornar visíveis respostas mais lentas, mas não estabelece um compromisso de nível de serviço para produção. A amplitude mostra a distância entre extremos e, por construção, pode ser influenciada por poucas observações.
+
+\section{Comparação pareada por bloco}
+
+A Tabela~\ref{tab:e11-diferencas} mostra as diferenças de duração em cada bloco, e a Tabela~\ref{tab:e11-pares} sintetiza diferenças e razões. Essa separação evita reunir tempos, diferenças e razões em uma única célula. Nas razões, o cenário à esquerda é o numerador; valores acima de um indicam maior duração.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Diferenças pareadas de duração, em segundos.}
+\label{tab:e11-diferencas}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Bloco & C3 menos C2 & C4 menos C2 & C4 menos C3 \\
+\midrule
+\input{capitulos/dados-e11-m01/publicacao-diferencas}
+\end{tabular}
+\fonte{Dados da campanha E11-M01}
+\end{table}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Síntese dos contrastes pareados entre as dez rodadas.}
+\label{tab:e11-pares}
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}llrrrrr@{}}
+\toprule
+Contraste & Medida & Mediana & Q1 & Q3 & Mínimo & Máximo \\
+\midrule
+\input{capitulos/dados-e11-m01/publicacao-contrastes}
+\end{tabular}
+\fonte{Dados da campanha E11-M01}
+\end{table}
+
+A diferença mediana C3 menos C2 foi 0,57 s, com C3 mais lento em sete blocos. C4 levou mais tempo que C2 nos dez blocos, com diferença mediana de 1,04 s e razão mediana de aproximadamente 1,06. Em relação a C3, C4 levou mais tempo em oito blocos, com diferença mediana de 0,81 s. A Figura~\ref{fig:e11-contrastes} permite visualizar a direção e a magnitude dos contrastes.
+
+\begin{figure}[htbp]
+\centering
+\caption{Diferenças de duração por bloco; valores positivos indicam maior tempo do primeiro cenário.}
+\label{fig:e11-contrastes}
+\includegraphics[width=.96\linewidth]{e11-m01-contrastes-pareados.pdf}
+\fonte{}
+\end{figure}
+
+Esses valores são medianas das comparações dentro de cada bloco. Por exemplo, a diferença entre as medianas de C3 e C2, arredondadas na Tabela~\ref{tab:e11-resumo}, é 0,26 s, enquanto a mediana das diferenças pareadas é 0,57 s. Não há contradição: os estimadores usam operações distintas. O pareamento mantém a associação planejada entre as três execuções de um bloco.
+
+A regularidade da direção C4 maior que C2 é um resultado descritivo da amostra. Ela não estabelece significância estatística nem um percentual universal de custo. Também não permite decompor a diferença total em parcelas independentes de Docker, Kubernetes e transporte: as camadas interagem e o posicionamento do avaliador difere entre as configurações.
+
+\section{Ameaças à validade e alcance dos resultados}
+
+Quanto à validade interna, os blocos, a carga fixa, a imagem conferida e o estado inicial novo reduzem fontes de variação identificadas no procedimento. Permanecem possíveis interferências do host, das camadas de virtualização e da ordem temporal. O posicionamento no control-plane em C4 também pode interagir com serviços de controle. A variação entre execuções e a ordem de ensaios são riscos reconhecidos em estudos de desempenho \cite{maricq2018taming,duplyakin2023ordering}; este trabalho os torna visíveis, sem afirmar que foram eliminados.
+
+Quanto à validade de construto, o tempo do lote caracteriza o caminho completo da aplicação e do cliente, sob os limites escolhidos. Ele não representa CPU utilizada, energia ou custo puro de rede. Da mesma forma, receber HTTP 200 não seria suficiente para demonstrar preservação funcional; por isso, a auditoria também utilizou o oráculo, as sequências e os efeitos. As cotas de CPU e memória são condições do ensaio, não métricas de consumo.
+
+Quanto à validade externa, a investigação cobre uma prova de conceito, uma condição lógica, uma carga de 1.000 operações seriais e um host físico. Dois nós kind não equivalem a dois computadores independentes. Os resultados não caracterizam processamento real de vídeo, escala horizontal, operação multiusuário, tolerância à perda de nós ou capacidade máxima.
+
+Quanto à conclusão estatística, foram preservadas dez rodadas por cenário e a análise permaneceu descritiva. Não se tratou cada requisição como réplica independente, não se excluíram blocos lentos e não se afirmou equivalência pela proximidade de medianas. Uma campanha futura com objetivo inferencial deverá definir estimador, precisão e número de repetições antes da coleta.
+
+A leitura conjunta permite reconhecer dois resultados complementares: a cadeia adaptada preservou o comportamento funcional para as entradas cobertas, e sua duração variou entre as configurações. A viabilidade de implantação foi demonstrada nesse recorte; a vantagem de desempenho, o consumo de recursos e a escalabilidade permanecem perguntas distintas.
